@@ -1,6 +1,6 @@
 # GateKeeper
 
-`GateKeeper` 是一个使用 `Go` (`golang`) 编写的不依赖分布式数据库的 `Api` 网关, 使用它可以高效进行服务代理 以及 在线化服务配置并且你无需重启服务器。
+`GateKeeper` 是一个使用 `Go` (`golang`) 编写的不依赖分布式数据库的 `API` 网关, 使用它可以高效进行服务代理 以及 在线化服务配置并且你无需重启服务器。
 
 - [特性](#%E7%89%B9%E6%80%A7)
 - [内容](#%E5%86%85%E5%AE%B9)
@@ -38,14 +38,14 @@ git clone git@github.com:didichuxing/gatekeeper.git
 
 ```
 export GO111MODULE=on
-export GOPROXY=https://goproxy.io
+export GOPROXY=https://goproxy.cn
 ```
 
 3. 创建 `db` 并导入数据
 
 如果不使用在线服务接入以及统计功能，可以跳过本步。
 ```
-mysql -h localhost -u root -p -e "CREATE DATABASE `gatekeeper` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
+mysql -h localhost -u root -p -e "CREATE DATABASE gatekeeper DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
 mysql -h localhost -u root -p gatekeeper < install/db.sql --default-character-set=utf8　
 ```
 

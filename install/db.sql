@@ -1,6 +1,3 @@
-CREATE DATABASE `gatekeeper` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-
-USE `gatekeeper`;
 
 CREATE TABLE `gateway_match_rule` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
