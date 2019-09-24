@@ -1,0 +1,287 @@
+{{template "layout" .}}
+<!-- iCheck for checkboxes and radio inputs -->
+<link rel="stylesheet" href="/assets/plugins/iCheck/all.css">
+{{define "content"}}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                {{if eq .Module.Base.ID 0}}
+                新增tcp服务{{else}}修改tcp服务
+                {{end}}
+                <small>service manage</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="/admin/index"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li class="active">服务管理</li>
+            </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <!-- right column -->
+                <div class="col-md-12">
+                    <a name="alert-warning"></a>
+                    <div id="alert-warning" class="alert alert-warning alert-dismissible" style="display: none;">
+                        <h4><i class="icon fa fa-warning"></i> Alert!</h4>
+                        <label></label>
+                    </div>
+                    <form class="form-horizontal" method="post">
+                        <!-- 基本信息 == start == -->
+                        <div class="box box-info">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">基本信息</h3>
+                            </div>
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">服务标识 <span class="text-red">*</span></label>
+                                    <div class="col-sm-7">
+                                        {{if eq .Module.Base.ID 0}}
+                                        <input type="text" class="form-control" name="base.name" value="{{.Module.Base.Name}}">
+                                        {{else}}
+                                        <input type="hidden" class="form-control" name="base.name" value="{{.Module.Base.Name}}">
+                                        <label class="form-control-static">{{.Module.Base.Name}}</label>
+                                        {{end}}
+                                    </div>
+                                    <div class="col-sm-3 form-control-static">
+                                        唯一标识，支持：英文、数字、-、_
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">服务名称
+                                        <span class="text-red">*</span></label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control"
+                                               name="base.service_name" value="{{.Module.Base.ServiceName}}">
+                                    </div>
+                                    <div class="col-sm-3">
+                                        服务描述
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">监听端口
+                                        <span class="text-red">*</span></label>
+                                    <div class="col-sm-7">
+                                        {{if eq .Module.Base.ID 0}}
+                                        <input type="text" class="form-control" name="base.frontend_addr" value="{{.Module.Base.FrontendAddr}}">
+                                        {{else}}
+                                        <input type="hidden" class="form-control" name="base.frontend_addr" value="{{.Module.Base.FrontendAddr}}">
+                                        <label class="form-control-static">{{.Module.Base.FrontendAddr}}</label>
+                                        {{end}}
+                                    </div>
+                                    <div class="col-sm-3"> 如 :8900
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 基本信息 == end == -->
+                        <!-- 目标服务器 == start == -->
+                        <div class="box box-info">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">目标服务器</h3>
+                            </div>
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">探活频率
+                                        <span class="text-red">*</span></label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" value="{{if eq .Module.LoadBalance.CheckInterval 0}}5000{{else}}{{.Module.LoadBalance.CheckInterval}}{{end}}"
+                                               name="load.check_interval">
+                                    </div>
+                                    <div class="col-sm-3"> (ms) 最小1000</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">连接目标服务器超时
+                                        <span class="text-red">*</span></label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" value="{{if eq .Module.LoadBalance.ProxyConnectTimeout 0}}10000{{else}}{{.Module.LoadBalance.ProxyConnectTimeout}}{{end}}" name="load.proxy_connect_timeout">
+                                    </div>
+                                    <div class="col-sm-3"> (ms) 最小500
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">服务器ip和权重 <span class="text-red">*</span></label>
+                                    <div class="col-sm-7">
+                                        <textarea type="text" class="form-control" style="height: 100px;" name="load.ip_weight_list">{{.IPWeightList}}</textarea>
+                                    </div>
+                                    <div class="col-sm-3"> 每个规则一行 如：<br/>127.0.0.1:8701 100
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 目标服务器 == end == -->
+                        <!-- 访问控制 == start == -->
+                        <div class="box box-info">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">访问控制</h3>
+                            </div>
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">访问控制开关
+                                    </label>
+                                    <div class="col-sm-7" style="display:flex;align-items:center">
+                                        <input type="checkbox" class="minimal" id="agree" value="1" name="access.open" {{if eq .Module.AccessControl.Open 1}}checked{{ end }}>
+                                        <span>&nbsp;(开启后ip/host/登陆设置才会生效)</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">IP白名单
+                                    </label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" name="access.white_list" value="{{.Module.AccessControl.WhiteList}}">
+                                    </div>
+                                    <div class="col-sm-3">多条用以英文逗号分隔</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">IP黑名单
+                                    </label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" name="access.black_list" value="{{.Module.AccessControl.BlackList}}">
+                                    </div>
+                                    <div class="col-sm-3">多条用以英文逗号分隔</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">HOST白名单
+                                    </label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control" name="access.white_host_name" value="{{.Module.AccessControl.WhiteHostName}}">
+                                    </div>
+                                    <div class="col-sm-3">多条用以英文逗号分隔</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 访问控制 == end == -->
+                        <!-- 服务限流 == start == -->
+                        <div class="box box-info">
+                            <div class="box-header with-border">
+                                <h3 class="box-title">服务限流</h3>
+                            </div>
+                            <div class="box-body">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">客户端IP限流
+                                        <span class="text-red">*</span></label>
+                                    <div class="col-sm-7">
+                                        <input type="text" class="form-control"
+                                               name="access.client_flow_limit" value="{{.Module.AccessControl.ClientFlowLimit}}">
+                                    </div>
+                                    <div class="col-sm-3">QPS （单机）</div>
+                                </div>
+                            </div>
+                            <div class="box-footer">
+                                {{if eq .Module.Base.ID 0}}
+                                <button type="button" id="add-btn" class="btn btn-primary">Submit</button>
+                                {{else}}
+                                <button type="button" id="edit-btn" class="btn btn-primary">Submit</button>
+                                {{end}}
+                                <input name="base.id" value="{{.Module.Base.ID}}" type="hidden"/>
+                            </div>
+                        </div>
+                        <!-- /.box-footer -->
+                    </form>
+                </div>
+                <!--/.col (right) -->
+            </div>
+            <!-- /.row -->
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+{{end}}
+{{define "script"}}
+    <!-- page script -->
+    <script src="/assets/plugins/iCheck/icheck.min.js"></script>
+    <script>
+        $(function () {
+            //iCheck for checkbox and radio inputs
+            $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+                checkboxClass: 'icheckbox_minimal-blue',
+                radioClass: 'iradio_minimal-blue'
+            })
+            //Red color scheme for iCheck
+            $('input[type="checkbox"].minimal-red, input[type="radio"].minimal-red').iCheck({
+                checkboxClass: 'icheckbox_minimal-red',
+                radioClass: 'iradio_minimal-red'
+            })
+            //Flat red color scheme for iCheck
+            $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
+                checkboxClass: 'icheckbox_flat-green',
+                radioClass: 'iradio_flat-green'
+            })
+        })
+        $("#add-btn").click(function(){
+            $("#add-btn").attr("disabled",true);
+            $.ajax({
+                type: "post",
+                url: "/admin/save_service",
+                data: {
+                    "base.name": $("input[name='base.name']").val(),
+                    "base.service_name": $("input[name='base.service_name']").val(),
+                    "base.frontend_addr": $("input[name='base.frontend_addr']").val(),
+                    "load.check_interval": $("input[name='load.check_interval']").val(),
+                    "load.proxy_connect_timeout": $("input[name='load.proxy_connect_timeout']").val(),
+                    // "load.idle_conn_timeout": $("input[name='load.idle_conn_timeout']").val(),
+                    "load.ip_weight_list": $("textarea[name='load.ip_weight_list']").val(),
+                    "access.open": $("input[name='access.open']").val(),
+                    "access.white_list": $("input[name='access.white_list']").val(),
+                    "access.black_list": $("input[name='access.black_list']").val(),
+                    "access.white_host_name": $("input[name='access.white_host_name']").val(),
+                    "access.client_flow_limit": $("input[name='access.client_flow_limit']").val(),
+                    "base.id": $("input[name='base.id']").val(),
+                    "base.load_type": "tcp",
+                },
+                dataType: "json",
+                complete: function (data) {
+                    $("#alert-warning").show();
+                    if(data.responseJSON.errno==0){
+                        location.href="/admin/service_list";
+                    }else{
+                        console.log(data.responseJSON.errno);
+                        $("#alert-warning label").html(data.responseJSON.errmsg);
+                        location.href="#alert-warning";
+                    }
+                    $("#add-btn").attr("disabled",false);
+                }
+            });
+            return false;
+        });
+        $("#edit-btn").click(function(){
+            $("#edit-btn").attr("disabled",true);
+            $.ajax({
+                type: "post",
+                url: "/admin/save_service",
+                data: {
+                    "base.name": $("input[name='base.name']").val(),
+                    "base.service_name": $("input[name='base.service_name']").val(),
+                    "base.frontend_addr": $("input[name='base.frontend_addr']").val(),
+                    "load.check_interval": $("input[name='load.check_interval']").val(),
+                    "load.proxy_connect_timeout": $("input[name='load.proxy_connect_timeout']").val(),
+                    // "load.idle_conn_timeout": $("input[name='load.idle_conn_timeout']").val(),
+                    "load.ip_weight_list": $("textarea[name='load.ip_weight_list']").val(),
+                    "access.open": $("input[name='access.open']").val(),
+                    "access.white_list": $("input[name='access.white_list']").val(),
+                    "access.black_list": $("input[name='access.black_list']").val(),
+                    "access.white_host_name": $("input[name='access.white_host_name']").val(),
+                    "access.client_flow_limit": $("input[name='access.client_flow_limit']").val(),
+                    "base.id": $("input[name='base.id']").val(),
+                    "base.load_type": "tcp",
+                },
+                dataType: "json",
+                complete: function (data) {
+                    if(data.responseJSON.errno==0){
+                        alert("保存成功!");
+                        window.location.reload();
+                    }else{
+                        $("#alert-warning").show();
+                        console.log(data.responseJSON.errno);
+                        $("#alert-warning label").html(data.responseJSON.errmsg);
+                        location.href="#alert-warning";
+                    }
+                    $("#edit-btn").attr("disabled",false);
+                }
+            });
+            return false;
+        });
+    </script>
+{{end}}

@@ -1,0 +1,117 @@
+{{template "layout" .}}
+<!-- iCheck for checkboxes and radio inputs -->
+<link rel="stylesheet" href="/assets/plugins/iCheck/all.css">
+<!-- Morris chart -->
+<link rel="stylesheet" href="/assets/bower_components/morris.js/morris.css">
+{{define "content"}}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        {{$module := .}}
+        <section class="content-header">
+            <h1>
+                {{$module.Module.Base.Name}}
+                <small>service manage</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="/admin/index"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li class="active">服务管理</li>
+            </ol>
+        </section>
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">服务列表</h3>
+                        </div>
+                        <div class="box-body">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>名称</th>
+                                    <th>状态</th>
+                                    <th>流量开关</th>
+                                    <th>IP</th>
+                                    <th>权重</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{range $index, $element := .ModuleIPList}}
+                                    <tr>
+                                        <td>{{$module.Module.Base.Name}}-{{$index}}</td>
+                                        <td>{{if $module.IsActive $element}}<span style="color: green">正常</span>{{else}}<span style="color: red">异常</span>{{end}}</td>
+                                        <td>{{if $module.IsForbid $element}}<span style="color: red">关闭</span>{{else}}<span style="color: green">打开</span>{{end}}</td>
+                                        <td>{{$element}}</td>
+                                        <td>{{range $windex, $welement := $module.WeightList}}
+                                                {{if eq $windex  $index}}
+                                                    {{$welement}}
+                                                {{ end }}
+                                            {{ end }}</td>
+                                        <td>
+                                            {{if $module.IsForbid $element}}
+                                                <button type="button" class="btn btn-xs btn-danger waves-effect m-b-5"  onclick='location.href="/admin/open?name={{$module.Module.Base.Name}}&addr={{$element}}";' value="打开流量">打开流量</button>
+                                            {{else}}
+                                                <button type="button" class="btn btn-xs btn-danger waves-effect m-b-5" onclick='location.href="/admin/close?name={{$module.Module.Base.Name}}&addr={{$element}}";' value="关闭流量">关闭流量</button>
+                                            {{end}}
+                                        </td>
+                                    </tr>
+                                {{ end }}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">每小时请求量统计</h3>
+                        </div>
+                        <div class="box-body">
+                            <div class="chart" id="revenue-chart" style="position: relative;width:100%;height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.row -->
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+{{end}}
+{{define "script"}}
+<!-- echarts-gl.min.js charts -->
+<script src="/assets/plugins/echarts/echarts.min.js"></script>
+<script type="">
+    $(function () {
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('revenue-chart'));
+    option = {
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: ['0:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00']
+        },
+        yAxis: {
+            type: 'value'
+        },
+        grid: [
+            {left: '5%', right: '5%', top: '10', bottom: '50'},
+        ],
+        tooltip:{
+            show:true,
+            formatter: '{b0}<br/>{c0}'
+        },
+        series: [{
+            color: ['#37A2DA', '#32C5E9', '#67E0E3', '#9FE6B8', '#FFDB5C','#ff9f7f', '#fb7293', '#E062AE', '#E690D1', '#e7bcf3', '#9d96f5', '#8378EA', '#96BFFF'],
+
+            data: [{{.DailyHourStat}}],
+            type: 'line',
+            areaStyle: {}
+        }]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+    })
+</script>
+{{end}}

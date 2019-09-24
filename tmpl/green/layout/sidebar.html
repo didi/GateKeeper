@@ -1,0 +1,24 @@
+{{ define "sidebar" }}
+<aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+        <!-- Sidebar user panel -->
+        <div class="user-panel">
+            <div class="pull-left image">
+                <img src="/assets/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+            </div>
+            <div class="pull-left info">
+                <p>admin</p>
+                <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+            </div>
+        </div>
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        <ul class="sidebar-menu" data-widget="tree">
+            <li class="header">LABELS</li>
+            <li {{if eq "/admin/service_list" (index . "active_uri")}}class="active"{{end}}><a href="/admin/service_list"><i class="fa fa-circle-o text-red"></i> <span>服务管理</span></a></li>
+            <li {{if eq "/admin/app_list" (index . "active_uri")}}class="active"{{end}}><a href="/admin/app_list"><i class="fa fa-circle-o text-yellow"></i> <span>租户管理</span></a></li>
+        </ul>
+    </section>
+    <!-- /.sidebar -->
+</aside>
+{{ end }}

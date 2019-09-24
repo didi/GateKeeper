@@ -1,0 +1,1331 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/didichuxing/gatekeeper/service/gateway_service.go (79.7%)</option>
+				
+				<option value="file1">github.com/didichuxing/gatekeeper/service/module_config.go (61.0%)</option>
+				
+				<option value="file2">github.com/didichuxing/gatekeeper/service/register_func.go (59.6%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package service
+
+import (
+        "fmt"
+        "github.com/didichuxing/gatekeeper/dao"
+        "github.com/didichuxing/gatekeeper/public"
+        "github.com/pkg/errors"
+        "net/http"
+        "net/http/httputil"
+        "os"
+        "regexp"
+        "strconv"
+        "strings"
+)
+
+const (
+        DLTagMatchRuleFailure     = " match_rule_failure"
+        DLTagMatchRuleSuccess     = " match_rule_success"
+        DLTagAccessControlFailure = " access_control_failure"
+        DLTagAccessControlUndef   = " access_control_undef"
+        DLTagAccessControlSuccess = " access_control_success"
+        DLTagLoadBalanceFailure   = " load_balance_failure"
+        DLTagLoadBalanceSuccess   = " load_balance_suceess"
+        DLTagSsoHandlerFailure    = " sso_handler_failure"
+        DLTagSsoHandlerSuccess    = " sso_handler_success"
+
+        HeaderKeyUserPerm     = "didi-header-userperm"
+        HeaderKeyUserGroup    = "didi-header-usergroup"
+        HeaderKeyUserGroupKey = "didi-header-usergroupkey"
+        UserPermCtxKey        = "user_perm_key"
+        HeaderKeyUserCityPerm = "didi-header-usercityperm"
+)
+
+type GateWayService struct {
+        currentModule *dao.GatewayModule
+        w             http.ResponseWriter
+        req           *http.Request
+}
+
+func NewGateWayService(w http.ResponseWriter, req *http.Request) *GateWayService <span class="cov8" title="1">{
+        return &amp;GateWayService{
+                w:   w,
+                req: req,
+        }
+}</span>
+
+func (o *GateWayService) CurrentModule() *dao.GatewayModule <span class="cov8" title="1">{
+        return o.currentModule
+}</span>
+
+func (o *GateWayService) SetCurrentModule(currentModule *dao.GatewayModule) <span class="cov8" title="1">{
+        o.currentModule = currentModule
+}</span>
+
+
+//权限验证
+func (o *GateWayService) AccessControl() error <span class="cov8" title="1">{
+        if o.currentModule.AccessControl == nil </span><span class="cov0" title="0">{
+                return nil
+        }</span>
+        <span class="cov8" title="1">ctx := public.NewContext(o.w, o.req)
+        var errmsg string
+        switch </span>{
+        case !AuthModuleOpened(o, ctx):<span class="cov8" title="1">
+                public.ContextNotice(o.req.Context(), DLTagAccessControlSuccess, map[string]interface{}{
+                        "msg": "access_control_not_open",
+                })
+                return nil</span>
+        case AuthInBlackIPList(o, ctx):<span class="cov8" title="1">
+                public.ContextNotice(o.req.Context(), DLTagAccessControlFailure, map[string]interface{}{
+                        "msg": "AuthInBlackIPList",
+                })
+                return errors.New("msg:AuthInBlackIPList")</span>
+        case AuthInWhiteIPList(o, ctx):<span class="cov8" title="1">
+                public.ContextNotice(o.req.Context(), DLTagAccessControlSuccess, map[string]interface{}{
+                        "msg": "AuthWhiteIPList_success",
+                })
+                return nil</span>
+        case AuthInWhiteHostList(o, ctx):<span class="cov0" title="0">
+                public.ContextNotice(o.req.Context(), DLTagAccessControlSuccess, map[string]interface{}{
+                        "msg": "AuthWhiteHostList_success",
+                })
+                return nil</span>
+        case AuthRegisterFunc(o, ctx, &amp;errmsg):<span class="cov8" title="1">
+                public.ContextNotice(o.req.Context(), DLTagAccessControlSuccess, map[string]interface{}{
+                        "msg": "AuthRegisterFunc_success",
+                })
+                return nil</span>
+        }
+        <span class="cov8" title="1">if errmsg==""</span><span class="cov0" title="0">{
+                errmsg="auth_failure"
+        }</span>
+        <span class="cov8" title="1">public.ContextWarning(o.req.Context(), DLTagAccessControlFailure, map[string]interface{}{
+                "msg": errmsg,
+        })
+        return errors.New(errmsg)</span>
+}
+
+//是否启用模块权限校验？
+func AuthModuleOpened(o *GateWayService, ctx *public.Context) bool <span class="cov8" title="1">{
+        if o.currentModule.AccessControl.Open == 1 </span><span class="cov8" title="1">{
+                return true
+        }</span>
+        <span class="cov8" title="1">return false</span>
+}
+
+//app的签名校验
+func AuthAppToken(o *GateWayService, ctx *public.Context) (bool,error) <span class="cov8" title="1">{
+        if err:=AuthAppSign(ctx);err!=nil </span><span class="cov8" title="1">{
+                return false,err
+        }</span>
+        <span class="cov8" title="1">if err := AfterAuthLimit(ctx); err != nil </span><span class="cov8" title="1">{
+                return false,err
+        }</span>
+        <span class="cov8" title="1">return true,nil</span>
+}
+
+func AuthInBlackIPList(o *GateWayService, ctx *public.Context) bool <span class="cov8" title="1">{
+        clientIp := public.RemoteIp(o.req)
+        blackList := strings.Split(o.currentModule.AccessControl.BlackList, ",")
+        if public.AuthIpList(clientIp, blackList) </span><span class="cov8" title="1">{
+                public.ContextNotice(o.req.Context(), DLTagAccessControlUndef, map[string]interface{}{
+                        "msg":       "AuthInBlackIPList",
+                        "clientIp":  clientIp,
+                        "blackList": blackList,
+                })
+                return true
+        }</span>
+        <span class="cov8" title="1">return false</span>
+}
+
+func AuthInWhiteIPList(o *GateWayService, ctx *public.Context) bool <span class="cov8" title="1">{
+        clientIp := public.RemoteIp(o.req)
+        whiteList := strings.Split(o.currentModule.AccessControl.WhiteList, ",")
+        if public.AuthIpList(clientIp, whiteList) </span><span class="cov8" title="1">{
+                return true
+        }</span>
+        <span class="cov8" title="1">return false</span>
+}
+
+func AuthInWhiteHostList(o *GateWayService, ctx *public.Context) bool <span class="cov8" title="1">{
+        hostname, err := os.Hostname()
+        if err != nil </span><span class="cov0" title="0">{
+                return false
+        }</span>
+        <span class="cov8" title="1">whiteHostname := strings.Split(o.currentModule.AccessControl.WhiteHostName, ",")
+        if public.AuthIpList(hostname, whiteHostname) </span><span class="cov0" title="0">{
+                return true
+        }</span>
+        <span class="cov8" title="1">return false</span>
+}
+
+func AuthRegisterFunc(o *GateWayService, ctx *public.Context, errmsg *string) bool <span class="cov8" title="1">{
+        for _, rf := range AuthRegisterFuncs </span><span class="cov8" title="1">{
+                if flag,err:=rf(o, ctx);flag </span><span class="cov8" title="1">{
+                        return true
+                }</span>else<span class="cov8" title="1">{
+                        *(errmsg)=err.Error()
+                }</span>
+        }
+        <span class="cov8" title="1">return false</span>
+}
+
+func AfterAuthLimit(authCtx *public.Context) error <span class="cov8" title="1">{
+        appID := authCtx.Query("app_id")
+        return AppAuth(appID, authCtx)
+}</span>
+
+func AppAuth(appID string, authCtx *public.Context) error <span class="cov8" title="1">{
+        appConfig, err := SysConfMgr.GetAppConfigByAPPID(appID)
+        if err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov8" title="1">v:=authCtx.Req.Context().Value("request_url")
+        reqPath,ok := v.(string)
+        if !ok</span><span class="cov0" title="0">{
+                reqPath = ""
+        }</span>
+        <span class="cov8" title="1">if !public.InOrPrefixStringList(reqPath, strings.Split(appConfig.OpenApi, ",")) </span><span class="cov0" title="0">{
+                errmsg := "You don't have rights for this path:" + reqPath + " - " + appConfig.OpenApi
+                return errors.New(errmsg)
+        }</span>
+
+        //限速器
+        <span class="cov8" title="1">limiter := public.FlowLimiterHandler.GetAPPLimitVisitor(appID, appConfig.Qps)
+        if appConfig.Qps &gt; 0 &amp;&amp; limiter.Allow() == false </span><span class="cov8" title="1">{
+                errmsg := fmt.Sprintf("Qps limit : %d, %d", int64(limiter.Limit()), limiter.Burst())
+                return errors.New(errmsg)
+        }</span>
+
+        <span class="cov8" title="1">if appConfig.GroupID &gt; 0 </span><span class="cov0" title="0">{
+                authCtx.Req.Header.Add(HeaderKeyUserGroup, strconv.Itoa(int(appConfig.GroupID)))
+                authCtx.Req.Header.Add(HeaderKeyUserGroupKey, public.USERGROUP_PREFIX+strconv.Itoa(int(appConfig.GroupID)))
+        }</span>
+
+        <span class="cov8" title="1">counter := public.FlowCounterHandler.GetAPPCounter(appID)
+        if appConfig.TotalQueryDaily &gt; 0 &amp;&amp; counter.TotalCount &gt; appConfig.TotalQueryDaily </span><span class="cov0" title="0">{
+                errmsg := fmt.Sprintf("total query daily limit: %d", appConfig.TotalQueryDaily)
+                return errors.New(errmsg)
+        }</span>
+        <span class="cov8" title="1">counter.Increase(authCtx.Req.Context())
+        return nil</span>
+}
+
+func AuthAppSign(c *public.Context) error <span class="cov8" title="1">{
+        clientSign := c.Query("sign")
+        appID := c.Query("app_id")
+        if appID == "" </span><span class="cov8" title="1">{
+                return errors.New(fmt.Sprintf("AuthAppSign -error:%v",
+                                "app_id empty"))
+        }</span>
+        <span class="cov8" title="1">appConfig, err := SysConfMgr.GetAppConfigByAPPID(appID)
+        if err != nil </span><span class="cov0" title="0">{
+                return errors.New(fmt.Sprintf(
+                                "AuthAppSign -error:%v -app_id:%v -sign:%v",
+                                "GetAppConfigByAPPID error", appID,clientSign, ))
+        }</span>
+        <span class="cov8" title="1">if appConfig.Secret == "" </span><span class="cov0" title="0">{
+                return errors.New(fmt.Sprintf(
+                        "AuthAppSign -error:%v -app_id:%v -sign:%v",
+                        "Secret empty", appID,clientSign, ))
+        }</span>
+
+        <span class="cov8" title="1">if appConfig.WhiteIps != "" &amp;&amp;
+                public.AuthIpList(public.RemoteIp(c.Req), strings.Split(appConfig.WhiteIps, ",")) </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+
+        //todo 自定义sign生成规则
+        <span class="cov8" title="1">signKey := appConfig.Secret
+        if signKey != clientSign </span><span class="cov0" title="0">{
+                return errors.New(fmt.Sprintf(
+                        "AuthAppSign -error:%v -app_id:%v -sign:%v",
+                        "sign error", appID,clientSign, ))
+        }</span>
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (o *GateWayService) LoadBalance() (*httputil.ReverseProxy, error) <span class="cov8" title="1">{
+        ipList, err := SysConfMgr.GetModuleIpList(o.currentModule.Base.Name)
+        if err != nil </span><span class="cov0" title="0">{
+                public.ContextWarning(o.req.Context(), DLTagLoadBalanceFailure, map[string]interface{}{
+                        "msg":             err,
+                        "modulename":      o.currentModule.Base.Name,
+                        "availableIpList": SysConfMgr.GetAvaliableIPList(o.currentModule.Base.Name),
+                })
+                return nil, errors.New("get_iplist_error")
+        }</span>
+        <span class="cov8" title="1">if len(ipList) == 0 </span><span class="cov0" title="0">{
+                public.ContextWarning(o.req.Context(), DLTagLoadBalanceFailure, map[string]interface{}{
+                        "msg":             "empty_iplist_error",
+                        "modulename":      o.currentModule.Base.Name,
+                        "availableIpList": SysConfMgr.GetAvaliableIPList(o.currentModule.Base.Name),
+                })
+                return nil, errors.New("empty_iplist_error")
+        }</span>
+        <span class="cov8" title="1">proxy, err := o.GetModuleHttpProxy()
+        if err != nil </span><span class="cov0" title="0">{
+                public.ContextWarning(o.req.Context(), DLTagLoadBalanceFailure, map[string]interface{}{
+                        "msg":       err,
+                        "module":    o.currentModule.Base.Name,
+                })
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return proxy, nil</span>
+}
+
+func (o *GateWayService) GetModuleHttpProxy() (*httputil.ReverseProxy, error) <span class="cov8" title="1">{
+        proxy,err:=SysConfMgr.GetModuleHttpProxy(o.currentModule.Base.Name)
+        if err != nil </span><span class="cov0" title="0">{
+                public.ContextWarning(o.req.Context(), DLTagLoadBalanceFailure, map[string]interface{}{
+                        "err":       err,
+                        "module":    o.currentModule.Base.Name,
+                })
+                return &amp;httputil.ReverseProxy{}, err
+        }</span>
+        <span class="cov8" title="1">return proxy,nil</span>
+}
+
+
+func (o *GateWayService) MatchRule() error <span class="cov8" title="1">{
+        var currentModule *dao.GatewayModule
+        modules := SysConfMgr.GetModuleConfig()
+Loop:
+        for _, module := range modules.Module </span><span class="cov8" title="1">{
+                if module.Base.LoadType != "http" </span><span class="cov8" title="1">{
+                        continue</span>
+                }
+                <span class="cov8" title="1">for _, matchRule := range module.MatchRule </span><span class="cov8" title="1">{
+                        urlStr := o.req.URL.Path
+                        if matchRule.Type == "url_prefix" &amp;&amp; strings.HasPrefix(urlStr, matchRule.Rule+"/") </span><span class="cov8" title="1">{
+                                currentModule = module
+                                //提前检测，减少资源消耗
+                                if matchRule.UrlRewrite==""</span><span class="cov8" title="1">{
+                                        break Loop</span>
+                                }
+                                <span class="cov8" title="1">for _,uw  := range strings.Split(matchRule.UrlRewrite, ",") </span><span class="cov8" title="1">{
+                                        uws := strings.Split(uw, " ")
+                                        if len(uws) == 2 </span><span class="cov8" title="1">{
+                                                re, regerr := regexp.Compile(uws[0])
+                                                if regerr!=nil</span><span class="cov0" title="0">{
+                                                        return regerr
+                                                }</span>
+                                                <span class="cov8" title="1">rep := re.ReplaceAllString(urlStr, uws[1])
+                                                o.req.URL.Path = rep
+                                                public.ContextNotice(o.req.Context(), DLTagMatchRuleSuccess, map[string]interface{}{
+                                                        "url":       o.req.RequestURI,
+                                                        "write_url": rep,
+                                                })
+                                                break</span>
+                                        }
+                                }
+                                <span class="cov8" title="1">break Loop</span>
+                        }
+                }
+        }
+        <span class="cov8" title="1">if currentModule == nil </span><span class="cov0" title="0">{
+                public.ContextWarning(o.req.Context(), DLTagMatchRuleFailure, map[string]interface{}{
+                        "msg": "module_not_found",
+                        "url": o.req.RequestURI,
+                })
+                return errors.New("module not found")
+        }</span>
+        <span class="cov8" title="1">public.ContextNotice(o.req.Context(), DLTagMatchRuleSuccess, map[string]interface{}{
+                "url": o.req.RequestURI,
+        })
+        o.SetCurrentModule(currentModule)
+        return nil</span>
+}</pre>
+		
+		<pre class="file" id="file1" style="display: none">package service
+
+import (
+        "bytes"
+        "compress/gzip"
+        "context"
+        "fmt"
+        "github.com/didichuxing/gatekeeper/dao"
+        "github.com/didichuxing/gatekeeper/public"
+        "github.com/BurntSushi/toml"
+        "net/http"
+        "reflect"
+        "strconv"
+
+        "github.com/e421083458/golang_common/lib"
+        "github.com/pkg/errors"
+        "io/ioutil"
+        "net"
+        "net/http/httputil"
+        "os"
+        "strings"
+        "sync"
+        "time"
+)
+
+type SysConfigManage struct {
+        moduleConfig       *dao.ModuleConfiger
+        moduleConfigLocker sync.RWMutex
+
+        moduleIpListMap       map[string][]string //可用ip
+        moduleIpListMapLocker sync.RWMutex
+
+        moduleActiveIpListMap       map[string][]string //活动ip
+        moduleActiveIpListMapLocker sync.RWMutex
+
+        moduleForbidIpListMap       map[string][]string //禁用ip
+        moduleForbidIpListMapLocker sync.RWMutex
+
+        moduleProxyFuncMap       map[string]func(rr public.RR) *httputil.ReverseProxy
+        moduleProxyFuncMapLocker sync.RWMutex
+
+        moduleRRMap       map[string]public.RR
+        moduleRRMapLocker sync.RWMutex
+
+        appConfig       *dao.APPConfiger
+        appConfigLocker sync.RWMutex
+
+        loadConfigContext context.Context //重新载入配置时，需要执行close
+        loadConfigCancel  func()          //停止配置自动检查
+}
+
+var SysConfMgr *SysConfigManage
+
+func NewSysConfigManage() *SysConfigManage <span class="cov8" title="1">{
+        return &amp;SysConfigManage{
+                moduleIpListMap:       map[string][]string{},
+                moduleActiveIpListMap: map[string][]string{},
+                moduleForbidIpListMap: map[string][]string{},
+                moduleProxyFuncMap:    map[string]func(rr public.RR) *httputil.ReverseProxy{},
+                moduleRRMap:           map[string]public.RR{},
+        }
+}</span>
+
+//初始化配置
+func (s *SysConfigManage) InitConfig() <span class="cov8" title="1">{
+        s.loadConfigContext, s.loadConfigCancel = context.WithCancel(context.Background())
+        if err := s.refreshAPPConfig(); err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+        <span class="cov8" title="1">if err := s.refreshModuleConfig(); err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+        <span class="cov8" title="1">s.checkIpList()
+        s.configModuleRR()
+        s.configModuleProxyMap()</span>
+}
+
+//刷新配置
+func (s *SysConfigManage) ReloadConfig() <span class="cov0" title="0">{
+        //刷新获取配置
+        s.refreshAPPConfig()
+        s.refreshModuleConfig()
+
+        //如果非首次加载，执行cancel
+        if s.loadConfigCancel != nil </span><span class="cov0" title="0">{
+                s.loadConfigCancel()
+        }</span>
+        <span class="cov0" title="0">s.loadConfigContext, s.loadConfigCancel = context.WithCancel(context.Background())
+
+        //检测及配置
+        s.checkIpList()
+        s.configModuleRR()
+        s.configModuleProxyMap()</span>
+}
+
+//自动刷新配置
+func (s *SysConfigManage) MonitorConfig() <span class="cov8" title="1">{
+        //定期刷新模块配置，确保新模块加载成功
+        loadInterval := lib.GetIntConf("base.base.conf_load_interval")
+        go func() </span><span class="cov8" title="1">{
+                defer func() </span><span class="cov0" title="0">{
+                        if err := recover(); err != nil </span><span class="cov0" title="0">{
+                                public.SysLogger.Error("InternalRefresh_recover:%v", err)
+                        }</span>
+                }()
+                <span class="cov8" title="1">for </span><span class="cov8" title="1">{
+                        time.Sleep(time.Duration(loadInterval) * time.Millisecond)
+                        s.ReloadConfig()
+                }</span>
+        }()
+}
+
+//配置变更通知
+func (s *SysConfigManage) ConfigChangeNotice() (&lt;-chan struct{}) <span class="cov8" title="1">{
+        return s.loadConfigContext.Done()
+}</span>
+
+func (s *SysConfigManage) GetModuleConfig() *dao.ModuleConfiger <span class="cov8" title="1">{
+        s.moduleConfigLocker.RLock()
+        defer s.moduleConfigLocker.RUnlock()
+        return s.moduleConfig
+}</span>
+
+//通过模块名获取模块配置
+func (s *SysConfigManage) GetModuleConfigByName(name string) *dao.GatewayModule <span class="cov8" title="1">{
+        for _, item := range s.GetModuleConfig().Module </span><span class="cov8" title="1">{
+                if item.Base.Name == name </span><span class="cov8" title="1">{
+                        return item
+                }</span>
+        }
+        <span class="cov0" title="0">return nil</span>
+}
+
+//获取活动IP
+func (s *SysConfigManage) GetActiveIPList(moduleName string) []string <span class="cov0" title="0">{
+        s.moduleActiveIpListMapLocker.RLock()
+        activeIpList, _ := s.moduleActiveIpListMap[moduleName]
+        s.moduleActiveIpListMapLocker.RUnlock()
+        return activeIpList
+}</span>
+
+//获取禁用IP
+func (s *SysConfigManage) GetForbidIPList(moduleName string) []string <span class="cov0" title="0">{
+        s.moduleForbidIpListMapLocker.RLock()
+        ipList, _ := s.moduleForbidIpListMap[moduleName]
+        s.moduleForbidIpListMapLocker.RUnlock()
+        return ipList
+}</span>
+
+//获取可用IP
+func (s *SysConfigManage) GetAvaliableIPList(moduleName string) []string <span class="cov8" title="1">{
+        s.moduleIpListMapLocker.RLock()
+        ipList, _ := s.moduleIpListMap[moduleName]
+        s.moduleIpListMapLocker.RUnlock()
+        return ipList
+}</span>
+
+//获取当前可用的ip列表
+func (s *SysConfigManage) GetModuleIpList(moduleName string) ([]string, error) <span class="cov8" title="1">{
+        ipList := s.GetAvaliableIPList(moduleName)
+        if len(ipList) != 0 </span><span class="cov8" title="1">{
+                return ipList, nil
+        }</span>
+        <span class="cov0" title="0">return []string{}, errors.New("module ip empty")</span>
+}
+
+//获取配置的ip列表
+func (s *SysConfigManage) GetModuleConfIpList(moduleName string) ([]string, error) <span class="cov8" title="1">{
+        if moduleConf := s.GetModuleConfigByName(moduleName); moduleConf != nil </span><span class="cov8" title="1">{
+                ipList := strings.Split(moduleConf.LoadBalance.IpList, ",")
+                return ipList, nil
+        }</span>
+        <span class="cov0" title="0">return []string{}, errors.New("module ip empty")</span>
+}
+
+//获取模块的负载信息
+func (s *SysConfigManage) GetModuleRR(moduleName string) (public.RR, error) <span class="cov8" title="1">{
+        s.moduleRRMapLocker.RLock()
+        defer s.moduleRRMapLocker.RUnlock()
+        rr, ok := s.moduleRRMap[moduleName]
+        if ok </span><span class="cov8" title="1">{
+                return rr, nil
+        }</span>
+        <span class="cov0" title="0">return nil, errors.New("module rr empty")</span>
+}
+
+//返回模块对应的ip及权重
+func (s *SysConfigManage) GetConfIpWeightMap(module *dao.GatewayModule, defaultWeight int64) map[string]int64 <span class="cov8" title="1">{
+        confIpList := strings.Split(module.LoadBalance.IpList, ",")
+        confWeightList := strings.Split(module.LoadBalance.WeightList, ",")
+        confIpWeightMap := map[string]int64{}
+        for index, ipAddr := range confIpList </span><span class="cov8" title="1">{
+                if len(confWeightList) &gt;= index+1 </span><span class="cov8" title="1">{
+                        weight, err := strconv.ParseInt(confWeightList[index], 10, 64)
+                        if err != nil </span><span class="cov0" title="0">{
+                                weight = defaultWeight
+                        }</span>
+                        <span class="cov8" title="1">confIpWeightMap[ipAddr] = weight</span>
+                } else<span class="cov0" title="0"> {
+                        confIpWeightMap[ipAddr] = defaultWeight
+                }</span>
+        }
+        <span class="cov8" title="1">return confIpWeightMap</span>
+}
+
+//获取租户数据
+func (s *SysConfigManage) GetAppConfigByAPPID(appid string) (*dao.GatewayAPP, error) <span class="cov8" title="1">{
+        for _, config := range s.appConfig.AuthirizedApps </span><span class="cov8" title="1">{
+                if config.AppID == appid </span><span class="cov8" title="1">{
+                        return config, nil
+                }</span>
+        }
+        <span class="cov0" title="0">return nil, errors.New("app_id_is_empty")</span>
+}
+
+//获取http代理方法
+func (s *SysConfigManage) GetModuleHttpProxy(moduleName string) (*httputil.ReverseProxy, error) <span class="cov8" title="1">{
+        rr, err := s.GetModuleRR(moduleName)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">s.moduleProxyFuncMapLocker.RLock()
+        defer s.moduleProxyFuncMapLocker.RUnlock()
+        proxyFunc, ok := s.moduleProxyFuncMap[moduleName]
+        if ok </span><span class="cov8" title="1">{
+                return proxyFunc(rr), nil
+        }</span>
+        <span class="cov0" title="0">return nil, errors.New("module proxy empty")</span>
+}
+
+//刷新模块配置到内存
+func (s *SysConfigManage) refreshModuleConfig() error <span class="cov8" title="1">{
+        defer func() </span><span class="cov8" title="1">{
+                if err := recover(); err != nil </span><span class="cov0" title="0">{
+                        public.SysLogger.Error("RefreshModule_recover:%v", err)
+                }</span>
+        }()
+        <span class="cov8" title="1">configFile := lib.GetConfFilePath("module.toml")
+        public.SysLogger.Info("module_file:%s", configFile)
+        fileConf, err := s.getFileModuleConf(configFile)
+        if err != nil </span><span class="cov0" title="0">{
+                public.SysLogger.Error("GetFileModuleConf_error:%v", err)
+                return err
+        }</span>
+
+        <span class="cov8" title="1">dbConf, err := s.getDBModuleConf(true)
+        if err != nil </span><span class="cov0" title="0">{
+                public.SysLogger.Error("GetDBModuleConf_error:%v", err)
+        }</span>
+        <span class="cov8" title="1">public.SysLogger.Info("GetDBModuleConf:%v", dbConf)
+
+        //如果db挂了默认降级走file
+        if dbConf != nil </span><span class="cov0" title="0">{
+                s.moduleConfigLocker.Lock()
+                s.moduleConfig = dbConf
+                s.moduleConfigLocker.Unlock()
+                public.SysLogger.Info("module_configured_by_db.")
+                err := s.writeFileModuleConf(configFile, dbConf)
+                if err != nil </span><span class="cov0" title="0">{
+                        public.SysLogger.Error("WriteFileModuleConf_error:%v", err)
+                }</span> else<span class="cov0" title="0"> {
+                        public.SysLogger.Info("module_file_was_override.")
+                }</span>
+        } else<span class="cov8" title="1"> if fileConf != nil </span><span class="cov8" title="1">{
+                s.moduleConfigLocker.Lock()
+                s.moduleConfig = fileConf
+                s.moduleConfigLocker.Unlock()
+                public.SysLogger.Info("module_configured_by_file.")
+        }</span> else<span class="cov0" title="0"> {
+                public.SysLogger.Info("get_dbConf_and_fileConf_both_error")
+                return err
+        }</span>
+        <span class="cov8" title="1">public.SysLogger.Info("ModuleConf:%v", s.GetModuleConfig())
+        return nil</span>
+}
+
+func (s *SysConfigManage) checkModuleIpList(balance *dao.GatewayLoadBalance) []string <span class="cov8" title="1">{
+        newIpList := []string{}
+        ipList := strings.Split(balance.IpList, ",")
+        for _, ip := range ipList </span><span class="cov8" title="1">{
+                checkUrl := fmt.Sprintf("http://%s%s", ip, balance.CheckUrl)
+                if balance.CheckMethod == "httpchk" </span><span class="cov8" title="1">{
+                        response, _, err := public.HttpGET(public.CheckLogger, checkUrl, nil, balance.CheckInterval, nil)
+                        if err != nil || response.StatusCode != 200 </span><span class="cov8" title="1">{
+                                public.CheckLogger.Warn("dltag=httpchk_failure|url=%v", checkUrl)
+                        }</span> else<span class="cov8" title="1"> {
+                                newIpList = append(newIpList, ip)
+                        }</span>
+                }
+                <span class="cov8" title="1">if balance.CheckMethod == "tcpchk" </span><span class="cov8" title="1">{
+                        conn, err := net.DialTimeout("tcp", ip, time.Millisecond*time.Duration(int64(balance.CheckInterval)))
+                        if err != nil </span><span class="cov8" title="1">{
+                                public.CheckLogger.Warn("dltag=_com_tcp_failure|ip=%v", ip)
+                        }</span> else<span class="cov8" title="1"> {
+                                conn.Close()
+                                public.CheckLogger.Warn("dltag=_com_tcp_success|ip=%v", ip)
+                                newIpList = append(newIpList, ip)
+                        }</span>
+                }
+        }
+        <span class="cov8" title="1">return newIpList</span>
+}
+
+//配置模块服务发现检测
+//已运行模块周期刷新，直到IpContext停止
+func (s *SysConfigManage) checkIpList() <span class="cov8" title="1">{
+        moduleConfiger := s.GetModuleConfig()
+        s.moduleIpListMapLocker.Lock()
+        s.moduleForbidIpListMapLocker.Lock()
+        for _, module := range moduleConfiger.Module </span><span class="cov8" title="1">{
+                s.moduleIpListMap[module.Base.Name] = strings.Split(module.LoadBalance.IpList, ",")
+                s.moduleForbidIpListMap[module.Base.Name] = strings.Split(module.LoadBalance.ForbidList, ",")
+        }</span>
+        <span class="cov8" title="1">s.moduleForbidIpListMapLocker.Unlock()
+        s.moduleIpListMapLocker.Unlock()
+        for _, modulePt := range moduleConfiger.Module </span><span class="cov8" title="1">{
+                module := modulePt
+                go func() </span><span class="cov8" title="1">{
+                        defer func() </span><span class="cov0" title="0">{
+                                if err := recover(); err != nil </span><span class="cov0" title="0">{
+                                        public.CheckLogger.Warn("checkModuleIpList_recover:%v", err)
+                                }</span>
+                        }()
+                        <span class="cov8" title="1">t1 := time.NewTimer(time.Second * 0)
+                Loop:
+                        for </span><span class="cov8" title="1">{
+                                select </span>{
+                                case &lt;-t1.C:<span class="cov8" title="1">
+                                        activeIpList := s.checkModuleIpList(module.LoadBalance)
+                                        s.moduleActiveIpListMapLocker.Lock()
+                                        s.moduleActiveIpListMap[module.Base.Name] = activeIpList
+                                        s.moduleActiveIpListMapLocker.Unlock()
+
+                                        s.moduleForbidIpListMapLocker.Lock()
+                                        forbidIpList, ok := s.moduleForbidIpListMap[module.Base.Name]
+                                        s.moduleForbidIpListMapLocker.Unlock()
+                                        if !ok </span><span class="cov0" title="0">{
+                                                forbidIpList = []string{}
+                                        }</span>
+
+                                        //剔除禁用节点
+                                        <span class="cov8" title="1">newIpList := []string{}
+                                        for _, newIp := range activeIpList </span><span class="cov8" title="1">{
+
+                                                if !public.InStringList(newIp, forbidIpList) </span><span class="cov8" title="1">{
+                                                        newIpList = append(newIpList, newIp)
+                                                }</span>
+                                        }
+
+                                        <span class="cov8" title="1">configIpList := strings.Split(module.LoadBalance.IpList, ",")
+                                        s.moduleIpListMapLocker.Lock()
+                                        s.moduleIpListMap[module.Base.Name] = newIpList
+                                        s.moduleIpListMapLocker.Unlock()
+                                        public.CheckLogger.Info("%s CheckModuleIpList newIpList=%+v configIpList=%+v", module.Base.Name, newIpList, configIpList)
+                                        t1.Reset(time.Millisecond * time.Duration(module.LoadBalance.CheckInterval))</span>
+
+                                case &lt;-s.ConfigChangeNotice():<span class="cov0" title="0">
+                                        public.CheckLogger.Info(module.Base.Name + "_CheckModuleIpList done")
+                                        break Loop</span>
+                                }
+                        }
+                }()
+        }
+}
+
+func (s *SysConfigManage) checkModuleConf(conf *dao.ModuleConfiger) error <span class="cov8" title="1">{
+        if conf == nil || len(conf.Module) == 0 </span><span class="cov0" title="0">{
+                return errors.New("conf is empty.")
+        }</span>
+        <span class="cov8" title="1">for _, confItem := range conf.Module </span><span class="cov8" title="1">{
+                if confItem.Base == nil </span><span class="cov0" title="0">{
+                        return errors.New("module.base is empty.")
+                }</span>
+                <span class="cov8" title="1">if confItem.LoadBalance == nil </span><span class="cov0" title="0">{
+                        return errors.New("module.load_balance is empty.")
+                }</span>
+
+                //validator
+                <span class="cov8" title="1">errs := public.ValidatorHandler.Struct(confItem)
+                if errs != nil </span><span class="cov0" title="0">{
+                        return errs
+                }</span>
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (s *SysConfigManage) getFileModuleConf(confPath string) (*dao.ModuleConfiger, error) <span class="cov8" title="1">{
+        moduleConf := &amp;dao.ModuleConfiger{}
+        file, err := os.Open(confPath)
+        if err != nil </span><span class="cov0" title="0">{
+                return moduleConf, err
+        }</span>
+        <span class="cov8" title="1">defer file.Close()
+        bts, err := ioutil.ReadAll(file)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">if _, err := toml.Decode(string(bts), moduleConf); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">if err := s.checkModuleConf(moduleConf); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return moduleConf, nil</span>
+}
+
+func (s *SysConfigManage) writeFileModuleConf(confPath string, moduleConf *dao.ModuleConfiger) error <span class="cov0" title="0">{
+        var buffer bytes.Buffer
+        e := toml.NewEncoder(&amp;buffer)
+        if err := e.Encode(moduleConf); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">bakPath := strings.Replace(confPath, ".toml", "_bak.toml", -1)
+        os.Remove(bakPath)
+        if err := os.Rename(confPath, bakPath); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">if err := ioutil.WriteFile(confPath, buffer.Bytes(), 0644); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+func (s *SysConfigManage) getDBModuleConf(ischeck bool) (*dao.ModuleConfiger, error) <span class="cov8" title="1">{
+        defer func() </span><span class="cov8" title="1">{
+                if err := recover(); err != nil </span><span class="cov8" title="1">{
+                        public.SysLogger.Error("GetDBModuleConf_recover:%v", err)
+                }</span>
+        }()
+
+        <span class="cov8" title="1">moduleConf := &amp;dao.ModuleConfiger{Module: []*dao.GatewayModule{}}
+        bases, err := (&amp;dao.GatewayModuleBase{}).GetAll()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">matchRuleArr, err := (&amp;dao.GatewayMatchRule{}).GetAll()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">accessControlArr, err := (&amp;dao.GatewayAccessControl{}).GetAll()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">loadBalanceArr, err := (&amp;dao.GatewayLoadBalance{}).GetAll()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">for _, base := range bases </span><span class="cov0" title="0">{
+                matchRules := []*dao.GatewayMatchRule{}
+                for _, x := range matchRuleArr </span><span class="cov0" title="0">{
+                        if x.ModuleId == base.Id </span><span class="cov0" title="0">{
+                                matchRules = append(matchRules, x)
+                        }</span>
+                }
+                <span class="cov0" title="0">accessControl := &amp;dao.GatewayAccessControl{}
+                for _, x := range accessControlArr </span><span class="cov0" title="0">{
+                        if x.ModuleId == base.Id </span><span class="cov0" title="0">{
+                                accessControl = x
+                        }</span>
+                }
+                <span class="cov0" title="0">loadBalance := &amp;dao.GatewayLoadBalance{}
+                for _, x := range loadBalanceArr </span><span class="cov0" title="0">{
+                        if x.ModuleId == base.Id </span><span class="cov0" title="0">{
+                                loadBalance = x
+                        }</span>
+                }
+                // why check base != nil at the end, and repeat with CheckModuleConf
+                <span class="cov0" title="0">if base != nil &amp;&amp; loadBalance != nil </span><span class="cov0" title="0">{
+                        moduleConf.Module = append(moduleConf.Module, &amp;dao.GatewayModule{
+                                Base:          base,
+                                MatchRule:     matchRules,
+                                //DataFilter:    dataFilter,
+                                AccessControl: accessControl,
+                                LoadBalance:   loadBalance,
+                        })
+                }</span>
+        }
+        <span class="cov0" title="0">if ischeck </span><span class="cov0" title="0">{
+                if err := s.checkModuleConf(moduleConf); err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+        }
+        <span class="cov0" title="0">return moduleConf, nil</span>
+}
+
+//刷新租户信息到内存
+func (s *SysConfigManage) refreshAPPConfig() error <span class="cov8" title="1">{
+        defer func() </span><span class="cov8" title="1">{
+                if err := recover(); err != nil </span><span class="cov0" title="0">{
+                        public.SysLogger.Error("RefreshAPP_recover:%v", err)
+                }</span>
+        }()
+        <span class="cov8" title="1">configFile := lib.GetConfFilePath("app.toml")
+        public.SysLogger.Info("module_file:%s", configFile)
+        fileConf, err := s.getFileAPPConf(configFile)
+        if err != nil </span><span class="cov0" title="0">{
+                public.SysLogger.Error("GetFileAPPConf_error:%v", err)
+                return err
+        }</span>
+        <span class="cov8" title="1">public.SysLogger.Info("GetFileAPPConf:%v", fileConf)
+        dbConf, err := s.getDBAPPConf(true)
+        if err != nil </span><span class="cov0" title="0">{
+                public.SysLogger.Error("GetDBAPPConf_error:%v", err)
+        }</span>
+        <span class="cov8" title="1">public.SysLogger.Info("GetDBAPPConf:%v", dbConf)
+
+        //如果db挂了默认降级走file
+        if dbConf != nil </span><span class="cov0" title="0">{
+                s.appConfigLocker.Lock()
+                s.appConfig = dbConf
+                s.appConfigLocker.Unlock()
+                public.SysLogger.Info("app_configured_by_db.")
+                err := s.writeFileAppConf(configFile, dbConf)
+                if err != nil </span><span class="cov0" title="0">{
+                        public.SysLogger.Error("WriteFileModuleConf_error:%v", err)
+                }</span> else<span class="cov0" title="0"> {
+                        public.SysLogger.Info("app_file_was_override.")
+                }</span>
+        } else<span class="cov8" title="1"> if fileConf != nil </span><span class="cov8" title="1">{
+                s.appConfigLocker.Lock()
+                s.appConfig = fileConf
+                s.appConfigLocker.Unlock()
+                public.SysLogger.Info("app_configured_by_file.")
+        }</span> else<span class="cov0" title="0"> {
+                public.SysLogger.Info("get_dbConf_and_fileConf_both_error")
+                return err
+        }</span>
+        <span class="cov8" title="1">public.SysLogger.Info("APPConf:%v", s.appConfig)
+        return nil</span>
+}
+
+func (s *SysConfigManage) getFileAPPConf(confPath string) (*dao.APPConfiger, error) <span class="cov8" title="1">{
+        appConf := &amp;dao.APPConfiger{}
+        file, err := os.Open(confPath)
+        if err != nil </span><span class="cov0" title="0">{
+                return appConf, err
+        }</span>
+        <span class="cov8" title="1">defer file.Close()
+        bts, err := ioutil.ReadAll(file)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">if _, err := toml.Decode(string(bts), appConf); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">if err := s.checkAppConf(appConf); err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov8" title="1">return appConf, nil</span>
+}
+
+func (s *SysConfigManage) checkAppConf(conf *dao.APPConfiger) error <span class="cov8" title="1">{
+        if conf == nil </span><span class="cov0" title="0">{
+                return errors.New("conf is empty.")
+        }</span>
+        <span class="cov8" title="1">for _, confItem := range conf.AuthirizedApps </span><span class="cov8" title="1">{
+                if confItem.Name == "" </span><span class="cov0" title="0">{
+                        return errors.New("app.name is empty.")
+                }</span>
+                <span class="cov8" title="1">if confItem.Secret == "" </span><span class="cov0" title="0">{
+                        return errors.New("app.secret is empty.")
+                }</span>
+                <span class="cov8" title="1">if confItem.AppID == "" </span><span class="cov0" title="0">{
+                        return errors.New("app.app_id is empty.")
+                }</span>
+
+                //validator
+                <span class="cov8" title="1">errs := public.ValidatorHandler.Struct(confItem)
+                if errs != nil </span><span class="cov0" title="0">{
+                        return errs
+                }</span>
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (s *SysConfigManage) getDBAPPConf(ischeck bool) (*dao.APPConfiger, error) <span class="cov8" title="1">{
+        defer func() </span><span class="cov8" title="1">{
+                if err := recover(); err != nil </span><span class="cov8" title="1">{
+                        public.SysLogger.Error("GetDBAPPConf_recover:%v", err)
+                }</span>
+        }()
+
+        <span class="cov8" title="1">apps, err := (&amp;dao.GatewayAPP{}).GetAll()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+        <span class="cov0" title="0">appConf := &amp;dao.APPConfiger{AuthirizedApps: apps}
+        if ischeck </span><span class="cov0" title="0">{
+                if err := s.checkAppConf(appConf); err != nil </span><span class="cov0" title="0">{
+                        return nil, err
+                }</span>
+        }
+        <span class="cov0" title="0">return appConf, nil</span>
+}
+
+func (s *SysConfigManage) writeFileAppConf(confPath string, appConf *dao.APPConfiger) error <span class="cov0" title="0">{
+        var buffer bytes.Buffer
+        e := toml.NewEncoder(&amp;buffer)
+        if err := e.Encode(appConf); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">bakPath := strings.Replace(confPath, ".toml", "_bak.toml", -1)
+        os.Remove(bakPath)
+        if err := os.Rename(confPath, bakPath); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">if err := ioutil.WriteFile(confPath, buffer.Bytes(), 0644); err != nil </span><span class="cov0" title="0">{
+                return err
+        }</span>
+        <span class="cov0" title="0">return nil</span>
+}
+
+//配置模块负载信息到ModuleRRMap+已运行模块周期刷新，直到IpContext停止
+func (s *SysConfigManage) configModuleRR() error <span class="cov8" title="1">{
+        modules := s.GetModuleConfig()
+        for _, modulePointer := range modules.Module </span><span class="cov8" title="1">{
+                currentModule := modulePointer
+                go func(currentModule *dao.GatewayModule) </span><span class="cov8" title="1">{
+                        defer func() </span><span class="cov8" title="1">{
+                                if err := recover(); err != nil </span><span class="cov0" title="0">{
+                                        public.SysLogger.Error("ConfigModuleRR_recover:%v", err)
+                                }</span>
+                        }()
+                        <span class="cov8" title="1">if currentModule.Base.LoadType != "http" </span><span class="cov8" title="1">{
+                                return
+                        }</span>
+                        <span class="cov8" title="1">t1 := time.NewTimer(0)
+                        ipList := []string{}
+                        ipWeightMap := map[string]int64{}
+                Loop:
+                        for </span><span class="cov8" title="1">{
+                                select </span>{
+                                case &lt;-t1.C:<span class="cov8" title="1">
+                                        newIpList := s.GetAvaliableIPList(currentModule.Base.Name)
+                                        newIpWeightMap := s.GetConfIpWeightMap(currentModule, public.IP_DEFAULT_WEIGHT)
+                                        if !reflect.DeepEqual(ipList, newIpList) || !reflect.DeepEqual(ipWeightMap, newIpWeightMap) </span><span class="cov8" title="1">{
+                                                Rw := public.NewWeightedRR(public.RR_NGINX)
+                                                for _, ipAddr := range newIpList </span><span class="cov8" title="1">{
+                                                        w, ok := newIpWeightMap[ipAddr]
+                                                        if ok </span><span class="cov8" title="1">{
+                                                                Rw.Add(ipAddr, int(w))
+                                                        }</span> else<span class="cov0" title="0"> {
+                                                                Rw.Add(ipAddr, public.IP_DEFAULT_WEIGHT)
+                                                        }</span>
+                                                }
+                                                <span class="cov8" title="1">s.moduleRRMapLocker.Lock()
+                                                s.moduleRRMap[currentModule.Base.Name] = Rw
+                                                s.moduleRRMapLocker.Unlock()</span>
+                                        }
+                                        <span class="cov8" title="1">ipList = newIpList
+                                        ipWeightMap = newIpWeightMap
+                                        t1.Reset(time.Millisecond * time.Duration(currentModule.LoadBalance.CheckInterval))</span>
+                                case &lt;-s.ConfigChangeNotice():<span class="cov0" title="0">
+                                        t1.Stop()
+                                        continue Loop</span>
+                                }
+                        }
+                }(currentModule)
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+
+func (s *SysConfigManage) configModuleProxyMap() error <span class="cov8" title="1">{
+        modules := s.GetModuleConfig()
+        for _, modulePointer := range modules.Module </span><span class="cov8" title="1">{
+                currentModule := modulePointer
+                proxyFunc := func(rr public.RR) *httputil.ReverseProxy </span><span class="cov8" title="1">{
+                        proxy := &amp;httputil.ReverseProxy{
+                                Director: func(req *http.Request) </span><span class="cov8" title="1">{
+                                        if rHost, ok := rr.Next().(string); ok </span><span class="cov8" title="1">{
+                                                req.URL.Scheme = "http"
+                                                if req.TLS != nil </span><span class="cov0" title="0">{
+                                                        req.URL.Scheme = "https"
+                                                }</span>
+                                                <span class="cov8" title="1">req.URL.Host = rHost
+                                                req.Host = lib.GetStringConf("base.http.req_host")</span>
+                                        }
+                                },
+                                ModifyResponse: func(response *http.Response) error <span class="cov8" title="1">{
+                                        var payload []byte
+                                        var readErr error
+                                        if strings.Contains(response.Header.Get("Content-Encoding"), "gzip") </span><span class="cov0" title="0">{
+                                                gr, err := gzip.NewReader(response.Body)
+                                                if err != nil </span><span class="cov0" title="0">{
+                                                        public.ContextWarning(response.Request.Context(), lib.DLTagUndefind, map[string]interface{}{
+                                                                "func": "gzip.NewReader_error",
+                                                                "err":  err,
+                                                        })
+                                                }</span>
+                                                <span class="cov0" title="0">payload, readErr = ioutil.ReadAll(gr)
+                                                response.Header.Del(public.CONTENT_ENCODING)</span>
+                                        } else<span class="cov8" title="1"> {
+                                                payload, readErr = ioutil.ReadAll(response.Body)
+                                        }</span>
+                                        <span class="cov8" title="1">if readErr != nil </span><span class="cov0" title="0">{
+                                                public.ContextWarning(response.Request.Context(), lib.DLTagUndefind, map[string]interface{}{
+                                                        "func": "ioutil.ReadAll_error",
+                                                        "err":  readErr,
+                                                })
+                                                return readErr
+                                        }</span>
+
+                                        //过滤前打点
+                                        <span class="cov8" title="1">newPayload := payload
+                                        public.ContextNotice(response.Request.Context(), lib.DLTagUndefind, map[string]interface{}{
+                                                "func":       "modify_response_before",
+                                                "payload":    public.Substr(string(payload), 0, 1&lt;&lt;8),
+                                                "modulename": currentModule.Base.Name,
+                                                "url":        response.Request.URL.String(),
+                                        })
+
+                                        //过滤请求数据
+                                        tmpPayload, err := ResponseDataFilter(currentModule, response, payload)
+                                        if err != nil </span><span class="cov0" title="0">{
+                                                return err
+                                        }</span>
+                                        <span class="cov8" title="1">newPayload = tmpPayload
+                                        response.Body = ioutil.NopCloser(bytes.NewBuffer(newPayload))
+                                        response.ContentLength = int64(len(newPayload))
+                                        response.Header.Set("Content-Length", strconv.FormatInt(int64(len(newPayload)), 10))
+
+                                        //过滤后打点
+                                        public.ContextNotice(response.Request.Context(), lib.DLTagUndefind, map[string]interface{}{
+                                                "func":       "modify_response_after",
+                                                "newPayload": public.Substr(string(payload), 0, 1&lt;&lt;8),
+                                                "modulename": currentModule.Base.Name,
+                                                "url":        response.Request.URL.String(),
+                                        })
+                                        return nil</span>
+                                },
+                                Transport: &amp;http.Transport{
+                                        DialContext: (&amp;net.Dialer{
+                                                //限制建立TCP连接的时间
+                                                Timeout: time.Duration(currentModule.LoadBalance.ProxyConnectTimeout) * time.Millisecond,
+                                                //keep-alived最大空闲时间
+                                                KeepAlive: time.Duration(currentModule.LoadBalance.IdleConnTimeout) * time.Millisecond,
+                                                //支持ipv4/ipv6
+                                                DualStack: true,
+                                        }).DialContext,
+                                        TLSHandshakeTimeout: 10 * time.Second,
+                                        //最大空闲链接
+                                        MaxIdleConns: currentModule.LoadBalance.MaxIdleConn,
+                                        //最大空闲时间
+                                        IdleConnTimeout: time.Duration(currentModule.LoadBalance.IdleConnTimeout) * time.Millisecond,
+                                        //限制读取response header的时间
+                                        ResponseHeaderTimeout: time.Duration(currentModule.LoadBalance.ProxyHeaderTimeout) * time.Millisecond,
+                                        //限制读取response body的时间
+                                        ExpectContinueTimeout: time.Duration(currentModule.LoadBalance.ProxyBodyTimeout) * time.Millisecond,
+                                },
+                                ErrorHandler: func(w http.ResponseWriter, req *http.Request, err error) <span class="cov0" title="0">{
+                                        if err.Error() == "context canceled" </span><span class="cov0" title="0">{
+                                                public.ContextWarning(req.Context(), lib.DLTagUndefind, map[string]interface{}{
+                                                        "func": "module_proxy_errorhandler",
+                                                        "err":  err,
+                                                        "url":  req.URL.String(),
+                                                })
+                                        }</span> else<span class="cov0" title="0"> {
+                                                public.ContextError(req.Context(), lib.DLTagUndefind, map[string]interface{}{
+                                                        "func": "module_proxy_errorhandler",
+                                                        "err":  err,
+                                                        "url":  req.URL.String(),
+                                                })
+                                        }</span>
+                                        <span class="cov0" title="0">public.HttpError(http.StatusGatewayTimeout, fmt.Sprint(err), w, req)
+                                        return</span>
+                                },
+                        }
+                        <span class="cov8" title="1">return proxy</span>
+                }
+                <span class="cov8" title="1">s.moduleProxyFuncMapLocker.Lock()
+                s.moduleProxyFuncMap[currentModule.Base.Name] = proxyFunc
+                s.moduleProxyFuncMapLocker.Unlock()</span>
+        }
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package service
+
+import (
+        "encoding/json"
+        "errors"
+        "fmt"
+        "github.com/didichuxing/gatekeeper/dao"
+        "github.com/didichuxing/gatekeeper/public"
+        "github.com/tidwall/gjson"
+        "github.com/tidwall/sjson"
+        "net/http"
+)
+
+//验证方法列表
+var AuthRegisterFuncs [] func(o *GateWayService, ctx *public.Context) (bool,error)
+
+//过滤方法列表
+var FilterRegisterFuncs [] func(m *dao.GatewayModule, r *http.Response, payload []byte) ([]byte, error)
+
+func RegisterAuthFunc(funcs ...func(o *GateWayService, ctx *public.Context) (bool,error)) <span class="cov8" title="1">{
+        AuthRegisterFuncs = append(AuthRegisterFuncs, funcs...)
+}</span>
+
+//注册过滤方法
+func RegisterFilterFunc(funcs ...func(m *dao.GatewayModule, r *http.Response, payload []byte) ([]byte, error)) <span class="cov8" title="1">{
+        FilterRegisterFuncs = append(FilterRegisterFuncs, funcs...)
+}</span>
+
+//过滤数据函数
+//@param m         模块配置
+//@param r         输出对象
+//@param payload   过滤内容
+//@param matchURLS         需要过滤的地址
+func FilterCityData(matchURLS []string) func(m *dao.GatewayModule, r *http.Response, payload []byte) ([]byte, error)<span class="cov8" title="1">{
+        return func(m *dao.GatewayModule, r *http.Response, payload []byte) ([]byte, error) </span><span class="cov8" title="1">{
+                v:=r.Request.Context().Value("request_url")
+                requestURL,ok := v.(string)
+                if !ok</span><span class="cov0" title="0">{
+                        requestURL = r.Request.URL.Path
+                }</span>
+                <span class="cov8" title="1">for _,matchURL:=range matchURLS</span><span class="cov8" title="1">{
+                        if matchURL==requestURL </span><span class="cov8" title="1">{
+                                filterData, err := filterJsonTreeByKey(
+                                        string(payload),"data.list",
+                                        "city_id",
+                                        []string{"12"},)
+                                return []byte(filterData),err
+                        }</span>
+                }
+                <span class="cov8" title="1">return payload,nil</span>
+        }
+}
+
+func ResponseDataFilter(m *dao.GatewayModule, r *http.Response, p []byte) ([]byte, error) <span class="cov8" title="1">{
+        for _, ff := range FilterRegisterFuncs </span><span class="cov8" title="1">{
+                if newPayload,err:=ff(m, r, p);err!=nil </span><span class="cov0" title="0">{
+                        return newPayload,err
+                }</span>else<span class="cov8" title="1">{
+                        p=newPayload
+                }</span>
+        }
+        <span class="cov8" title="1">return p, nil</span>
+}
+
+//基于json_path过滤节点数据
+//@param payload string 原始内容
+//@param jsonTree string json树
+//@param filterKey string jsonkey
+//@param filterIds string[] 保留的ids
+func filterJsonTreeByKey(payload , jsonTree , filterKey string, filterIds []string) (string, error) <span class="cov8" title="1">{
+        mapTest := map[string]interface{}{}
+        if err := json.Unmarshal([]byte(payload), &amp;mapTest); err != nil </span><span class="cov0" title="0">{
+                return payload, errors.New(fmt.Sprintf("json.Unmarshal err:%v",err))
+        }</span>
+        <span class="cov8" title="1">dlRs := gjson.Get(payload, jsonTree)
+        dataList := []interface{}{}
+        for _, dlitem := range dlRs.Array() </span><span class="cov8" title="1">{
+                for dKey, dValue := range dlitem.Map() </span><span class="cov8" title="1">{
+                        if dKey == filterKey &amp;&amp; public.InStringList(dValue.String(), filterIds) </span><span class="cov8" title="1">{
+                                dlitemmap := map[string]interface{}{}
+                                json.Unmarshal([]byte(dlitem.String()), &amp;dlitemmap)
+                                dataList = append(dataList, dlitemmap)
+                        }</span>
+                }
+        }
+        <span class="cov8" title="1">newPayload, err := sjson.Set(string(payload), jsonTree, dataList) //写入json树
+        if err != nil </span><span class="cov0" title="0">{
+                return "", errors.New(fmt.Sprintf("sjson.Set err:%v",err))
+        }</span>
+        <span class="cov8" title="1">return newPayload, nil</span>
+}
+
+//基于json_path过滤不包含节点数据
+//@param payload string 原始内容
+//@param jsonTree string json树
+//@param filterKey string jsonkey
+//@param filterIds string[] 不保留的ids
+func filterNotJsonTreeByKey(payload , jsonTree , filterKey string, filterIds []string) (string, error) <span class="cov0" title="0">{
+        mapTest := map[string]interface{}{}
+        if err := json.Unmarshal([]byte(payload), &amp;mapTest); err != nil </span><span class="cov0" title="0">{
+                return payload, errors.New(fmt.Sprintf("json.Unmarshal err:%v",err))
+        }</span>
+        <span class="cov0" title="0">dlRs := gjson.Get(payload, jsonTree)
+        dataList := []interface{}{}
+        for _, dlitem := range dlRs.Array() </span><span class="cov0" title="0">{
+                for dKey, dValue := range dlitem.Map() </span><span class="cov0" title="0">{
+                        if dKey == filterKey &amp;&amp; !public.InStringList(dValue.String(), filterIds) </span><span class="cov0" title="0">{
+                                dlitemmap := map[string]interface{}{}
+                                json.Unmarshal([]byte(dlitem.String()), &amp;dlitemmap)
+                                dataList = append(dataList, dlitemmap)
+                        }</span>
+                }
+        }
+        <span class="cov0" title="0">newPayload, err := sjson.Set(string(payload), jsonTree, dataList) //写入json树
+        if err != nil </span><span class="cov0" title="0">{
+                return "", errors.New(fmt.Sprintf("sjson.Set err:%v",err))
+        }</span>
+        <span class="cov0" title="0">return newPayload, nil</span>
+}</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

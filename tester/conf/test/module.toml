@@ -1,0 +1,351 @@
+[[module]]
+  [module.base]
+    load_type = "http"
+    name = "tester"
+    service_name = "tester"
+    pass_auth_type = 2
+    frontend_addr = ""
+
+  [[module.match_rule]]
+    type = "url_prefix"
+    rule = "/gatekeeper/tester"
+    rule_ext = ""
+    url_rewrite = "^/gatekeeper/tester(.*) $1"
+  [module.load_balance]
+    check_method = "httpchk"
+    check_url = "/ping"
+    check_timeout = 1000
+    check_interval = 4000
+    type = "round-robin"
+    ip_list = "127.0.0.1:50001,127.0.0.1:50002,127.0.0.1:50003"
+    weight_list = "1,1,1"
+    forbid_list = ""
+    proxy_connect_timeout = 10000
+    proxy_header_timeout = 10000
+    proxy_body_timeout = 10000
+    max_idle_conn = 2000
+    idle_conn_timeout = 10000
+  [module.access_control]
+    black_list = "192.168.0.1"
+    white_list = "192.168.0.2,123.124.255.72,163.177.97.2,10.210.191.20,119.39.124.89,120.194.203.66,222.89.241.126"
+    white_host_name = ""
+    auth_type = ""
+    client_flow_limit = 0
+    open = 0
+
+[[module]]
+  [module.base]
+    load_type = "http"
+    name = "tester_lb"
+    service_name = "tester_lb"
+    pass_auth_type = 2
+    frontend_addr = ""
+
+  [[module.match_rule]]
+    type = "url_prefix"
+    rule = "/gatekeeper/tester_lb"
+    rule_ext = ""
+    url_rewrite = "^/gatekeeper/tester_lb(.*) $1"
+  [module.load_balance]
+    check_method = "httpchk"
+    check_url = "/ping"
+    check_timeout = 500
+    check_interval = 3000
+    type = "round-robin"
+    ip_list = "127.0.0.1:50001,127.0.0.1:50002,127.0.0.1:50003"
+    weight_list = "1,2,1"
+    forbid_list = ""
+    proxy_connect_timeout = 10000
+    proxy_header_timeout = 10000
+    proxy_body_timeout = 10000
+    max_idle_conn = 2000
+    idle_conn_timeout = 10000
+  [module.access_control]
+    black_list = "192.168.0.1"
+    white_list = "192.168.0.2"
+    white_host_name = ""
+    auth_type = ""
+    client_flow_limit = 0
+    open = 0
+
+[[module]]
+  [module.base]
+    load_type = "http"
+    name = "without_urlwrite"
+    service_name = "without_urlwrite"
+    pass_auth_type = 2
+    frontend_addr = ""
+
+  [[module.match_rule]]
+    type = "url_prefix"
+    rule = "/gatekeeper/without_urlwrite"
+    rule_ext = ""
+    url_rewrite = ""
+  [module.load_balance]
+    check_method = "httpchk"
+    check_url = "/ping"
+    check_timeout = 500
+    check_interval = 3000
+    type = "round-robin"
+    ip_list = "127.0.0.1:50001,127.0.0.1:50002,127.0.0.1:50003"
+    weight_list = "2,2,2"
+    forbid_list = ""
+    proxy_connect_timeout = 10000
+    proxy_header_timeout = 10000
+    proxy_body_timeout = 10000
+    max_idle_conn = 2000
+    idle_conn_timeout = 10000
+  [module.access_control]
+    black_list = ""
+    white_list = ""
+    white_host_name = ""
+    auth_type = ""
+    client_flow_limit = 0
+    open = 0
+
+[[module]]
+  [module.base]
+    load_type = "http"
+    name = "tester_blocklist"
+    service_name = "tester_blocklist"
+    pass_auth_type = 2
+    frontend_addr = ""
+
+  [[module.match_rule]]
+    type = "url_prefix"
+    rule = "/gatekeeper/tester_blocklist"
+    rule_ext = ""
+    url_rewrite = "^/gatekeeper/tester_blocklist(.*) $1"
+  [module.load_balance]
+    check_method = "httpchk"
+    check_url = "/ping"
+    check_timeout = 500
+    check_interval = 3000
+    type = "round-robin"
+    ip_list = "127.0.0.1:50001"
+    weight_list = "2"
+    forbid_list = ""
+    proxy_connect_timeout = 10000
+    proxy_header_timeout = 10000
+    proxy_body_timeout = 10000
+    max_idle_conn = 2000
+    idle_conn_timeout = 10000
+  [module.access_control]
+    black_list = "127.0.0.1"
+    white_list = ""
+    white_host_name = ""
+    auth_type = ""
+    client_flow_limit = 0
+    open = 1
+
+[[module]]
+  [module.base]
+    load_type = "http"
+    name = "tester_whitelist"
+    service_name = "tester_whitelist"
+    pass_auth_type = 2
+    frontend_addr = ""
+
+  [[module.match_rule]]
+    type = "url_prefix"
+    rule = "/gatekeeper/tester_whitelist"
+    rule_ext = ""
+    url_rewrite = "^/gatekeeper/tester_whitelist(.*) $1"
+  [module.load_balance]
+    check_method = "httpchk"
+    check_url = "/ping"
+    check_timeout = 500
+    check_interval = 3000
+    type = "round-robin"
+    ip_list = "127.0.0.1:50003"
+    weight_list = "2"
+    forbid_list = ""
+    proxy_connect_timeout = 10000
+    proxy_header_timeout = 10000
+    proxy_body_timeout = 10000
+    max_idle_conn = 2000
+    idle_conn_timeout = 10000
+  [module.access_control]
+    black_list = ""
+    white_list = "127.0.0.1"
+    white_host_name = ""
+    auth_type = ""
+    client_flow_limit = 5
+    open = 1
+
+
+[[module]]
+  [module.base]
+    load_type = "tcp"
+    name = "tester_tcp"
+    service_name = "tester_tcp"
+    pass_auth_type = 2
+    frontend_addr = ":10002"
+
+  [[module.match_rule]]
+    type = "url_prefix"
+    rule = ""
+    rule_ext = ""
+    url_rewrite = ""
+  [module.load_balance]
+    check_method = "tcpchk"
+    check_url = ""
+    check_timeout = 500
+    check_interval = 2000
+    type = "round-robin"
+    ip_list = "127.0.0.1:51001,127.0.0.1:51002,127.0.0.1:51003"
+    weight_list = "100,100,100"
+    forbid_list = ""
+    proxy_connect_timeout = 10000
+    proxy_header_timeout = 10000
+    proxy_body_timeout = 10000
+    max_idle_conn = 2000
+    idle_conn_timeout = 10000
+  [module.access_control]
+    black_list = ""
+    white_list = ""
+    white_host_name = ""
+    auth_type = ""
+    client_flow_limit = 0
+    open = 0
+
+[[module]]
+  [module.base]
+    load_type = "tcp"
+    name = "tester_tcp_whitelist"
+    service_name = "tester_tcp_whitelist"
+    pass_auth_type = 2
+    frontend_addr = ":10003"
+
+  [[module.match_rule]]
+    type = "url_prefix"
+    rule = ""
+    rule_ext = ""
+    url_rewrite = ""
+  [module.load_balance]
+    check_method = "tcpchk"
+    check_url = ""
+    check_timeout = 500
+    check_interval = 3000
+    type = "round-robin"
+    ip_list = "127.0.0.1:51001"
+    weight_list = "100"
+    forbid_list = ""
+    proxy_connect_timeout = 10000
+    proxy_header_timeout = 10000
+    proxy_body_timeout = 10000
+    max_idle_conn = 2000
+    idle_conn_timeout = 10000
+  [module.access_control]
+    black_list = ""
+    white_list = "127.0.0.1"
+    white_host_name = ""
+    auth_type = ""
+    client_flow_limit = 5
+    open = 1
+
+[[module]]
+  [module.base]
+    load_type = "http"
+    name = "tester_app"
+    service_name = "tester_app"
+    pass_auth_type = 2
+    frontend_addr = ""
+
+  [[module.match_rule]]
+    type = "url_prefix"
+    rule = "/gatekeeper/tester_app"
+    rule_ext = ""
+    url_rewrite = "^/gatekeeper/tester_app(.*) $1"
+  [module.load_balance]
+    check_method = "httpchk"
+    check_url = "/ping"
+    check_timeout = 500
+    check_interval = 3000
+    type = "round-robin"
+    ip_list = "127.0.0.1:50003"
+    weight_list = "2"
+    forbid_list = ""
+    proxy_connect_timeout = 10000
+    proxy_header_timeout = 10000
+    proxy_body_timeout = 10000
+    max_idle_conn = 2000
+    idle_conn_timeout = 10000
+  [module.access_control]
+    black_list = ""
+    white_list = ""
+    white_host_name = ""
+    auth_type = ""
+    client_flow_limit = 5
+    open = 1
+
+[[module]]
+  [module.base]
+    load_type = "http"
+    name = "tester_appaccess"
+    service_name = "tester_appaccess"
+    pass_auth_type = 2
+    frontend_addr = ""
+
+  [[module.match_rule]]
+    type = "url_prefix"
+    rule = "/gatekeeper/tester_appaccess"
+    rule_ext = ""
+    url_rewrite = "^/gatekeeper/tester_appaccess(.*) $1"
+  [module.load_balance]
+    check_method = "httpchk"
+    check_url = "/ping"
+    check_timeout = 500
+    check_interval = 3000
+    type = "round-robin"
+    ip_list = "127.0.0.1:50003"
+    weight_list = "2"
+    forbid_list = ""
+    proxy_connect_timeout = 10000
+    proxy_header_timeout = 10000
+    proxy_body_timeout = 10000
+    max_idle_conn = 2000
+    idle_conn_timeout = 10000
+  [module.access_control]
+    black_list = ""
+    white_list = ""
+    white_host_name = ""
+    auth_type = ""
+    client_flow_limit = 0
+    open = 1
+
+
+[[module]]
+  [module.base]
+    load_type = "http"
+    name = "tester_filter"
+    service_name = "tester_filter"
+    pass_auth_type = 2
+    frontend_addr = ""
+
+  [[module.match_rule]]
+    type = "url_prefix"
+    rule = "/gatekeeper/tester_filter"
+    rule_ext = ""
+    url_rewrite = "^/gatekeeper/tester_filter(.*) $1"
+  [module.load_balance]
+    check_method = "httpchk"
+    check_url = "/ping"
+    check_timeout = 500
+    check_interval = 3000
+    type = "round-robin"
+    ip_list = "127.0.0.1:50003"
+    weight_list = "2"
+    forbid_list = ""
+    proxy_connect_timeout = 10000
+    proxy_header_timeout = 10000
+    proxy_body_timeout = 10000
+    max_idle_conn = 2000
+    idle_conn_timeout = 10000
+  [module.access_control]
+    black_list = ""
+    white_list = ""
+    white_host_name = ""
+    auth_type = ""
+    client_flow_limit = 0
+    open = 0
