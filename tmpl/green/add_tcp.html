@@ -127,7 +127,7 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-sm-2 control-label">IP白名单
+                                    <label class="col-sm-2 control-label">客户端IP白名单
                                     </label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" name="access.white_list" value="{{.Module.AccessControl.WhiteList}}">
@@ -135,7 +135,7 @@
                                     <div class="col-sm-3">多条用以英文逗号分隔</div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-sm-2 control-label">IP黑名单
+                                    <label class="col-sm-2 control-label">客户端IP黑名单
                                     </label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" name="access.black_list" value="{{.Module.AccessControl.BlackList}}">
@@ -143,7 +143,7 @@
                                     <div class="col-sm-3">多条用以英文逗号分隔</div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="col-sm-2 control-label">HOST白名单
+                                    <label class="col-sm-2 control-label">hostname白名单
                                     </label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" name="access.white_host_name" value="{{.Module.AccessControl.WhiteHostName}}">
@@ -166,7 +166,7 @@
                                         <input type="text" class="form-control"
                                                name="access.client_flow_limit" value="{{.Module.AccessControl.ClientFlowLimit}}">
                                     </div>
-                                    <div class="col-sm-3">QPS （单机）</div>
+                                    <div class="col-sm-3">QPS （单机），0为不限制</div>
                                 </div>
                             </div>
                             <div class="box-footer">

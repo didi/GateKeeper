@@ -44,9 +44,10 @@ export GOPROXY=https://goproxy.cn
 3. 创建 `db` 并导入数据
 
 如果不使用在线服务接入以及统计功能，可以跳过本步。
+默认使用：`gatekeeper` 作为数据库名
 ```
 mysql -h localhost -u root -p -e "CREATE DATABASE gatekeeper DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
-mysql -h localhost -u root -p gatekeeper < install/db.sql --default-character-set=utf8　
+mysql -h localhost -u root -p gatekeeper < install/db.sql --default-character-set=utf8
 ```
 
 4. 调整 `mysql`、`redis` 配置文件
@@ -63,6 +64,8 @@ go run main.go
 6. 登陆管理后台
 
 `http://127.0.0.1:8081/admin/login`
+
+默认账号密码: `admin` / `123456`
 
 ### 并发压测
 
@@ -160,7 +163,7 @@ go run main.go
         表示需要探测的目标服务器除去主机信息后的地址。若目标主机为: `10.90.164.31:8072`，则真实地址为：`http://10.90.164.31:8072/ping` ，需要保证该地址访问可以正常返回200状态。
         - 重写规则：如：`^/gatekeeper/test_http(.*) $1`
         
-        如果访问网关的地址是：`http://127.0.0.1:8081/gatekeeper/test_http/ping`, 则访目标的地址是： `http://10.90.164.31:8072/ping`,  如果不重写则访问目标的地址是：  `http://10.90.164.31:8072/gatekeeper/test_http/ping`
+        如果访问网关的地址是：`http://127.0.0.1:8081/gatekeeper/test_http/ping`, 则访目标的地址是： `http://10.90.164.31:8072/ping`, 如果不重写则访问目标的地址是：  `http://10.90.164.31:8072/gatekeeper/test_http/ping`, 创建时如未填写则自动填写 `^访问前缀(.*) $1`
         
         - 客户端`IP`限流
         
@@ -177,8 +180,13 @@ go run main.go
     
         - 使用租户信息访问下游服务
         
-        基于 `app_id` 和 `secret` 可以计算出签名(为简化操作，我们这里直接使用 `secret` 作为了签名)，然后直接使用get参数传入就可以访问下游服务了。如：
+        基于 `app_id` 和 `secret` 可以计算出签名 `sign` (为简化操作，我们这里直接使用 `secret` 作为了签名)，然后直接使用get参数传入就可以访问下游服务了。 如：
         `http://127.0.0.1:8081/gatekeeper/test_http/ping?app_id=test_app&sign=62fda0f2212eaffd90dbf04136768c5f`
+        
+        - 租户鉴权
+        
+        参考下文中的 定义请求前验证 `request` 方法
+        `service.AuthAppToken`
 
         - 新增、修改租户
         
@@ -267,7 +275,7 @@ go run main.go
     ```
     
 #### 功能拓展
-- 定义请求前验证 `request` 方法
+- 定义请求前验证 `request` 方法 比如：租户权限验证方法
 ```
 func AuthAppToken(m *dao.GatewayModule, req *http.Request) (bool,error) {
 	ctx:=public.NewContext(nil,req)
@@ -286,7 +294,7 @@ func AuthAppToken(m *dao.GatewayModule, req *http.Request) (bool,error) {
 service.RegisterBeforeRequestAuthFunc(service.AuthAppToken)
 ```
 
-- 定义请求后修改 `response` 方法
+- 定义请求后修改 `response` 方法 比如：过滤返回中的城市数据函数
 
 ```
 //定义数据修改方法

@@ -734,6 +734,12 @@ func (admin *Admin) SaveService(c *gin.Context) {
 	//构造 gateway_match_rule
 	matchRules := strings.Split(matchRule, ",")
 	urlRewrites := strings.Split(urlRewrite, "\n")
+	if baseID == "0" && (urlRewrite=="\n" || urlRewrite==""){
+		//urlRewrites为空时，自动填充
+		for _, rule := range matchRules {
+			urlRewrites = append(urlRewrites,fmt.Sprintf("^%s(.*) $1",rule))
+		}
+	}
 	urlRewrite = strings.Join(urlRewrites, ",")
 	for _, rule := range matchRules {
 		model := &dao.GatewayMatchRule{}

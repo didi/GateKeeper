@@ -30,10 +30,10 @@ func main() {
 	service.SysConfMgr.InitConfig()
 	service.SysConfMgr.MonitorConfig()
 
-	//注册请求前验证请求方法
+	//注册请求前验证request方法
 	service.RegisterBeforeRequestAuthFunc(service.AuthAppToken)
 
-	//注册请求后内容更改函数
+	//注册请求后更改response方法
 	service.RegisterModifyResponseFunc(service.FilterCityData([]string{"/gatekeeper/tester_filter/goods_list"}))
 
 	router.HTTPServerRun()

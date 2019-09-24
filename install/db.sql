@@ -1,4 +1,3 @@
-
 CREATE TABLE `gateway_match_rule` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `module_id` bigint(20) NOT NULL COMMENT '模块id',
