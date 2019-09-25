@@ -110,14 +110,18 @@ func AuthModuleOpened(o *GateWayService, ctx *public.Context) bool {
 }
 
 //AuthAppToken app的签名校验
-func AuthAppToken(m *dao.GatewayModule, req *http.Request) (bool,error) {
-	ctx:=public.NewContext(nil,req)
+func AuthAppToken(m *dao.GatewayModule, req *http.Request, res http.ResponseWriter) (bool,error) {
+	ctx:=public.NewContext(res,req)
+	//验证签名
 	if err:=AuthAppSign(ctx);err!=nil {
 		return false,err
 	}
+	//限速等操作
 	if err := AfterAuthLimit(ctx); err != nil {
 		return false,err
 	}
+	//todo 可以在这里加入sso跳转逻辑
+	//ctx.Redirect("/sso/login",301)
 	return true,nil
 }
 
@@ -162,7 +166,7 @@ func AuthInWhiteHostList(o *GateWayService, ctx *public.Context) bool {
 //AuthRegisterFunc 验证注册函数
 func AuthRegisterFunc(o *GateWayService, errmsg *string) bool {
 	for _, rf := range BeforeRequestAuthRegisterFuncs {
-		flag,err:=rf(o.currentModule, o.req)
+		flag,err:=rf(o.currentModule, o.req, o.w)
 		if flag {
 			return true
 		}

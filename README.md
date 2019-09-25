@@ -277,14 +277,19 @@ go run main.go
 #### 功能拓展
 - 定义请求前验证 `request` 方法 比如：租户权限验证方法
 ```
-func AuthAppToken(m *dao.GatewayModule, req *http.Request) (bool,error) {
-	ctx:=public.NewContext(nil,req)
+//AuthAppToken app的签名校验
+func AuthAppToken(m *dao.GatewayModule, req *http.Request, res http.ResponseWriter) (bool,error) {
+	ctx:=public.NewContext(res,req)
+	//验证签名
 	if err:=AuthAppSign(ctx);err!=nil {
 		return false,err
 	}
+	//限速等操作
 	if err := AfterAuthLimit(ctx); err != nil {
 		return false,err
 	}
+	//todo 可以在这里加入sso跳转逻辑
+	//ctx.Redirect("/sso/login",301)
 	return true,nil
 }
 ```

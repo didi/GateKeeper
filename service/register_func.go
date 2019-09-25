@@ -14,13 +14,13 @@ import (
 )
 
 //BeforeRequestAuthRegisterFuncs 验证方法列表
-var BeforeRequestAuthRegisterFuncs [] func(m *dao.GatewayModule, req *http.Request) (bool,error)
+var BeforeRequestAuthRegisterFuncs [] func(m *dao.GatewayModule, req *http.Request, res http.ResponseWriter) (bool,error)
 
 //ModifyResponseRegisterFuncs 过滤方法列表
 var ModifyResponseRegisterFuncs [] func(m *dao.GatewayModule, req *http.Request, res *http.Response) error
 
 //RegisterBeforeRequestAuthFunc 注册请求前验证请求方法
-func RegisterBeforeRequestAuthFunc(funcs ...func(m *dao.GatewayModule, req *http.Request) (bool,error)) {
+func RegisterBeforeRequestAuthFunc(funcs ...func(m *dao.GatewayModule, req *http.Request, res http.ResponseWriter) (bool,error)) {
 	BeforeRequestAuthRegisterFuncs = append(BeforeRequestAuthRegisterFuncs, funcs...)
 }
 
