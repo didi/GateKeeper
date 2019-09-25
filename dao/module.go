@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/didichuxing/gatekeeper/public"
+	"github.com/didi/gatekeeper/public"
 	"github.com/e421083458/gorm"
 )
 

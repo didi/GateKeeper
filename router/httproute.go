@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/didichuxing/gatekeeper/controller"
-	"github.com/didichuxing/gatekeeper/middleware"
+	"github.com/didi/gatekeeper/controller"
+	"github.com/didi/gatekeeper/middleware"
 	"github.com/e421083458/golang_common/lib"
 	"github.com/gin-gonic/gin"
 )

@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
-	"github.com/didichuxing/gatekeeper/public"
-	"github.com/didichuxing/gatekeeper/router"
-	"github.com/didichuxing/gatekeeper/service"
+	"github.com/didi/gatekeeper/public"
+	"github.com/didi/gatekeeper/router"
+	"github.com/didi/gatekeeper/service"
 	"github.com/e421083458/golang_common/lib"
 	//_ "net/http/pprof"
 	"os"

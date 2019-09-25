@@ -3,7 +3,7 @@ package common
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/didichuxing/gatekeeper/service"
+	"github.com/didi/gatekeeper/service"
 	"github.com/e421083458/golang_common/lib"
 	"github.com/smartystreets/goconvey/convey"
 	"testing"

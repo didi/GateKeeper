@@ -57,7 +57,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/didichuxing/gatekeeper/public"
+	"github.com/didi/gatekeeper/public"
 	"io"
 	"log"
 	"math/rand"

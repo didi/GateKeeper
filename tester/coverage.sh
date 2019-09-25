@@ -7,6 +7,6 @@ else
     exit 1
 fi
 
-go test  -coverpkg github.com/didichuxing/gatekeeper/${file_dir}/... -coverprofile=report/${file_dir}_coverage.out ./...
+go test  -coverpkg github.com/didi/gatekeeper/${file_dir}/... -coverprofile=report/${file_dir}_coverage.out ./...
 go tool cover -html=report/${file_dir}_coverage.out -o report/${file_dir}_coverage.html
 open report/${file_dir}_coverage.html

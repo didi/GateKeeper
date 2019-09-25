@@ -2,8 +2,8 @@ package service
 
 import (
 	"fmt"
-	"github.com/didichuxing/gatekeeper/dao"
-	"github.com/didichuxing/gatekeeper/public"
+	"github.com/didi/gatekeeper/dao"
+	"github.com/didi/gatekeeper/public"
 	"github.com/pkg/errors"
 	"net/http"
 	"net/http/httputil"

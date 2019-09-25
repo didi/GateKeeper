@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/didichuxing/gatekeeper/tester/testhttp"
+	"github.com/didi/gatekeeper/tester/testhttp"
 	"time"
 )
 

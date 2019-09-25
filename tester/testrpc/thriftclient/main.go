@@ -5,7 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"git.apache.org/thrift.git/lib/go/thrift"
-	"github.com/didichuxing/gatekeeper/tester/testrpc/thriftgen"
+	"github.com/didi/gatekeeper/tester/testrpc/thriftgen"
 	"log"
 	"os"
 	"time"

@@ -4,9 +4,9 @@ import (
 	"crypto/md5"
 	"encoding/base64"
 	"fmt"
-	"github.com/didichuxing/gatekeeper/dao"
-	"github.com/didichuxing/gatekeeper/public"
-	"github.com/didichuxing/gatekeeper/service"
+	"github.com/didi/gatekeeper/dao"
+	"github.com/didi/gatekeeper/public"
+	"github.com/didi/gatekeeper/service"
 	"io"
 	"regexp"
 

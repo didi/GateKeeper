@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/didichuxing/gatekeeper/public"
-	"github.com/didichuxing/gatekeeper/service"
+	"github.com/didi/gatekeeper/public"
+	"github.com/didi/gatekeeper/service"
 	"github.com/gin-gonic/gin"
 )
 

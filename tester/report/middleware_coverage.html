@@ -54,21 +54,21 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/didichuxing/gatekeeper/middleware/access_control.go (80.0%)</option>
+				<option value="file0">github.com/didi/gatekeeper/middleware/access_control.go (80.0%)</option>
 				
-				<option value="file1">github.com/didichuxing/gatekeeper/middleware/cluster_auth.go (8.3%)</option>
+				<option value="file1">github.com/didi/gatekeeper/middleware/cluster_auth.go (8.3%)</option>
 				
-				<option value="file2">github.com/didichuxing/gatekeeper/middleware/http_limit.go (87.5%)</option>
+				<option value="file2">github.com/didi/gatekeeper/middleware/http_limit.go (87.5%)</option>
 				
-				<option value="file3">github.com/didichuxing/gatekeeper/middleware/load_balance.go (62.5%)</option>
+				<option value="file3">github.com/didi/gatekeeper/middleware/load_balance.go (62.5%)</option>
 				
-				<option value="file4">github.com/didichuxing/gatekeeper/middleware/match_rule.go (66.7%)</option>
+				<option value="file4">github.com/didi/gatekeeper/middleware/match_rule.go (66.7%)</option>
 				
-				<option value="file5">github.com/didichuxing/gatekeeper/middleware/recovery.go (40.0%)</option>
+				<option value="file5">github.com/didi/gatekeeper/middleware/recovery.go (40.0%)</option>
 				
-				<option value="file6">github.com/didichuxing/gatekeeper/middleware/tcp_limit.go (80.0%)</option>
+				<option value="file6">github.com/didi/gatekeeper/middleware/tcp_limit.go (80.0%)</option>
 				
-				<option value="file7">github.com/didichuxing/gatekeeper/middleware/trace_log.go (82.8%)</option>
+				<option value="file7">github.com/didi/gatekeeper/middleware/trace_log.go (82.8%)</option>
 				
 				</select>
 			</div>
@@ -86,8 +86,8 @@
 
 import (
         "errors"
-        "github.com/didichuxing/gatekeeper/public"
-        "github.com/didichuxing/gatekeeper/service"
+        "github.com/didi/gatekeeper/public"
+        "github.com/didi/gatekeeper/service"
         "github.com/gin-gonic/gin"
         "net/http"
 )
@@ -113,7 +113,7 @@ func AccessControl() gin.HandlerFunc <span class="cov8" title="1">{
 		<pre class="file" id="file1" style="display: none">package middleware
 
 import (
-        "github.com/didichuxing/gatekeeper/public"
+        "github.com/didi/gatekeeper/public"
         "github.com/e421083458/golang_common/lib"
         "github.com/gin-gonic/gin"
         "github.com/pkg/errors"
@@ -144,8 +144,8 @@ func ClusterAuth() gin.HandlerFunc <span class="cov8" title="1">{
 
 import (
         "fmt"
-        "github.com/didichuxing/gatekeeper/public"
-        "github.com/didichuxing/gatekeeper/service"
+        "github.com/didi/gatekeeper/public"
+        "github.com/didi/gatekeeper/service"
         "github.com/gin-gonic/gin"
         "github.com/pkg/errors"
         "net/http"
@@ -190,8 +190,8 @@ func HttpLimit() gin.HandlerFunc <span class="cov8" title="1">{
 import (
         "bytes"
         "errors"
-        "github.com/didichuxing/gatekeeper/public"
-        "github.com/didichuxing/gatekeeper/service"
+        "github.com/didi/gatekeeper/public"
+        "github.com/didi/gatekeeper/service"
         "github.com/gin-gonic/gin"
         "io/ioutil"
         "net/http"
@@ -225,8 +225,8 @@ func LoadBalance() gin.HandlerFunc <span class="cov8" title="1">{
 		<pre class="file" id="file4" style="display: none">package middleware
 
 import (
-        "github.com/didichuxing/gatekeeper/public"
-        "github.com/didichuxing/gatekeeper/service"
+        "github.com/didi/gatekeeper/public"
+        "github.com/didi/gatekeeper/service"
         "github.com/gin-gonic/gin"
         "net/http"
 )
@@ -253,7 +253,7 @@ func MatchRule() gin.HandlerFunc <span class="cov8" title="1">{
 import (
         "errors"
         "fmt"
-        "github.com/didichuxing/gatekeeper/public"
+        "github.com/didi/gatekeeper/public"
         "github.com/e421083458/golang_common/lib"
         "github.com/gin-gonic/gin"
         "runtime/debug"
@@ -285,10 +285,10 @@ func Recovery() gin.HandlerFunc <span class="cov8" title="1">{
 import (
         "context"
         "fmt"
-        "github.com/didichuxing/gatekeeper/dao"
-        "github.com/didichuxing/gatekeeper/public"
-        "github.com/didichuxing/gatekeeper/service"
-        "github.com/didichuxing/gatekeeper/tcpproxy"
+        "github.com/didi/gatekeeper/dao"
+        "github.com/didi/gatekeeper/public"
+        "github.com/didi/gatekeeper/service"
+        "github.com/didi/gatekeeper/tcpproxy"
         "net"
         "os"
         "strings"
@@ -369,7 +369,7 @@ func TcpLimit(module *dao.GatewayModule) tcpproxy.HandlerFunc <span class="cov8"
 import (
         "bytes"
         "context"
-        "github.com/didichuxing/gatekeeper/public"
+        "github.com/didi/gatekeeper/public"
         "github.com/e421083458/golang_common/lib"
         "github.com/gin-gonic/gin"
         "io/ioutil"

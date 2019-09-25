@@ -1,4 +1,4 @@
-module github.com/didichuxing/gatekeeper
+module github.com/didi/gatekeeper
 
 go 1.11
 

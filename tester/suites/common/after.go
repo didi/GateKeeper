@@ -1,8 +1,8 @@
 package common
 
 import (
-	"github.com/didichuxing/gatekeeper/router"
-	"github.com/didichuxing/gatekeeper/tester/testrpc/thriftserver"
+	"github.com/didi/gatekeeper/router"
+	"github.com/didi/gatekeeper/tester/testrpc/thriftserver"
 	"github.com/e421083458/golang_common/lib"
 )
 

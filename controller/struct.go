@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/didichuxing/gatekeeper/dao"
+	"github.com/didi/gatekeeper/dao"
 )
 
 //APPDetailInfo app详情结构体
