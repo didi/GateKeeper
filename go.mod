@@ -9,7 +9,7 @@ require (
 	github.com/bitly/go-simplejson v0.5.0
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/bouk/monkey v1.0.1
-	github.com/e421083458/golang_common v1.0.6
+	github.com/e421083458/golang_common v1.0.7
 	github.com/e421083458/gorm v1.0.1
 	github.com/garyburd/redigo v1.6.0
 	github.com/gin-contrib/sse v0.1.0 // indirect
