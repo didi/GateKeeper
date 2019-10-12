@@ -13,8 +13,8 @@ import (
 //LoadBalance 负载均衡中间件
 func LoadBalance() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		gws,ok:=c.MustGet(MiddlewareServiceKey).(*service.GateWayService)
-		if !ok{
+		gws, ok := c.MustGet(MiddlewareServiceKey).(*service.GateWayService)
+		if !ok {
 			public.ResponseError(c, http.StatusBadRequest, errors.New("gateway_service not valid"))
 			return
 		}
@@ -23,8 +23,8 @@ func LoadBalance() gin.HandlerFunc {
 			public.ResponseError(c, http.StatusProxyAuthRequired, err)
 			return
 		}
-		requestBody,ok:=c.MustGet(MiddlewareRequestBodyKey).([]byte)
-		if !ok{
+		requestBody, ok := c.MustGet(MiddlewareRequestBodyKey).([]byte)
+		if !ok {
 			public.ResponseError(c, http.StatusBadRequest, errors.New("request_body not valid"))
 			return
 		}

@@ -34,11 +34,11 @@ func main() {
 		defer transport.Close()
 		data := thriftgen.Data{Text: "ping"}
 		d, err := client.DoFormat(context.Background(), &data)
-		if err!=nil{
-			fmt.Println("err:",err.Error())
-		}else{
-			fmt.Println("Text:",d.Text)
+		if err != nil {
+			fmt.Println("err:", err.Error())
+		} else {
+			fmt.Println("Text:", d.Text)
 		}
-		time.Sleep(40*time.Millisecond)
+		time.Sleep(40 * time.Millisecond)
 	}
 }

@@ -20,7 +20,7 @@ func main() {
 	conf = flag.String("config", "./conf/dev/", "input config file like ./conf/dev/")
 	flag.Parse()
 
-	lib.InitModule(*conf,[]string{"base","mysql","redis",})
+	lib.InitModule(*conf, []string{"base", "mysql", "redis"})
 	defer lib.Destroy()
 	public.InitMysql()
 	public.InitConf()

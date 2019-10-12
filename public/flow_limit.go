@@ -16,23 +16,23 @@ type LimitVisitor struct {
 }
 
 //FlowLimiter 流控管理器
-type FlowLimiter struct{
+type FlowLimiter struct {
 	limitVisitors map[string]*LimitVisitor
 	limitLock     sync.RWMutex
 }
 
 //NewFlowLimiter 创建对象
 func NewFlowLimiter() *FlowLimiter {
-	t:=&FlowLimiter{
-		limitVisitors:make(map[string]*LimitVisitor),
-		limitLock:sync.RWMutex{},
+	t := &FlowLimiter{
+		limitVisitors: make(map[string]*LimitVisitor),
+		limitLock:     sync.RWMutex{},
 	}
 	go t.CleanupLimitVisitors()
 	return t
 }
 
 //AddAppVisitor 创建app流控
-func(t *FlowLimiter) AddAppVisitor(appID string,qps int64) *rate.Limiter {
+func (t *FlowLimiter) AddAppVisitor(appID string, qps int64) *rate.Limiter {
 	limiter := rate.NewLimiter(rate.Limit(qps), int(qps*3))
 	t.limitLock.Lock()
 	t.limitVisitors[appID] = &LimitVisitor{limiter, time.Now()}
@@ -41,7 +41,7 @@ func(t *FlowLimiter) AddAppVisitor(appID string,qps int64) *rate.Limiter {
 }
 
 //AddLimitVisitor 创建流控对象
-func(t *FlowLimiter) AddLimitVisitor(name string, qps int64) *rate.Limiter {
+func (t *FlowLimiter) AddLimitVisitor(name string, qps int64) *rate.Limiter {
 	limiter := rate.NewLimiter(rate.Limit(qps), int(qps*3))
 	t.limitLock.Lock()
 	t.limitVisitors[name] = &LimitVisitor{limiter, time.Now()}
@@ -50,12 +50,12 @@ func(t *FlowLimiter) AddLimitVisitor(name string, qps int64) *rate.Limiter {
 }
 
 //GetAPPLimitVisitor 获取app流控对象,不存在就创建
-func(t *FlowLimiter) GetAPPLimitVisitor(appID string,qps int64) *rate.Limiter {
+func (t *FlowLimiter) GetAPPLimitVisitor(appID string, qps int64) *rate.Limiter {
 	t.limitLock.RLock()
 	v, exists := t.limitVisitors[appID]
 	if !exists {
 		t.limitLock.RUnlock()
-		return t.AddAppVisitor(appID,qps)
+		return t.AddAppVisitor(appID, qps)
 	}
 	v.lastSeen = time.Now()
 	t.limitLock.RUnlock()
@@ -63,7 +63,7 @@ func(t *FlowLimiter) GetAPPLimitVisitor(appID string,qps int64) *rate.Limiter {
 }
 
 //GetModuleIPVisitor 获取module流控对象,不存在就创建
-func(t *FlowLimiter) GetModuleIPVisitor(moduleIPAddr string, qps int64) *rate.Limiter {
+func (t *FlowLimiter) GetModuleIPVisitor(moduleIPAddr string, qps int64) *rate.Limiter {
 	t.limitLock.RLock()
 	v, exists := t.limitVisitors[moduleIPAddr]
 	if !exists {
@@ -76,7 +76,7 @@ func(t *FlowLimiter) GetModuleIPVisitor(moduleIPAddr string, qps int64) *rate.Li
 }
 
 //CleanupLimitVisitors 定时清空流控对象
-func(t *FlowLimiter) CleanupLimitVisitors() {
+func (t *FlowLimiter) CleanupLimitVisitors() {
 	for {
 		time.Sleep(time.Minute)
 		t.limitLock.Lock()

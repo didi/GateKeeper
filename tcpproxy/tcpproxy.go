@@ -83,7 +83,7 @@ type Proxy struct {
 	ListenFunc func(net, laddr string) (net.Listener, error)
 
 	//middleware callback
-	mwsCb     map[string] func(descRouter *TCPRouter) *TCPRouter // ip:port => mw_callback
+	mwsCb map[string]func(descRouter *TCPRouter) *TCPRouter // ip:port => mw_callback
 }
 
 // Matcher reports whether hostname matches the Matcher's criteria.
@@ -137,7 +137,7 @@ func (p *Proxy) configFor(ipPort string) *config {
 		p.configs = make(map[string]*config)
 	}
 	p.configsLock.Lock()
-	if p.configs[ipPort]==nil {
+	if p.configs[ipPort] == nil {
 		p.configs[ipPort] = &config{}
 	}
 	p.configsLock.Unlock()
@@ -151,7 +151,7 @@ func (p *Proxy) rrConfigFor(ipPort string) *config {
 		p.mwsCb = make(map[string]func(descRouter *TCPRouter) *TCPRouter)
 	}
 	p.configsLock.Lock()
-	if _,ok:=p.configs[ipPort];!ok {
+	if _, ok := p.configs[ipPort]; !ok {
 		p.configs[ipPort] = &config{
 			rr: public.NewWeightedRR(public.RRNginx),
 		}
@@ -269,7 +269,7 @@ func (p *Proxy) awaitFirstError(errc <-chan error) {
 	close(p.donec)
 }
 
-func (p *Proxy) serveRRListener(ret chan<- error, ln net.Listener, rr public.RR,ipPort string) {
+func (p *Proxy) serveRRListener(ret chan<- error, ln net.Listener, rr public.RR, ipPort string) {
 	for {
 		c, err := ln.Accept()
 		if err != nil {
@@ -305,15 +305,15 @@ func (p *Proxy) serveRRConn(c net.Conn, rr public.RR, ipPort string) bool {
 		}
 
 		//wrap target use middleware
-		tcpRouter,ok:=target.(*TCPRouter)
-		if !ok{
+		tcpRouter, ok := target.(*TCPRouter)
+		if !ok {
 			log.Printf("tcpproxy: target turn to TCPRouter error\n")
 			return false
 		}
 		p.configsLock.RLock()
-		mwcb,ok:= (p.mwsCb[ipPort])
-		if ok{
-			target=mwcb(tcpRouter)
+		mwcb, ok := (p.mwsCb[ipPort])
+		if ok {
+			target = mwcb(tcpRouter)
 		}
 		p.configsLock.RUnlock()
 		target.HandleConn(c)

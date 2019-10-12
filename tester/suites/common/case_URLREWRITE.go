@@ -29,12 +29,12 @@ func TestURLWrite(t *testing.T) {
 
 	convey.Convey("Url地址重写测试", t, func() {
 		convey.Convey("不配置重写规则", func() {
-			hostPath,err:= getURLContent(nuwURL)
+			hostPath, err := getURLContent(nuwURL)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(hostPath, convey.ShouldEqual, "/gatekeeper/without_urlwrite/get_path")
 		})
 		convey.Convey("配置重写规则", func() {
-			hostPath,err:= getURLContent(checkURL)
+			hostPath, err := getURLContent(checkURL)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(hostPath, convey.ShouldEqual, "/get_path")
 		})
@@ -46,12 +46,12 @@ func getURLContent(checkURL string) (string, error) {
 	resp, err := client.Get(checkURL)
 	time.Sleep(100 * time.Millisecond)
 	if err != nil {
-		return "",err
+		return "", err
 	}
 	queryBody, err := ioutil.ReadAll(resp.Body)
 	resp.Body.Close()
 	if err != nil {
-		return "",err
+		return "", err
 	}
 	hostPath := string(queryBody)
 	return hostPath, nil

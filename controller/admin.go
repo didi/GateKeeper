@@ -159,7 +159,7 @@ func (admin *Admin) Open(c *gin.Context) {
 	addr := c.Query("addr")
 	tx := public.GormPool
 	tx = tx.Begin()
-	base := &dao.GatewayModuleBase{Name: moduleName,}
+	base := &dao.GatewayModuleBase{Name: moduleName}
 	baseInfo, err := base.FindByName(tx, moduleName)
 	if err != nil {
 		tx.Rollback()
@@ -211,7 +211,7 @@ func (admin *Admin) Close(c *gin.Context) {
 
 	tx := public.GormPool
 	tx = tx.Begin()
-	base := &dao.GatewayModuleBase{Name: moduleName,}
+	base := &dao.GatewayModuleBase{Name: moduleName}
 	baseInfo, err := base.FindByName(tx, moduleName)
 	if err != nil {
 		tx.Rollback()
@@ -296,13 +296,13 @@ func (admin *Admin) Delete(c *gin.Context) {
 		return
 	}
 	baseInfo.Del(tx)
-	access := &dao.GatewayAccessControl{ModuleID: baseInfo.ID,}
+	access := &dao.GatewayAccessControl{ModuleID: baseInfo.ID}
 	access.Del(tx)
 	//filter := &dao.GatewayDataFilter{ModuleID: baseInfo.ID,}
 	//filter.Del(tx)
-	load := &dao.GatewayLoadBalance{ModuleID: baseInfo.ID,}
+	load := &dao.GatewayLoadBalance{ModuleID: baseInfo.ID}
 	load.Del(tx)
-	match := &dao.GatewayMatchRule{ModuleID: baseInfo.ID,}
+	match := &dao.GatewayMatchRule{ModuleID: baseInfo.ID}
 	match.Del(tx)
 	tx.Commit()
 
@@ -355,11 +355,11 @@ func (admin *Admin) AppList(c *gin.Context) {
 		})
 	}
 	//fmt.Println(appListObj)
-	t,err:=admin.getTemplateByURL("/admin/app_list")
+	t, err := admin.getTemplateByURL("/admin/app_list")
 	if err != nil {
 		public.ResponseError(c, 500, err)
 	}
-	err2:=admin.executeTemplate(t,c.Writer,appListObj,"/admin/app_list")
+	err2 := admin.executeTemplate(t, c.Writer, appListObj, "/admin/app_list")
 	if err2 != nil {
 		public.ResponseError(c, 500, err2)
 	}
@@ -381,7 +381,7 @@ func (admin *Admin) ServiceList(c *gin.Context) {
 		public.ResponseError(c, 500, errors.New("获取模块配置错误"))
 		return
 	}
-	t,err:=admin.getTemplateByURL("/admin/service_list")
+	t, err := admin.getTemplateByURL("/admin/service_list")
 	if err != nil {
 		public.ResponseError(c, 500, err)
 	}
@@ -410,7 +410,7 @@ func (admin *Admin) ServiceList(c *gin.Context) {
 		detailInfo.QPS = public.FlowCounterHandler.GetRequestCounter(module.Base.Name).QPS
 		today := time.Now().In(public.TimeLocation).Format(public.DayFormat)
 
-		counter:=public.FlowCounterHandler.GetRequestCounter(module.Base.Name)
+		counter := public.FlowCounterHandler.GetRequestCounter(module.Base.Name)
 		counter.GetDayCount(today)
 		daycount, _ := counter.GetDayCount(today)
 		detailInfo.DayRequest = fmt.Sprint(daycount)
@@ -418,7 +418,7 @@ func (admin *Admin) ServiceList(c *gin.Context) {
 	}
 
 	//fmt.Println(detailList)
-	err2:=admin.executeTemplate(t,c.Writer,detailList,"/admin/service_list")
+	err2 := admin.executeTemplate(t, c.Writer, detailList, "/admin/service_list")
 	if err2 != nil {
 		public.ResponseError(c, 500, err2)
 	}
@@ -498,7 +498,7 @@ func (admin *Admin) ServiceDetail(c *gin.Context) {
 		public.ResponseError(c, 500, errors.New("获取模块配置错误"))
 		return
 	}
-	t,err:=admin.getTemplateByURL("/admin/service_detail")
+	t, err := admin.getTemplateByURL("/admin/service_detail")
 	if err != nil {
 		public.ResponseError(c, 500, err)
 		//c.Error(500, err.Error())
@@ -525,7 +525,7 @@ func (admin *Admin) ServiceDetail(c *gin.Context) {
 	detailInfo.ForbidIPList = service.SysConfMgr.GetForbidIPList(moduleName)
 	detailInfo.AvaliableIPList = service.SysConfMgr.GetAvaliableIPList(moduleName)
 
-	counter:=public.FlowCounterHandler.GetRequestCounter(module.Base.Name)
+	counter := public.FlowCounterHandler.GetRequestCounter(module.Base.Name)
 	for i := 0; i <= time.Now().In(lib.TimeLocation).Hour(); i++ {
 		todaydate := time.Now().In(public.TimeLocation).Format("20060102")
 		todayhour := todaydate + fmt.Sprint(i)
@@ -555,7 +555,7 @@ func (admin *Admin) ServiceDetail(c *gin.Context) {
 		detailInfo.DailyStatMax = int64(float64(detailInfo.DailyStatMax) * 1.2)
 		detailInfo.DailyHourStat = detailInfo.DailyHourStat[0 : len(detailInfo.DailyHourStat)-1]
 	}
-	err2:=admin.executeTemplate(t,c.Writer,detailInfo,"/admin/service_list")
+	err2 := admin.executeTemplate(t, c.Writer, detailInfo, "/admin/service_list")
 	if err2 != nil {
 		public.ResponseError(c, 500, err2)
 		//c.Error(500, err2.Error())
@@ -597,7 +597,7 @@ func (admin *Admin) SaveService(c *gin.Context) {
 		public.ResponseError(c, 500, errors.New("探活频率 格式化错误:"+err.Error()))
 		return
 	}
-	if checkIntervalInt<1000{
+	if checkIntervalInt < 1000 {
 		public.ResponseError(c, 500, errors.New("探活频率 最小 1000 ms"))
 		return
 	}
@@ -606,7 +606,7 @@ func (admin *Admin) SaveService(c *gin.Context) {
 		public.ResponseError(c, 500, errors.New("连接目标服务器超时 格式化错误:"+err.Error()))
 		return
 	}
-	if proxyConnectTimeoutInt<500{
+	if proxyConnectTimeoutInt < 500 {
 		public.ResponseError(c, 500, errors.New("连接目标服务器超时 最小 500 ms"))
 		return
 	}
@@ -659,7 +659,7 @@ func (admin *Admin) SaveService(c *gin.Context) {
 			public.ResponseError(c, 500, errors.New("base.id，必须为数字！"))
 			return
 		}
-		base := &dao.GatewayModuleBase{ID: tID,}
+		base := &dao.GatewayModuleBase{ID: tID}
 		base.Del(tx)
 		model := &dao.GatewayMatchRule{ModuleID: tID}
 		model.Del(tx)
@@ -734,10 +734,10 @@ func (admin *Admin) SaveService(c *gin.Context) {
 	//构造 gateway_match_rule
 	matchRules := strings.Split(matchRule, ",")
 	urlRewrites := strings.Split(urlRewrite, "\n")
-	if baseID == "0" && (urlRewrite=="\n" || urlRewrite==""){
+	if baseID == "0" && (urlRewrite == "\n" || urlRewrite == "") {
 		//urlRewrites为空时，自动填充
 		for _, rule := range matchRules {
-			urlRewrites = append(urlRewrites,fmt.Sprintf("^%s(.*) $1",rule))
+			urlRewrites = append(urlRewrites, fmt.Sprintf("^%s(.*) $1", rule))
 		}
 	}
 	urlRewrite = strings.Join(urlRewrites, ",")
@@ -761,7 +761,7 @@ func (admin *Admin) SaveService(c *gin.Context) {
 				public.ResponseError(c, 500, errors.New("match.FindByURLPrefix:"+err.Error()))
 				return
 			}
-			if baseInfo.Rule == rule && baseInfo.ModuleID !=base.ID {
+			if baseInfo.Rule == rule && baseInfo.ModuleID != base.ID {
 				tx.Rollback()
 				public.ResponseError(c, 500, errors.New("访问前缀重复，请重新填写！"))
 				return
@@ -837,7 +837,7 @@ func (admin *Admin) SaveService(c *gin.Context) {
 	access.ClientFlowLimit = clientFlowLimitInt
 	if isOpen == "1" {
 		access.Open = 1
-	}else{
+	} else {
 		access.Open = 0
 	}
 	access.ModuleID = base.ID
@@ -890,7 +890,7 @@ func (admin *Admin) SaveAPP(c *gin.Context) {
 		return
 	}
 
-	if !lib.InArrayString(method,[]string{"any","get","post"}){
+	if !lib.InArrayString(method, []string{"any", "get", "post"}) {
 		public.ResponseError(c, 500, errors.New("请求方法，请重新填写！"))
 		return
 	}
@@ -949,7 +949,7 @@ func (admin *Admin) SaveAPP(c *gin.Context) {
 		public.ResponseError(c, 500, errors.New("ClusterReloadModule:"+err.Error()))
 		return
 	}
-	public.ResponseSuccess(c,"")
+	public.ResponseSuccess(c, "")
 	return
 }
 
@@ -965,7 +965,7 @@ func (admin *Admin) EditAPP(c *gin.Context) {
 	app := &dao.GatewayAPP{}
 
 	appInfo, err := app.FindByAppID(tx, appID)
-	if err!=nil{
+	if err != nil {
 		public.ResponseError(c, 500, errors.New("FindByAppID:"+err.Error()))
 		return
 	}
@@ -975,12 +975,12 @@ func (admin *Admin) EditAPP(c *gin.Context) {
 	}
 	app = appInfo
 	app.OpenAPI = strings.Join(strings.Split(app.OpenAPI, ","), "\r\n")
-	t,err:=admin.getTemplateByURL("/admin/edit_app")
+	t, err := admin.getTemplateByURL("/admin/edit_app")
 	if err != nil {
 		public.ResponseError(c, 500, err)
 		return
 	}
-	err2:=admin.executeTemplate(t,c.Writer,app,"/admin/app_list")
+	err2 := admin.executeTemplate(t, c.Writer, app, "/admin/app_list")
 	if err2 != nil {
 		public.ResponseError(c, 500, err2)
 		return
@@ -1012,7 +1012,7 @@ func (admin *Admin) APPDetail(c *gin.Context) {
 	detailInfo := &APPDetailInfo{}
 	detailInfo.APPInfo = app
 
-	counter:=public.FlowCounterHandler.GetAPPCounter(appID)
+	counter := public.FlowCounterHandler.GetAPPCounter(appID)
 	for i := 0; i <= time.Now().In(lib.TimeLocation).Hour(); i++ {
 		todaydate := time.Now().In(public.TimeLocation).Format("20060102")
 		todayhour := todaydate + fmt.Sprint(i)
@@ -1046,12 +1046,12 @@ func (admin *Admin) APPDetail(c *gin.Context) {
 	//templateName := "app_detail.html"
 	//t := template.New(templateName)                       //创建一个模板
 	//t, err := t.ParseFiles("./tmpl/green/" + templateName) //解析模板文件
-	t,err:=admin.getTemplateByURL("/admin/app_detail")
+	t, err := admin.getTemplateByURL("/admin/app_detail")
 	if err != nil {
 		public.ResponseError(c, 500, err)
 		return
 	}
-	err2:=admin.executeTemplate(t,c.Writer,detailInfo,"/admin/app_list")
+	err2 := admin.executeTemplate(t, c.Writer, detailInfo, "/admin/app_list")
 	if err2 != nil {
 		public.ResponseError(c, 500, err2)
 	}
@@ -1164,16 +1164,16 @@ func (admin *Admin) EditService(c *gin.Context) {
 			public.ResponseError(c, 500, err)
 			return
 		}
-		t=tg
-	}else{
+		t = tg
+	} else {
 		tg, err := admin.getTemplateByURL("/admin/edit_http")
 		if err != nil {
 			public.ResponseError(c, 500, err)
 			return
 		}
-		t=tg
+		t = tg
 	}
-	err2:=admin.executeTemplate(t,c.Writer,detailInfo,"/admin/service_list")
+	err2 := admin.executeTemplate(t, c.Writer, detailInfo, "/admin/service_list")
 	if err2 != nil {
 		public.ResponseError(c, 500, err2)
 		return
@@ -1188,20 +1188,20 @@ func (admin *Admin) AddHTTP(c *gin.Context) {
 		return
 	}
 
-	t, err:=admin.getTemplateByURL("/admin/add_http")
+	t, err := admin.getTemplateByURL("/admin/add_http")
 	if err != nil {
 		public.ResponseError(c, 500, err)
 	}
 	detailInfo := &ServiceDetailInfo{
-		RoutePrefix:lib.GetStringConf("base.http.route_prefix"),
-		Module:&dao.GatewayModule{
-			Base:&dao.GatewayModuleBase{},
-			MatchRule:[]*dao.GatewayMatchRule{},
-			LoadBalance:&dao.GatewayLoadBalance{},
-			AccessControl:&dao.GatewayAccessControl{},
+		RoutePrefix: lib.GetStringConf("base.http.route_prefix"),
+		Module: &dao.GatewayModule{
+			Base:          &dao.GatewayModuleBase{},
+			MatchRule:     []*dao.GatewayMatchRule{},
+			LoadBalance:   &dao.GatewayLoadBalance{},
+			AccessControl: &dao.GatewayAccessControl{},
 			//DataFilter:[]*dao.GatewayDataFilter{},
-	}}
-	err2:=admin.executeTemplate(t,c.Writer,detailInfo,"/admin/service_list")
+		}}
+	err2 := admin.executeTemplate(t, c.Writer, detailInfo, "/admin/service_list")
 	if err2 != nil {
 		public.ResponseError(c, 500, err2)
 	}
@@ -1219,14 +1219,14 @@ func (admin *Admin) AddTCP(c *gin.Context) {
 		public.ResponseError(c, 500, err)
 	}
 	detailInfo := &ServiceDetailInfo{
-		Module:&dao.GatewayModule{
-			Base:&dao.GatewayModuleBase{},
-			MatchRule:[]*dao.GatewayMatchRule{},
-			LoadBalance:&dao.GatewayLoadBalance{},
-			AccessControl:&dao.GatewayAccessControl{},
+		Module: &dao.GatewayModule{
+			Base:          &dao.GatewayModuleBase{},
+			MatchRule:     []*dao.GatewayMatchRule{},
+			LoadBalance:   &dao.GatewayLoadBalance{},
+			AccessControl: &dao.GatewayAccessControl{},
 			//DataFilter:[]*dao.GatewayDataFilter{},
 		}}
-	err2:=admin.executeTemplate(t,c.Writer,detailInfo,"/admin/service_list")
+	err2 := admin.executeTemplate(t, c.Writer, detailInfo, "/admin/service_list")
 	if err2 != nil {
 		public.ResponseError(c, 500, err2)
 	}
@@ -1239,38 +1239,38 @@ func (admin *Admin) AddAPP(c *gin.Context) {
 		c.Redirect(302, "/admin/login")
 		return
 	}
-	t,err:=admin.getTemplateByURL("/admin/add_app")
+	t, err := admin.getTemplateByURL("/admin/add_app")
 	if err != nil {
 		public.ResponseError(c, 500, err)
 	}
 
 	app := &dao.GatewayAPP{}
 	app.Secret = fmt.Sprintf("%x", md5.Sum([]byte(time.Now().String())))
-	err2:=admin.executeTemplate(t,c.Writer,app,"/admin/app_list")
+	err2 := admin.executeTemplate(t, c.Writer, app, "/admin/app_list")
 	if err2 != nil {
 		public.ResponseError(c, 500, err2)
 	}
 	return
 }
 
-func (admin *Admin) parseTemplate(tempFile string) (*template.Template,error){
+func (admin *Admin) parseTemplate(tempFile string) (*template.Template, error) {
 	return template.ParseFiles(
 		tempFile,
 		"./tmpl/green/layout/layout.html",
 		"./tmpl/green/layout/footer.html",
 		"./tmpl/green/layout/head.html",
 		"./tmpl/green/layout/header.html",
-		"./tmpl/green/layout/sidebar.html",)
+		"./tmpl/green/layout/sidebar.html")
 }
 
-func (admin *Admin) executeTemplate(t *template.Template,wr io.Writer, data interface{}, activeURL string) error{
-	m:=make(map[string]interface{})
+func (admin *Admin) executeTemplate(t *template.Template, wr io.Writer, data interface{}, activeURL string) error {
+	m := make(map[string]interface{})
 	m["data"] = data
 	m["active_uri"] = activeURL
-	return t.Execute(wr,m)
+	return t.Execute(wr, m)
 }
 
-func (admin *Admin) getTemplateByURL(action string) (*template.Template,error){
+func (admin *Admin) getTemplateByURL(action string) (*template.Template, error) {
 	switch action {
 	case "/admin/add_http":
 		return admin.parseTemplate("./tmpl/green/add_http.html")
@@ -1293,5 +1293,5 @@ func (admin *Admin) getTemplateByURL(action string) (*template.Template,error){
 	case "/admin/app_detail":
 		return admin.parseTemplate("./tmpl/green/app_detail.html")
 	}
-	return nil,errors.New("not found match action")
+	return nil, errors.New("not found match action")
 }

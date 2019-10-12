@@ -30,9 +30,9 @@ func TestRoundRobin(t *testing.T) {
 		moduleConfig.MatchRule[0].Rule)
 	convey.Convey("负载均衡测试", t, func() {
 		convey.Convey("RoundRobin测试", func() {
-			rrs,err:=getRRHosts(4,checkURL)
-			convey.So(err,convey.ShouldBeNil)
-			convey.So(rrs,convey.ShouldResemble,[]string{
+			rrs, err := getRRHosts(4, checkURL)
+			convey.So(err, convey.ShouldBeNil)
+			convey.So(rrs, convey.ShouldResemble, []string{
 				"127.0.0.1:50002",
 				"127.0.0.1:50001",
 				"127.0.0.1:50003",

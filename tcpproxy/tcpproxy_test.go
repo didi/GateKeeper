@@ -40,29 +40,29 @@ type noopTarget struct{}
 
 func (noopTarget) HandleConn(net.Conn) {}
 
-func TestTcpProxy(t *testing.T)  {
+func TestTcpProxy(t *testing.T) {
 	var p Proxy
 	p.AddRoute(":3307", To("127.0.0.1:3306")) // fallback
 	p.Start()
 	log.Fatal(p.Run())
 }
 
-func TestWeightTcpProxy(t *testing.T)  {
+func TestWeightTcpProxy(t *testing.T) {
 	var p Proxy
 	//p.AddWeightRoute(":8072", 100, To("127.0.0.1:8077")) // fallback
 	p.AddWeightRoute(":8072", 100, NewTCPRouter(
 		&DialProxy{
-			Addr:"127.0.0.1:8018",
-			KeepAlivePeriod:time.Millisecond * time.Duration(1000),
-			DialTimeout:time.Millisecond * time.Duration(1000),
+			Addr:            "127.0.0.1:8018",
+			KeepAlivePeriod: time.Millisecond * time.Duration(1000),
+			DialTimeout:     time.Millisecond * time.Duration(1000),
 		}))
 	p.AddWeightRoute(":8072", 100, NewTCPRouter(
 		&DialProxy{
-			Addr:"127.0.0.1:8028",
-			KeepAlivePeriod:time.Millisecond * time.Duration(1000),
-			DialTimeout:time.Millisecond * time.Duration(1000),
+			Addr:            "127.0.0.1:8028",
+			KeepAlivePeriod: time.Millisecond * time.Duration(1000),
+			DialTimeout:     time.Millisecond * time.Duration(1000),
 		}))
-	p.Use(":8072",func(next Target) Target {
+	p.Use(":8072", func(next Target) Target {
 		fmt.Println("set mw func")
 		return TCPHandlerFunc(func(c net.Conn) {
 			fmt.Println("in mw func")
@@ -322,9 +322,9 @@ func TestProxySNI(t *testing.T) {
 }
 
 func TestProxyPROXYOut(t *testing.T) {
-	front := newLocalListener(t)	//代理出去的地址,地址唯一才对
+	front := newLocalListener(t) //代理出去的地址,地址唯一才对
 	defer front.Close()
-	back := newLocalListener(t)		//后端服务器
+	back := newLocalListener(t) //后端服务器
 	defer back.Close()
 
 	p := testProxy(t, front)

@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-func main()  {
-	server:= testhttp.NewTestHTTPDestServer()
+func main() {
+	server := testhttp.NewTestHTTPDestServer()
 	server.Run(":8018")
-	time.Sleep(time.Second*1000)
+	time.Sleep(time.Second * 1000)
 }

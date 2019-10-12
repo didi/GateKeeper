@@ -21,6 +21,6 @@ func MatchRule() gin.HandlerFunc {
 			public.ResponseError(c, http.StatusBadRequest, err)
 			return
 		}
-		c.Set(MiddlewareServiceKey,gws)
+		c.Set(MiddlewareServiceKey, gws)
 	}
 }

@@ -47,7 +47,7 @@ func ResponseError(c *gin.Context, code ResponseCode, err error) {
 		ComLogWarning(c, "json.marshal.err", map[string]interface{}{
 			"err": jerr,
 		})
-	} 
+	}
 	c.Set("response", string(response))
 	c.Abort()
 	//c.AbortWithError(int(code), err)

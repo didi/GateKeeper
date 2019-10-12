@@ -46,7 +46,7 @@ func (p *Data) Read(iprot thrift.TProtocol) error {
 			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldID), err)
 		}
 		if fieldTypeID == thrift.STOP {
-			break;
+			break
 		}
 		switch fieldID {
 		case 1:
@@ -308,7 +308,7 @@ func (p *FormatDataDoFormatArgs) Read(iprot thrift.TProtocol) error {
 			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldID), err)
 		}
 		if fieldTypeID == thrift.STOP {
-			break;
+			break
 		}
 		switch fieldID {
 		case 1:
@@ -424,7 +424,7 @@ func (p *FormatDataDoFormatResult) Read(iprot thrift.TProtocol) error {
 			return thrift.PrependError(fmt.Sprintf("%T field %d read error: ", p, fieldID), err)
 		}
 		if fieldTypeID == thrift.STOP {
-			break;
+			break
 		}
 		switch fieldID {
 		case 0:

@@ -9,8 +9,7 @@ import (
 )
 
 //公共handle
-var
-(
+var (
 	ConfHandler      *viper.Viper
 	ConfPath         string
 	AuthConf         *AuthConfig

@@ -22,7 +22,7 @@ func TestFilter(t *testing.T) {
 
 	convey.Convey("内容过滤", t, func() {
 		convey.Convey("json_path 过滤测试", func() {
-			c,err:= getURLContent(checkURL)
+			c, err := getURLContent(checkURL)
 			convey.So(err, convey.ShouldBeNil)
 			convey.So(c, convey.ShouldEqual, "{\"errno\":0,\"errmsg\":\"\",\"data\":{\"list\":[{\"city_id\":\"12\",\"name\":\"商品1\",\"pid\":\"2018103018_9000042581625\"}]}}")
 		})

@@ -5,9 +5,9 @@ import (
 	"compress/gzip"
 	"context"
 	"fmt"
+	"github.com/BurntSushi/toml"
 	"github.com/didi/gatekeeper/dao"
 	"github.com/didi/gatekeeper/public"
-	"github.com/BurntSushi/toml"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -114,7 +114,7 @@ func (s *SysConfigManage) MonitorConfig() {
 }
 
 //ConfigChangeNotice 配置变更通知
-func (s *SysConfigManage) ConfigChangeNotice() (<-chan struct{}) {
+func (s *SysConfigManage) ConfigChangeNotice() <-chan struct{} {
 	return s.loadConfigContext.Done()
 }
 
@@ -471,8 +471,8 @@ func (s *SysConfigManage) getDBModuleConf(ischeck bool) (*dao.ModuleConfiger, er
 		// why check base != nil at the end, and repeat with CheckModuleConf
 		if base != nil && loadBalance != nil {
 			moduleConf.Module = append(moduleConf.Module, &dao.GatewayModule{
-				Base:          base,
-				MatchRule:     matchRules,
+				Base:      base,
+				MatchRule: matchRules,
 				//DataFilter:    dataFilter,
 				AccessControl: accessControl,
 				LoadBalance:   loadBalance,
@@ -718,7 +718,7 @@ func (s *SysConfigManage) configModuleProxyMap() error {
 					response.Body = ioutil.NopCloser(bytes.NewBuffer(newPayload))
 					response.ContentLength = int64(len(newPayload))
 					response.Header.Set("Content-Length", strconv.FormatInt(int64(len(newPayload)), 10))
-					if err := ModifyResponse(currentModule,response.Request, response);err != nil {
+					if err := ModifyResponse(currentModule, response.Request, response); err != nil {
 						return err
 					}
 

@@ -7,16 +7,16 @@ import (
 )
 
 //TearDown 测试套件退出函数
-func TearDown()  {
+func TearDown() {
 	router.HTTPServerStop()
 	router.TCPServerStop()
 	httpAddrSlice := lib.GetStringSliceConf("test_dest.http_dest.addrs")
-	for _,addr:=range httpAddrSlice {
+	for _, addr := range httpAddrSlice {
 		testHTTP.Stop(addr)
 	}
-	testTCP :=thriftserver.NewTestTCPDestServer()
+	testTCP := thriftserver.NewTestTCPDestServer()
 	tcpAddrSlice := lib.GetStringSliceConf("test_dest.tcp_dest.addrs")
-	for _,addr:=range tcpAddrSlice {
+	for _, addr := range tcpAddrSlice {
 		testTCP.Stop(addr)
 	}
 }

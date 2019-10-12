@@ -64,7 +64,7 @@ func TestCheckIPList(t *testing.T) {
 //TestTCPCheckIPList TCP服务发现测试
 func TestTCPCheckIPList(t *testing.T) {
 	tcpConfig := service.SysConfMgr.GetModuleConfigByName("tester_tcp")
-	checkTCPAddr :=fmt.Sprintf("%s%s",lib.GetStringConf("base.cluster.cluster_ip"),tcpConfig.Base.FrontendAddr)
+	checkTCPAddr := fmt.Sprintf("%s%s", lib.GetStringConf("base.cluster.cluster_ip"), tcpConfig.Base.FrontendAddr)
 	convey.Convey("TCP服务发现测试", t, func() {
 
 		convey.Convey("配置IP与请求IP一致", func() {
@@ -88,27 +88,27 @@ func TestTCPCheckIPList(t *testing.T) {
 
 		convey.Convey("压测TCP服务", func() {
 			start := time.Now()
-			wg:=sync.WaitGroup{}
-			concurrency:=100
-			requests:=100000
-			for i:=0;i<concurrency;i++{
+			wg := sync.WaitGroup{}
+			concurrency := 100
+			requests := 100000
+			for i := 0; i < concurrency; i++ {
 				wg.Add(1)
 				go func() {
 					defer wg.Done()
 					_, err := tcpGetUniqueHostWithError(requests/concurrency, checkTCPAddr)
-					if err!=nil{
-						t.Errorf("tcpGetUniqueHostWithError%v",err)
+					if err != nil {
+						t.Errorf("tcpGetUniqueHostWithError%v", err)
 					}
 				}()
 			}
 			wg.Wait()
 			end := time.Now()
-			totalCost:=end.Sub(start).Nanoseconds() / 1000000
-			oneCost:=float64(end.Sub(start).Nanoseconds()) / float64(1000000) / float64(requests)
+			totalCost := end.Sub(start).Nanoseconds() / 1000000
+			oneCost := float64(end.Sub(start).Nanoseconds()) / float64(1000000) / float64(requests)
 			fmt.Println("\n压测结果:")
-			fmt.Printf("执行总耗时：%vms ",totalCost)
-			fmt.Printf("QPS：%v ",(1000/float64(totalCost))*float64(requests))
-			fmt.Printf("执行单次耗时：%vms\n",oneCost)
+			fmt.Printf("执行总耗时：%vms ", totalCost)
+			fmt.Printf("QPS：%v ", (1000/float64(totalCost))*float64(requests))
+			fmt.Printf("执行单次耗时：%vms\n", oneCost)
 		})
 
 		//convey.Convey("摘除全部服务IP时请求IP全部摘除", func() {
@@ -129,37 +129,37 @@ func TestTCPCheckIPList(t *testing.T) {
 func tcpGetHost(addr string) (string, error) {
 	tSocket, err := thrift.NewTSocket(addr)
 	if err != nil {
-		return "",err
+		return "", err
 	}
 	transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
 	transport, _ := transportFactory.GetTransport(tSocket)
 	protocolFactory := thrift.NewTBinaryProtocolFactoryDefault()
 	client := thriftgen.NewFormatDataClientFactory(transport, protocolFactory)
 	if err := transport.Open(); err != nil {
-		return "",errors.Errorf("Error opening:%s", addr)
+		return "", errors.Errorf("Error opening:%s", addr)
 	}
 	defer transport.Close()
 	data := thriftgen.Data{Text: "ping"}
 	d, err := client.DoFormat(context.Background(), &data)
 	if err != nil {
-		return "",errors.Errorf("Error opening:%s", addr)
+		return "", errors.Errorf("Error opening:%s", addr)
 	}
 	currentIP := d.Text
 	match, _ := regexp.MatchString("^[a-z0-9.]+:[0-9]+$", currentIP)
 	if !match {
-		return "",errors.Errorf("Error format currentIP:%s", currentIP)
+		return "", errors.Errorf("Error format currentIP:%s", currentIP)
 	}
-	return currentIP,nil
+	return currentIP, nil
 }
 
 func tcpGetUniqueHostWithError(times int, addr string) ([]string, error) {
 	checkHostSlice := []string{}
 loop:
 	for i := 0; i < times; i++ {
-		currentIP,err:=tcpGetHost(addr)
+		currentIP, err := tcpGetHost(addr)
 		if err != nil {
 			log.Println("tcpGetHost error:", err)
-			return checkHostSlice,err
+			return checkHostSlice, err
 		}
 		for _, cip := range checkHostSlice {
 			if cip == currentIP {
@@ -175,7 +175,7 @@ func tcpGetUniqueHost(times int, addr string) ([]string, error) {
 	checkHostSlice := []string{}
 loop:
 	for i := 0; i < times; i++ {
-		currentIP,err:=tcpGetHost(addr)
+		currentIP, err := tcpGetHost(addr)
 		if err != nil {
 			log.Println("tcpGetHost error:", err)
 			break loop

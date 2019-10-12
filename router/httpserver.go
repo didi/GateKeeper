@@ -32,7 +32,7 @@ func HTTPServerRun() {
 				public.SysLogger.Error("HttpServerRun_recover:%v", err)
 			}
 		}()
-		log.Printf(" [INFO] HttpServer %s listening\n",lib.GetStringConf("base.http.addr"))
+		log.Printf(" [INFO] HttpServer %s listening\n", lib.GetStringConf("base.http.addr"))
 		if err := HTTPSrvHandler.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf(" [ERROR] HttpServer %s err:%v\n", lib.GetStringConf("base.http.addr"), err)
 		}

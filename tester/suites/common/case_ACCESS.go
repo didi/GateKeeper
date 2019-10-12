@@ -25,24 +25,24 @@ func TestAccessControl(t *testing.T) {
 
 	convey.Convey("权限测试", t, func() {
 		convey.Convey("黑名单ip测试", func() {
-			c,err:= getURLContent(url2)
-			convey.So(err,convey.ShouldBeNil)
-			convey.So(getErrmsg(c),convey.ShouldNotEqual,"msg:AuthInBlackIPList")
+			c, err := getURLContent(url2)
+			convey.So(err, convey.ShouldBeNil)
+			convey.So(getErrmsg(c), convey.ShouldNotEqual, "msg:AuthInBlackIPList")
 		})
 		convey.Convey("白名单ip测试", func() {
-			c,err:= getURLContent(url1)
-			convey.So(err,convey.ShouldBeNil)
-			convey.So(c,convey.ShouldEqual,"127.0.0.1:50003")
+			c, err := getURLContent(url1)
+			convey.So(err, convey.ShouldBeNil)
+			convey.So(c, convey.ShouldEqual, "127.0.0.1:50003")
 		})
 	})
 }
 
-func getErrmsg(c string)  string{
-	m:=map[string]string{}
-	if err:=json.Unmarshal([]byte(c),m);err!=nil{
+func getErrmsg(c string) string {
+	m := map[string]string{}
+	if err := json.Unmarshal([]byte(c), m); err != nil {
 		return ""
 	}
-	if msg,ok:=m["errmsg"];ok{
+	if msg, ok := m["errmsg"]; ok {
 		return msg
 	}
 	return ""

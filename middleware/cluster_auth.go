@@ -14,8 +14,8 @@ func ClusterAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		clusterList := lib.GetStringConf("base.cluster.cluster_list")
 		matchFlag := false
-		ipList:=strings.Split(clusterList, ",")
-		ipList=append(ipList,"127.0.0.1")
+		ipList := strings.Split(clusterList, ",")
+		ipList = append(ipList, "127.0.0.1")
 		for _, host := range ipList {
 			if c.ClientIP() == host {
 				matchFlag = true

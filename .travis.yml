@@ -4,5 +4,10 @@ go:
   - 1.11.x
   - 1.12.x
   - 1.13.x
+env:
+  global:
+    - GO111MODULE=on
+    - GOPROXY=https://goproxy.io
 script:
   - ./build.sh
+  - cd tester/suites/common && go test

@@ -26,7 +26,7 @@ func PKCS5UnPadding(origData []byte) []byte {
 func AesEncrypt(c context.Context, origData, key []byte) ([]byte, error) {
 	defer func() {
 		if err := recover(); err != nil {
-			ContextWarning(c, lib.DLTagUndefind, map[string]interface{}{"msg":"AesEncrypt.recover", "err":err,})
+			ContextWarning(c, lib.DLTagUndefind, map[string]interface{}{"msg": "AesEncrypt.recover", "err": err})
 		}
 	}()
 	block, err := aes.NewCipher(key)
@@ -46,7 +46,7 @@ func AesEncrypt(c context.Context, origData, key []byte) ([]byte, error) {
 func AesDecrypt(c context.Context, crypted, key []byte) ([]byte, error) {
 	defer func() {
 		if err := recover(); err != nil {
-			ContextWarning(c, lib.DLTagUndefind, map[string]interface{}{"msg":"AesEncrypt.recover", "err":err,})
+			ContextWarning(c, lib.DLTagUndefind, map[string]interface{}{"msg": "AesEncrypt.recover", "err": err})
 		}
 	}()
 	block, err := aes.NewCipher(key)

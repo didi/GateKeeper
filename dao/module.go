@@ -11,7 +11,7 @@ type ModuleConfiger struct {
 }
 
 //GetGateWayModule 根据名字获取模块
-func (c *ModuleConfiger) GetGateWayModule(name string) *GatewayModule{
+func (c *ModuleConfiger) GetGateWayModule(name string) *GatewayModule {
 	for _, module := range c.Module {
 		if module.Base.Name == name {
 			return module
@@ -44,10 +44,10 @@ func (o *GatewayModuleBase) TableName() string {
 }
 
 //GetAll db getall
-func (o *GatewayModuleBase) GetAll(orders... string) ([]*GatewayModuleBase, error) {
+func (o *GatewayModuleBase) GetAll(orders ...string) ([]*GatewayModuleBase, error) {
 	var modules []*GatewayModuleBase
 	builder := public.GormPool
-	for _,order:=range orders{
+	for _, order := range orders {
 		builder = builder.Order(order)
 	}
 	err := builder.Find(&modules).Error

@@ -32,10 +32,10 @@ func (o *GatewayAPP) TableName() string {
 }
 
 //GetAll db getall
-func (o *GatewayAPP) GetAll(orders... string) ([]*GatewayAPP, error) {
+func (o *GatewayAPP) GetAll(orders ...string) ([]*GatewayAPP, error) {
 	var apps []*GatewayAPP
 	builder := public.GormPool
-	for _,order:=range orders{
+	for _, order := range orders {
 		builder = builder.Order(order)
 	}
 	err := builder.Find(&apps).Error

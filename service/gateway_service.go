@@ -57,7 +57,6 @@ func (o *GateWayService) SetCurrentModule(currentModule *dao.GatewayModule) {
 	o.currentModule = currentModule
 }
 
-
 //AccessControl 权限验证
 func (o *GateWayService) AccessControl() error {
 	if o.currentModule.AccessControl == nil {
@@ -92,8 +91,8 @@ func (o *GateWayService) AccessControl() error {
 		})
 		return nil
 	}
-	if errmsg==""{
-		errmsg="auth_failure"
+	if errmsg == "" {
+		errmsg = "auth_failure"
 	}
 	public.ContextWarning(o.req.Context(), DLTagAccessControlFailure, map[string]interface{}{
 		"msg": errmsg,
@@ -110,19 +109,19 @@ func AuthModuleOpened(o *GateWayService, ctx *public.Context) bool {
 }
 
 //AuthAppToken app的签名校验
-func AuthAppToken(m *dao.GatewayModule, req *http.Request, res http.ResponseWriter) (bool,error) {
-	ctx:=public.NewContext(res,req)
+func AuthAppToken(m *dao.GatewayModule, req *http.Request, res http.ResponseWriter) (bool, error) {
+	ctx := public.NewContext(res, req)
 	//验证签名
-	if err:=AuthAppSign(ctx);err!=nil {
-		return false,err
+	if err := AuthAppSign(ctx); err != nil {
+		return false, err
 	}
 	//限速等操作
 	if err := AfterAuthLimit(ctx); err != nil {
-		return false,err
+		return false, err
 	}
 	//todo 可以在这里加入sso跳转逻辑
 	//ctx.Redirect("/sso/login",301)
-	return true,nil
+	return true, nil
 }
 
 //AuthInBlackIPList 黑名单验证
@@ -166,11 +165,11 @@ func AuthInWhiteHostList(o *GateWayService, ctx *public.Context) bool {
 //AuthRegisterFunc 验证注册函数
 func AuthRegisterFunc(o *GateWayService, errmsg *string) bool {
 	for _, rf := range BeforeRequestAuthRegisterFuncs {
-		flag,err:=rf(o.currentModule, o.req, o.w)
+		flag, err := rf(o.currentModule, o.req, o.w)
 		if flag {
 			return true
 		}
-		*(errmsg)=err.Error()
+		*(errmsg) = err.Error()
 	}
 	return false
 }
@@ -187,9 +186,9 @@ func AppAuth(appID string, authCtx *public.Context) error {
 	if err != nil {
 		return err
 	}
-	v:=authCtx.Req.Context().Value(public.ContextKey("request_url"))
-	reqPath,ok := v.(string)
-	if !ok{
+	v := authCtx.Req.Context().Value(public.ContextKey("request_url"))
+	reqPath, ok := v.(string)
+	if !ok {
 		reqPath = ""
 	}
 	if !public.InOrPrefixStringList(reqPath, strings.Split(appConfig.OpenAPI, ",")) {
@@ -224,18 +223,18 @@ func AuthAppSign(c *public.Context) error {
 	appID := c.Query("app_id")
 	if appID == "" {
 		return errors.New(fmt.Sprintf("AuthAppSign -error:%v",
-				"app_id empty"))
+			"app_id empty"))
 	}
 	appConfig, err := SysConfMgr.GetAppConfigByAPPID(appID)
 	if err != nil {
 		return errors.New(fmt.Sprintf(
-				"AuthAppSign -error:%v -app_id:%v -sign:%v",
-				"GetAppConfigByAPPID error", appID,clientSign, ))
+			"AuthAppSign -error:%v -app_id:%v -sign:%v",
+			"GetAppConfigByAPPID error", appID, clientSign))
 	}
 	if appConfig.Secret == "" {
 		return errors.New(fmt.Sprintf(
 			"AuthAppSign -error:%v -app_id:%v -sign:%v",
-			"Secret empty", appID,clientSign, ))
+			"Secret empty", appID, clientSign))
 	}
 
 	if appConfig.WhiteIps != "" &&
@@ -248,7 +247,7 @@ func AuthAppSign(c *public.Context) error {
 	if signKey != clientSign {
 		return errors.New(fmt.Sprintf(
 			"AuthAppSign -error:%v -app_id:%v -sign:%v",
-			"sign error", appID,clientSign, ))
+			"sign error", appID, clientSign))
 	}
 	return nil
 }
@@ -275,8 +274,8 @@ func (o *GateWayService) LoadBalance() (*httputil.ReverseProxy, error) {
 	proxy, err := o.GetModuleHTTPProxy()
 	if err != nil {
 		public.ContextWarning(o.req.Context(), DLTagLoadBalanceFailure, map[string]interface{}{
-			"msg":       err,
-			"module":    o.currentModule.Base.Name,
+			"msg":    err,
+			"module": o.currentModule.Base.Name,
 		})
 		return nil, err
 	}
@@ -285,15 +284,15 @@ func (o *GateWayService) LoadBalance() (*httputil.ReverseProxy, error) {
 
 //GetModuleHTTPProxy 获取模块的代理
 func (o *GateWayService) GetModuleHTTPProxy() (*httputil.ReverseProxy, error) {
-	proxy,err:=SysConfMgr.GetModuleHTTPProxy(o.currentModule.Base.Name)
+	proxy, err := SysConfMgr.GetModuleHTTPProxy(o.currentModule.Base.Name)
 	if err != nil {
 		public.ContextWarning(o.req.Context(), DLTagLoadBalanceFailure, map[string]interface{}{
-			"err":       err,
-			"module":    o.currentModule.Base.Name,
+			"err":    err,
+			"module": o.currentModule.Base.Name,
 		})
 		return &httputil.ReverseProxy{}, err
 	}
-	return proxy,nil
+	return proxy, nil
 }
 
 //MatchRule 匹配规则
@@ -310,14 +309,14 @@ Loop:
 			if matchRule.Type == "url_prefix" && strings.HasPrefix(urlStr, matchRule.Rule+"/") {
 				currentModule = module
 				//提前检测，减少资源消耗
-				if matchRule.URLRewrite ==""{
+				if matchRule.URLRewrite == "" {
 					break Loop
 				}
-				for _,uw  := range strings.Split(matchRule.URLRewrite, ",") {
+				for _, uw := range strings.Split(matchRule.URLRewrite, ",") {
 					uws := strings.Split(uw, " ")
 					if len(uws) == 2 {
 						re, regerr := regexp.Compile(uws[0])
-						if regerr!=nil{
+						if regerr != nil {
 							return regerr
 						}
 						rep := re.ReplaceAllString(urlStr, uws[1])
@@ -326,7 +325,7 @@ Loop:
 							"url":       o.req.RequestURI,
 							"write_url": rep,
 						})
-						if o.req.URL.Path!=urlStr{
+						if o.req.URL.Path != urlStr {
 							break
 						}
 					}

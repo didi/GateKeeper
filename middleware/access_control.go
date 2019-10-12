@@ -11,8 +11,8 @@ import (
 //AccessControl 权限控制中间件
 func AccessControl() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		gws,ok:=c.MustGet(MiddlewareServiceKey).(*service.GateWayService)
-		if !ok{
+		gws, ok := c.MustGet(MiddlewareServiceKey).(*service.GateWayService)
+		if !ok {
 			public.ResponseError(c, http.StatusBadRequest, errors.New("gateway_service not valid"))
 			return
 		}
@@ -20,7 +20,7 @@ func AccessControl() gin.HandlerFunc {
 			public.ResponseError(c, http.StatusUnauthorized, err)
 			return
 		}
-		c.Set(MiddlewareServiceKey,gws)
+		c.Set(MiddlewareServiceKey, gws)
 		c.Next()
 	}
 }

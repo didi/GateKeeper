@@ -10,7 +10,7 @@ import (
 )
 
 //HTTPDestServer 目标服务管理器
-type  HTTPDestServer struct{
+type HTTPDestServer struct {
 	mapHTTPDestSvr map[string]*http.Server
 	lock           *sync.Mutex
 }
@@ -24,7 +24,7 @@ func NewTestHTTPDestServer() *HTTPDestServer {
 }
 
 //Run 启动服务
-func(t *HTTPDestServer) Run(addr string,showLog... bool) {
+func (t *HTTPDestServer) Run(addr string, showLog ...bool) {
 	flag.Parse()
 	if addr == "" {
 		log.Fatal("need addr like :8007")
@@ -32,18 +32,18 @@ func(t *HTTPDestServer) Run(addr string,showLog... bool) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", t.getPath)
 	mux.HandleFunc("/get_path", t.getPath)
-	mux.HandleFunc("/get_host", t.getHost(fmt.Sprintf("127.0.0.1%s",addr)))
+	mux.HandleFunc("/get_host", t.getHost(fmt.Sprintf("127.0.0.1%s", addr)))
 	mux.HandleFunc("/ping", t.ping)
 	mux.HandleFunc("/goods_list", t.goodsList)
-	if len(showLog)==0 || showLog[0]==true{
+	if len(showLog) == 0 || showLog[0] == true {
 		log.Println("RunHttpDestServer ", addr)
 	}
 	go func() {
 		server := &http.Server{
-			Addr: addr,
-			ReadTimeout: 60 * time.Second,
+			Addr:         addr,
+			ReadTimeout:  60 * time.Second,
 			WriteTimeout: 60 * time.Second,
-			Handler: mux,
+			Handler:      mux,
 		}
 		t.lock.Lock()
 		t.mapHTTPDestSvr[addr] = server
@@ -56,8 +56,8 @@ func(t *HTTPDestServer) Run(addr string,showLog... bool) {
 }
 
 //Stop 关闭服务
-func(t *HTTPDestServer) Stop(addr string)  {
-	if server,ok:=t.mapHTTPDestSvr[addr];ok{
+func (t *HTTPDestServer) Stop(addr string) {
+	if server, ok := t.mapHTTPDestSvr[addr]; ok {
 		//fmt.Println("TestHttpDestServer_Stop -addr:",addr)
 		server.Close()
 	}
@@ -67,8 +67,7 @@ func (t *HTTPDestServer) ping(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "pong")
 }
 
-
-func (t *HTTPDestServer) getHost(addr string) func(w http.ResponseWriter, r *http.Request){
+func (t *HTTPDestServer) getHost(addr string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, addr)
 	}

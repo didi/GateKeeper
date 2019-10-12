@@ -11,7 +11,6 @@ import (
 	"strings"
 )
 
-
 //Context 对response和request方法的封装
 type Context struct {
 	Res        http.ResponseWriter
@@ -120,7 +119,7 @@ func (c *Context) Path() string {
 
 //Schema 获取协议
 func (c *Context) Schema() string {
-	if c.Req.TLS != nil{
+	if c.Req.TLS != nil {
 		return "https://"
 	}
 	return "http://"
@@ -146,7 +145,7 @@ func (c *Context) IsAjaxReq() bool {
 //IsBrowser 是否为浏览器
 func (c *Context) IsBrowser() bool {
 	s := c.Req.Header.Get("Accept")
-	return s!="*/*"
+	return s != "*/*"
 }
 
 //AcceptJSON 是否为json请求
@@ -197,8 +196,8 @@ func (c *Context) Success(data interface{}) {
 }
 
 //Location 跳转到
-func (c *Context) Location(message,url string) {
-	content:="<script>alert('"+message+"');location.href='"+url+"'</script>"
+func (c *Context) Location(message, url string) {
+	content := "<script>alert('" + message + "');location.href='" + url + "'</script>"
 	c.Write([]byte(content))
 }
 
@@ -232,6 +231,7 @@ func (c *Context) Write(data []byte) {
 
 //Map map[string]别名
 type Map map[string]interface{}
+
 //
 ////Handler func别名
 //type Handler func(*Context)

@@ -11,19 +11,19 @@ import (
 	"time"
 )
 
-var(
+var (
 	testTCP  *thriftserver.TestTCPDestServer
 	testHTTP *testhttp.HTTPDestServer
 )
 
 //SetUp 套件创建执行函数
-func SetUp()  {
+func SetUp() {
 	conf := flag.String(
 		"config",
-		"../../conf/test/",	//默认配置文件
+		"../../conf/test/", //默认配置文件
 		"input config file like ../../conf/dev/")
 	flag.Parse()
-	lib.InitModule(*conf,[]string{"base","mysql","redis","test_dest",})
+	lib.InitModule(*conf, []string{"base", "mysql", "redis", "test_dest"})
 	defer lib.Destroy()
 	public.InitMysql()
 	public.InitConf()
@@ -43,22 +43,22 @@ func SetUp()  {
 	//目标http服务器
 	testHTTP = testhttp.NewTestHTTPDestServer()
 	httpAddrSlice := lib.GetStringSliceConf("test_dest.http_dest.addrs")
-	for _,addr:=range httpAddrSlice {
+	for _, addr := range httpAddrSlice {
 		testHTTP.Run(addr)
 	}
 
 	//目标tcp服务器
 	testTCP = thriftserver.NewTestTCPDestServer()
 	tcpAddrSlice := lib.GetStringSliceConf("test_dest.tcp_dest.addrs")
-	for _,addr:=range tcpAddrSlice {
+	for _, addr := range tcpAddrSlice {
 		testTCP.Run(addr)
 	}
-	time.Sleep(5*time.Second)
+	time.Sleep(5 * time.Second)
 	router.HTTPServerRun()
 	router.TCPServerRun()
-	time.Sleep(1*time.Second)
+	time.Sleep(1 * time.Second)
 }
 
 //Before 用例创建执行函数
-func Before()  {
+func Before() {
 }

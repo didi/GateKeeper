@@ -24,7 +24,7 @@ type TCPRouter struct {
 
 //NewTCPRouter 创建一个tcp路由器
 func NewTCPRouter(dialProxy *DialProxy) *TCPRouter {
-	return &TCPRouter{DialProxy: dialProxy,}
+	return &TCPRouter{DialProxy: dialProxy}
 }
 
 //Use 增加一个中间件
@@ -69,7 +69,7 @@ func (r *TCPRouter) genChainHandler(handle Target) Target {
 }
 
 //HandleConn 请求回调
-func (r *TCPRouter) HandleConn(c net.Conn){
+func (r *TCPRouter) HandleConn(c net.Conn) {
 	chainHandler := r.genChainHandler(r.DialProxy)
 	chainHandler.HandleConn(c)
 }
@@ -80,6 +80,6 @@ type WrapHandlerEntity struct {
 }
 
 //HandleConn 请求回调
-func (w *WrapHandlerEntity) HandleConn(c net.Conn)  {
+func (w *WrapHandlerEntity) HandleConn(c net.Conn) {
 	w.Handler.HandleConn(c)
 }

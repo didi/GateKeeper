@@ -27,11 +27,11 @@ func InitRouter() *gin.Engine {
 	router.GET("/ping", gateway.Ping)
 
 	//cluster
-	csr:=router.Group("/")
+	csr := router.Group("/")
 	csr.Use(middleware.ClusterAuth())
 	csr.GET("/reload", gateway.Reload)
 
-	gw:=router.Group(lib.GetStringConf("base.http.route_prefix"))
+	gw := router.Group(lib.GetStringConf("base.http.route_prefix"))
 	gw.Use(
 		middleware.RequestTraceLog(),
 		middleware.MatchRule(),

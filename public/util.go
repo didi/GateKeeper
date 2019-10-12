@@ -33,7 +33,7 @@ func AuthIPList(clientIP string, whiteList []string) bool {
 }
 
 //CheckConnPort 检查端口是否被占用
-func CheckConnPort(port string) error{
+func CheckConnPort(port string) error {
 	ln, err := net.Listen("tcp", port)
 	if err != nil {
 		return err
@@ -53,12 +53,12 @@ func InStringList(t string, list []string) bool {
 }
 
 //InOrPrefixStringList 字符串在string数组 或者 字符串前缀在数组中
-func InOrPrefixStringList(t string, arr []string)  bool{
-	for _,s:=range arr{
-		if t==s{
+func InOrPrefixStringList(t string, arr []string) bool {
+	for _, s := range arr {
+		if t == s {
 			return true
 		}
-		if s!="" && strings.HasPrefix(t,s){
+		if s != "" && strings.HasPrefix(t, s) {
 			return true
 		}
 	}
@@ -66,7 +66,7 @@ func InOrPrefixStringList(t string, arr []string)  bool{
 }
 
 //Substr 字符串的截取
-func Substr(str string,start int64,end int64) string {
+func Substr(str string, start int64, end int64) string {
 	length := int64(len(str))
 	if start < 0 || start > length {
 		return ""
@@ -74,8 +74,8 @@ func Substr(str string,start int64,end int64) string {
 	if end < 0 {
 		return ""
 	}
-	if end > length{
-		end=length
+	if end > length {
+		end = length
 	}
 	return string(str[start:end])
 }
@@ -103,28 +103,30 @@ type MapItem struct {
 func (ms MapSorter) Len() int {
 	return len(ms)
 }
+
 //Swap 交换位置
 func (ms MapSorter) Swap(i, j int) {
 	ms[i], ms[j] = ms[j], ms[i]
 }
+
 //Less 按首字母键排序
 func (ms MapSorter) Less(i, j int) bool {
-	return ms[i].Key<ms[j].Key
+	return ms[i].Key < ms[j].Key
 }
 
 //GetSign 获取签名
-func GetSign(paramMap map[string]string, secret string)  string{
-	paramArr:=NewMapSorter(paramMap)
-	str:=""
-	for _,v:=range paramArr{
-		str=str+fmt.Sprintf("%s=%s&",v.Key,url.QueryEscape(v.Val))
+func GetSign(paramMap map[string]string, secret string) string {
+	paramArr := NewMapSorter(paramMap)
+	str := ""
+	for _, v := range paramArr {
+		str = str + fmt.Sprintf("%s=%s&", v.Key, url.QueryEscape(v.Val))
 	}
-	str=str+secret
+	str = str + secret
 
 	h := md5.New()
 	h.Write([]byte(str))
 	cipherStr := h.Sum(nil)
-	md5Str:=hex.EncodeToString(cipherStr)
+	md5Str := hex.EncodeToString(cipherStr)
 	return md5Str[7:23]
 }
 
@@ -139,7 +141,7 @@ func RemoteIP(req *http.Request) string {
 	} else {
 		remoteAddr, _, err = net.SplitHostPort(remoteAddr)
 	}
-	if err!=nil{
+	if err != nil {
 		return ""
 	}
 	if remoteAddr == "::1" {
@@ -177,7 +179,7 @@ func HTTPGET(log *log.Logger, urlString string, urlParams url.Values, msTimeout 
 			"dltag=%v|url=%v|proc_time=%v|method=%v|args=%v|err=%v",
 			"_com_http_failure",
 			urlString,
-			float32(time.Now().UnixNano()-startTime) / 1.0e9,
+			float32(time.Now().UnixNano()-startTime)/1.0e9,
 			"GET",
 			urlParams,
 			err.Error())
@@ -192,7 +194,7 @@ func HTTPGET(log *log.Logger, urlString string, urlParams url.Values, msTimeout 
 			"dltag=%v|url=%v|proc_time=%v|method=%v|args=%v|err=%v",
 			"_com_http_failure",
 			urlString,
-			float32(time.Now().UnixNano()-startTime) / 1.0e9,
+			float32(time.Now().UnixNano()-startTime)/1.0e9,
 			"GET",
 			urlParams,
 			err.Error())
@@ -205,7 +207,7 @@ func HTTPGET(log *log.Logger, urlString string, urlParams url.Values, msTimeout 
 			"dltag=%v|url=%v|proc_time=%v|method=%v|args=%v|err=%v",
 			"_com_http_failure",
 			urlString,
-			float32(time.Now().UnixNano()-startTime) / 1.0e9,
+			float32(time.Now().UnixNano()-startTime)/1.0e9,
 			"GET",
 			urlParams,
 			err.Error())
@@ -215,7 +217,7 @@ func HTTPGET(log *log.Logger, urlString string, urlParams url.Values, msTimeout 
 		"dltag=%v|url=%v|proc_time=%v|method=%v|args=%v|result=%v",
 		"_com_http_success",
 		urlString,
-		float32(time.Now().UnixNano()-startTime) / 1.0e9,
+		float32(time.Now().UnixNano()-startTime)/1.0e9,
 		"GET",
 		urlParams,
 		string(body))
@@ -242,7 +244,7 @@ func HTTPPOST(log *log.Logger, urlString string, urlParams url.Values, msTimeout
 			"dltag=%v|url=%v|proc_time=%v|method=%v|args=%v|err=%v",
 			"_com_http_failure",
 			urlString,
-			float32(time.Now().UnixNano()-startTime) / 1.0e9,
+			float32(time.Now().UnixNano()-startTime)/1.0e9,
 			"POST",
 			urlParams,
 			err.Error())
@@ -255,7 +257,7 @@ func HTTPPOST(log *log.Logger, urlString string, urlParams url.Values, msTimeout
 			"dltag=%v|url=%v|proc_time=%v|method=%v|args=%v|err=%v",
 			"_com_http_failure",
 			urlString,
-			float32(time.Now().UnixNano()-startTime) / 1.0e9,
+			float32(time.Now().UnixNano()-startTime)/1.0e9,
 			"POST",
 			urlParams,
 			err.Error())
@@ -265,7 +267,7 @@ func HTTPPOST(log *log.Logger, urlString string, urlParams url.Values, msTimeout
 		"dltag=%v|url=%v|proc_time=%v|method=%v|args=%v|result=%v",
 		"_com_http_success",
 		urlString,
-		float32(time.Now().UnixNano()-startTime) / 1.0e9,
+		float32(time.Now().UnixNano()-startTime)/1.0e9,
 		"GET",
 		urlParams,
 		string(body))
@@ -286,7 +288,7 @@ func RedisLogDo(log *log.Logger, c redis.Conn, commandName string, args ...inter
 			args,
 			fmt.Sprintf("%fs", endExecTime.Sub(startExecTime).Seconds()))
 	} else {
-		replyStr,_:=redis.String(reply,nil)
+		replyStr, _ := redis.String(reply, nil)
 		log.Info(
 			"dltag=%v|method=%v|bind=%v|reply=%v|proc_time=%v",
 			"_com_redis_success",
@@ -299,9 +301,9 @@ func RedisLogDo(log *log.Logger, c redis.Conn, commandName string, args ...inter
 }
 
 //RedisConfPipline redis pip请求
-func RedisConfPipline(log *log.Logger, name string, pip ...func(c redis.Conn)) error{
-	c,err:=lib.RedisConnFactory(name)
-	if err!=nil{
+func RedisConfPipline(log *log.Logger, name string, pip ...func(c redis.Conn)) error {
+	c, err := lib.RedisConnFactory(name)
+	if err != nil {
 		log.Warn(
 			"dltag=%v|name=%v|err=%v",
 			"_com_redis_failure",
@@ -310,7 +312,7 @@ func RedisConfPipline(log *log.Logger, name string, pip ...func(c redis.Conn)) e
 		return err
 	}
 	defer c.Close()
-	for _,f:=range pip{
+	for _, f := range pip {
 		f(c)
 	}
 	c.Flush()
@@ -319,15 +321,15 @@ func RedisConfPipline(log *log.Logger, name string, pip ...func(c redis.Conn)) e
 
 //RedisConfDo 通过配置 执行redis
 func RedisConfDo(log *log.Logger, name string, commandName string, args ...interface{}) (interface{}, error) {
-	c,err:=lib.RedisConnFactory(name)
-	if err!=nil{
+	c, err := lib.RedisConnFactory(name)
+	if err != nil {
 		log.Warn(
 			"dltag=%v|method=%v|err=%v|bind=%v",
 			"_com_redis_failure",
 			commandName,
 			err,
 			args)
-		return nil,err
+		return nil, err
 	}
 	defer c.Close()
 
@@ -343,7 +345,7 @@ func RedisConfDo(log *log.Logger, name string, commandName string, args ...inter
 			args,
 			fmt.Sprintf("%fs", endExecTime.Sub(startExecTime).Seconds()))
 	} else {
-		replyStr,_:=redis.String(reply,nil)
+		replyStr, _ := redis.String(reply, nil)
 		log.Info(
 			"dltag=%v|method=%v|bind=%v|reply=%v|proc_time=%v",
 			"_com_redis_success",
