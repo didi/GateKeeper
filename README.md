@@ -1,8 +1,4 @@
-# <img src="https://raw.githubusercontent.com/didi/gatekeeper/master/tmpl/static/images/logo.png"/> GateKeeper 
-
-[![Build Status](https://www.travis-ci.org/didi/gendry.svg?branch=master)](https://www.travis-ci.org/didi/gendry)
-
-[![GoDoc](c)](https://godoc.org/github.com/didi/gendry)
+# <img src="https://raw.githubusercontent.com/didi/gatekeeper/master/tmpl/static/images/logo.png"/> GateKeeper [![Build Status](https://www.travis-ci.org/didi/gatekeeper.svg?branch=master)](https://www.travis-ci.org/didi/gatekeeper) [![Go Report Card](https://goreportcard.com/badge/github.com/didi/gatekeeper)](https://goreportcard.com/report/github.com/didi/gatekeeper) [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://github.com/didi/gatekeeper/blob/master/LICENSE) [![GoDoc](https://godoc.org/github.com/didi/gatekeeper?status.svg)](https://godoc.org/github.com/didi/gatekeeper)
 
 `GateKeeper` 是一个使用 `Go` (`golang`) 编写的不依赖分布式数据库的 `API` 网关, 使用它可以高效进行服务代理 以及 在线化服务配置并且你无需重启服务器。
 
