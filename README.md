@@ -1,5 +1,4 @@
-# <img src="https://github.com/didi/gatekeeper/raw/master/tmpl/static/images/logo.jpeg"/> GateKeeper
-
+# <img src="https://raw.githubusercontent.com/didi/gatekeeper/master/tmpl/static/images/logo.png"/> GateKeeper
 `GateKeeper` 是一个使用 `Go` (`golang`) 编写的不依赖分布式数据库的 `API` 网关, 使用它可以高效进行服务代理 以及 在线化服务配置并且你无需重启服务器。
 
 - [特性](#%E7%89%B9%E6%80%A7)
