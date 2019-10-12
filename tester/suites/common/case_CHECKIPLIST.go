@@ -7,12 +7,14 @@ import (
 	"github.com/didi/gatekeeper/service"
 	"github.com/didi/gatekeeper/tester/testrpc/thriftgen"
 	"github.com/e421083458/golang_common/lib"
+	"github.com/pkg/errors"
 	"github.com/smartystreets/goconvey/convey"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"regexp"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -84,6 +86,31 @@ func TestTCPCheckIPList(t *testing.T) {
 			time.Sleep(10 * time.Second)
 		})
 
+		convey.Convey("压测TCP服务", func() {
+			start := time.Now()
+			wg:=sync.WaitGroup{}
+			concurrency:=100
+			requests:=100000
+			for i:=0;i<concurrency;i++{
+				wg.Add(1)
+				go func() {
+					defer wg.Done()
+					_, err := tcpGetUniqueHostWithError(requests/concurrency, checkTCPAddr)
+					if err!=nil{
+						t.Errorf("tcpGetUniqueHostWithError%v",err)
+					}
+				}()
+			}
+			wg.Wait()
+			end := time.Now()
+			totalCost:=end.Sub(start).Nanoseconds() / 1000000
+			oneCost:=float64(end.Sub(start).Nanoseconds()) / float64(1000000) / float64(requests)
+			fmt.Println("\n压测结果:")
+			fmt.Printf("执行总耗时：%vms ",totalCost)
+			fmt.Printf("QPS：%v ",(1000/float64(totalCost))*float64(requests))
+			fmt.Printf("执行单次耗时：%vms\n",oneCost)
+		})
+
 		//convey.Convey("摘除全部服务IP时请求IP全部摘除", func() {
 		//	testTCP.Stop(":51001")
 		//	testTCP.Stop(":51002")
@@ -99,34 +126,58 @@ func TestTCPCheckIPList(t *testing.T) {
 	})
 }
 
+func tcpGetHost(addr string) (string, error) {
+	tSocket, err := thrift.NewTSocket(addr)
+	if err != nil {
+		return "",err
+	}
+	transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
+	transport, _ := transportFactory.GetTransport(tSocket)
+	protocolFactory := thrift.NewTBinaryProtocolFactoryDefault()
+	client := thriftgen.NewFormatDataClientFactory(transport, protocolFactory)
+	if err := transport.Open(); err != nil {
+		return "",errors.Errorf("Error opening:%s", addr)
+	}
+	defer transport.Close()
+	data := thriftgen.Data{Text: "ping"}
+	d, err := client.DoFormat(context.Background(), &data)
+	if err != nil {
+		return "",errors.Errorf("Error opening:%s", addr)
+	}
+	currentIP := d.Text
+	match, _ := regexp.MatchString("^[a-z0-9.]+:[0-9]+$", currentIP)
+	if !match {
+		return "",errors.Errorf("Error format currentIP:%s", currentIP)
+	}
+	return currentIP,nil
+}
+
+func tcpGetUniqueHostWithError(times int, addr string) ([]string, error) {
+	checkHostSlice := []string{}
+loop:
+	for i := 0; i < times; i++ {
+		currentIP,err:=tcpGetHost(addr)
+		if err != nil {
+			log.Println("tcpGetHost error:", err)
+			return checkHostSlice,err
+		}
+		for _, cip := range checkHostSlice {
+			if cip == currentIP {
+				break loop
+			}
+		}
+		checkHostSlice = append(checkHostSlice, currentIP)
+	}
+	return checkHostSlice, nil
+}
+
 func tcpGetUniqueHost(times int, addr string) ([]string, error) {
 	checkHostSlice := []string{}
 loop:
 	for i := 0; i < times; i++ {
-		tSocket, err := thrift.NewTSocket(addr)
+		currentIP,err:=tcpGetHost(addr)
 		if err != nil {
-			log.Println("tSocket error:", err)
-			break loop
-		}
-		transportFactory := thrift.NewTFramedTransportFactory(thrift.NewTTransportFactory())
-		transport, _ := transportFactory.GetTransport(tSocket)
-		protocolFactory := thrift.NewTBinaryProtocolFactoryDefault()
-		client := thriftgen.NewFormatDataClientFactory(transport, protocolFactory)
-		if err := transport.Open(); err != nil {
-			log.Println("Error opening:", addr)
-			break loop
-		}
-		defer transport.Close()
-		data := thriftgen.Data{Text: "ping"}
-		d, err := client.DoFormat(context.Background(), &data)
-		if err != nil {
-			log.Println("Error opening:", addr)
-			break loop
-		}
-		currentIP := d.Text
-		//fmt.Println("currentIP",currentIP)
-		match, _ := regexp.MatchString("^[a-z0-9.]+:[0-9]+$", currentIP)
-		if !match {
+			log.Println("tcpGetHost error:", err)
 			break loop
 		}
 		for _, cip := range checkHostSlice {
@@ -134,7 +185,7 @@ loop:
 				break loop
 			}
 		}
-		checkHostSlice = append(checkHostSlice, d.Text)
+		checkHostSlice = append(checkHostSlice, currentIP)
 	}
 	return checkHostSlice, nil
 }
