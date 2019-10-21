@@ -15,8 +15,8 @@
 - [License](#license)
 
 ## 特性
-- `http`、`tcp`服务代理
-- 服务发现
+- `http`、`websocket`、`tcp`服务代理
+- 服务探测
 - 加权负载轮询
 - `URL`地址重写
 - 服务限流：支持独立`IP`限流
