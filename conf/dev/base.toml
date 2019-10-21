@@ -10,8 +10,8 @@
     route_prefix = "/gatekeeper"        # 所有对外服务的route前缀, 如：/gateway
     addr =":8081"                       # 监听地址, default ":8700"
     req_host = "100.90.164.31"              # 绑定请求地址
-    read_timeout = 10                   # 读取超时时长
-    write_timeout = 10                  # 写入超时时长
+    read_timeout = 30                   # 读取超时时长
+    write_timeout = 30                  # 写入超时时长
     max_header_bytes = 20               # 最大的header大小，二进制位长度
 
 #集群配置

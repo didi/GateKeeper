@@ -681,6 +681,9 @@ func (s *SysConfigManage) configModuleProxyMap() error {
 					}
 				},
 				ModifyResponse: func(response *http.Response) error {
+					if strings.Contains(response.Header.Get("Connection"), "Upgrade") {
+						return nil
+					}
 					var payload []byte
 					var readErr error
 					if strings.Contains(response.Header.Get("Content-Encoding"), "gzip") {
