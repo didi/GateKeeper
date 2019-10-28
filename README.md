@@ -366,6 +366,7 @@ go get github.com/smartystreets/goconvey
 - 运行测试用例
 
 ```
+cd tester
 sh bootstrap.sh
 ```
 
