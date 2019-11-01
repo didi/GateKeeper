@@ -78,16 +78,16 @@ go run main.go
 
 压测结果：
 
-![image](https://github.com/didi/gatekeeper/raw/master/tmpl/static/images/image2019-9-16_10-5-1.png)
+![image](http://img-hxy021.didistatic.com/static/itstool_public/do1_mRLn3AQlyaQwEmJQfBLW)
 
-![image](https://github.com/didi/gatekeeper/raw/master/tmpl/static/images/image2019-9-16_10-5-19.png)
+![image](http://img-hxy021.didistatic.com/static/itstool_public/do1_ZCZJyBbLPA1misbCh3uZ)
 
 ### 使用手册
 
 - 集群配置及部署
 
     集群架构如图
-    ![image](https://github.com/didi/gatekeeper/raw/master/tmpl/static/images/image2019-9-16_10-1-49.png)
+    ![image](http://img-hxy021.didistatic.com/static/itstool_public/do1_CMRHhgPPJCHI4xNcGdmD)
         
     - 结合架构图对每个步骤说明如下：
         1. 用户通过接入层连接到 `GateKeeper` 实例中。
@@ -146,7 +146,7 @@ go run main.go
 - 服务管理
     
     - 服务列表
-    ![image](https://github.com/didi/gatekeeper/raw/master/tmpl/static/images/WechatIMG521.jpeg)
+    ![image](http://img-hxy021.didistatic.com/static/itstool_public/do1_MkkNkz67B5yw9uJRmDXZ)
         - 服务地址，如：`http://10.90.164.31:8081/gatekeeper/test_http`
         
         这里的 `10.90.164.31:8081` 表示集群地址，可以在 `./conf/dev/base.toml` 中设置
@@ -177,7 +177,7 @@ go run main.go
 - 租户管理
     
     - 租户列表
-    ![image](https://github.com/didi/gatekeeper/raw/master/tmpl/static/images/WechatIMG522.jpeg)
+    ![image](http://img-hxy021.didistatic.com/static/itstool_public/do1_yKCclTNndRCA3awqly2L)
     
         - 使用租户信息访问下游服务
         
