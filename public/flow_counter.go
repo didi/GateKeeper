@@ -79,6 +79,7 @@ type RequestCountService struct {
 	QPS         int64
 	Unix        int64
 	TickerCount int64
+	ReqDate     string
 }
 
 //NewRequestCountService 创建请求计数对象
@@ -90,6 +91,7 @@ func NewRequestCountService(moduleName string, interval time.Duration, maxCnt in
 		QPS:         0,
 		Unix:        0,
 		TickerCount: 0,
+		ReqDate:     "",
 	}
 	go func() {
 		defer func() {
@@ -116,6 +118,11 @@ func NewRequestCountService(moduleName string, interval time.Duration, maxCnt in
 				})
 			if currentCount, err := redis.Int64(RedisConfDo(StatLogger, "default", "GET", redisKey)); err == nil {
 				nowUnix := time.Now().Unix()
+				nowDate := time.Now().In(lib.TimeLocation).Format(lib.DateFormat)
+				if reqCounter.ReqDate != nowDate {
+					reqCounter.ReqDate = nowDate
+					reqCounter.TotalCount = 1
+				}
 				if reqCounter.Unix == 0 {
 					reqCounter.Unix = time.Now().Unix()
 				} else {
@@ -165,6 +172,7 @@ type APPCountService struct {
 	QPS         int64
 	Unix        int64
 	TickerCount int64
+	ReqDate     string
 }
 
 //NewAPPCountService 创建统计结构体
@@ -176,6 +184,7 @@ func NewAPPCountService(appID string, interval time.Duration, maxCnt int) (*APPC
 		QPS:         0,
 		Unix:        0,
 		TickerCount: 0,
+		ReqDate:     "",
 	}
 	go func() {
 		defer func() {
@@ -204,6 +213,11 @@ func NewAPPCountService(appID string, interval time.Duration, maxCnt int) (*APPC
 
 			if currentCount, err := redis.Int64(RedisConfDo(StatLogger, "default", "GET", totalAppKey)); err == nil {
 				nowUnix := time.Now().Unix()
+				nowDate := time.Now().In(lib.TimeLocation).Format(lib.DateFormat)
+				if reqCounter.ReqDate != nowDate {
+					reqCounter.ReqDate = nowDate
+					reqCounter.TotalCount = 1
+				}
 				if reqCounter.Unix == 0 {
 					reqCounter.Unix = time.Now().Unix()
 				} else {
