@@ -113,7 +113,7 @@
                                     <div class="col-sm-3"> (ms)
                                     </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group" style="display: none">
                                     <label class="col-sm-2 control-label">获取body内容超时 <span class="text-red">*</span></label>
                                     <div class="col-sm-7">
                                         <input type="text" class="form-control" value="{{if eq .Module.LoadBalance.ProxyBodyTimeout 0}}10000{{else}}{{.Module.LoadBalance.ProxyBodyTimeout}}{{end}}" name="load.proxy_body_timeout">

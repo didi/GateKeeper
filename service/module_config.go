@@ -40,6 +40,9 @@ type SysConfigManage struct {
 	moduleProxyFuncMap       map[string]func(rr public.RR) *httputil.ReverseProxy
 	moduleProxyFuncMapLocker sync.RWMutex
 
+	moduleTransportMap       map[string]*http.Transport
+	moduleTransportMapLocker sync.RWMutex
+
 	moduleRRMap       map[string]public.RR
 	moduleRRMapLocker sync.RWMutex
 
@@ -60,6 +63,7 @@ func NewSysConfigManage() *SysConfigManage {
 		moduleActiveIPListMap: map[string][]string{},
 		moduleForbidIPListMap: map[string][]string{},
 		moduleProxyFuncMap:    map[string]func(rr public.RR) *httputil.ReverseProxy{},
+		moduleTransportMap:    map[string]*http.Transport{},
 		moduleRRMap:           map[string]public.RR{},
 	}
 }
@@ -669,6 +673,7 @@ func (s *SysConfigManage) configModuleProxyMap() error {
 	for _, modulePointer := range modules.Module {
 		currentModule := modulePointer
 		proxyFunc := func(rr public.RR) *httputil.ReverseProxy {
+			mtp, _ := s.getModuleTransport(currentModule.Base.Name)
 			proxy := &httputil.ReverseProxy{
 				Director: func(req *http.Request) {
 					if rHost, ok := rr.Next().(string); ok {
@@ -735,21 +740,7 @@ func (s *SysConfigManage) configModuleProxyMap() error {
 					})
 					return nil
 				},
-				Transport: &http.Transport{
-					//请求下游的时间
-					DialContext: (&net.Dialer{
-						//限制建立TCP连接的时间
-						Timeout: time.Duration(currentModule.LoadBalance.ProxyConnectTimeout) * time.Millisecond,
-					}).DialContext,
-					//最大空闲链接数
-					MaxIdleConns: currentModule.LoadBalance.MaxIdleConn,
-					//链接最大空闲时间
-					IdleConnTimeout: time.Duration(currentModule.LoadBalance.IdleConnTimeout) * time.Millisecond,
-					//限制读取response header的时间
-					ResponseHeaderTimeout: time.Duration(currentModule.LoadBalance.ProxyHeaderTimeout) * time.Millisecond,
-					//限制读取response body的时间
-					ExpectContinueTimeout: time.Duration(currentModule.LoadBalance.ProxyBodyTimeout) * time.Millisecond,
-				},
+				Transport: mtp,
 				ErrorHandler: func(w http.ResponseWriter, req *http.Request, err error) {
 					if err.Error() == "context canceled" {
 						public.ContextWarning(req.Context(), lib.DLTagUndefind, map[string]interface{}{
@@ -770,9 +761,42 @@ func (s *SysConfigManage) configModuleProxyMap() error {
 			}
 			return proxy
 		}
+
+		mtp := &http.Transport{
+			//请求下游的时间
+			DialContext: (&net.Dialer{
+				//限制建立TCP连接的时间
+				Timeout: time.Duration(currentModule.LoadBalance.ProxyConnectTimeout) * time.Millisecond,
+			}).DialContext,
+			//单机最大连接数
+			MaxConnsPerHost: 0,
+			//单机最大空闲连接数
+			MaxIdleConnsPerHost: 1000,
+			//最大空闲链接数
+			MaxIdleConns: currentModule.LoadBalance.MaxIdleConn,
+			//链接最大空闲时间
+			IdleConnTimeout: time.Duration(currentModule.LoadBalance.IdleConnTimeout) * time.Millisecond,
+			//限制读取response header的时间
+			ResponseHeaderTimeout: time.Duration(currentModule.LoadBalance.ProxyHeaderTimeout) * time.Millisecond,
+		}
+
+		s.moduleTransportMapLocker.Lock()
+		s.moduleTransportMap[currentModule.Base.Name] = mtp
+		s.moduleTransportMapLocker.Unlock()
+
 		s.moduleProxyFuncMapLocker.Lock()
 		s.moduleProxyFuncMap[currentModule.Base.Name] = proxyFunc
 		s.moduleProxyFuncMapLocker.Unlock()
 	}
 	return nil
+}
+
+func (s *SysConfigManage) getModuleTransport(name string) (*http.Transport, error) {
+	s.moduleTransportMapLocker.RLock()
+	if mtp, ok := s.moduleTransportMap[name]; ok {
+		s.moduleTransportMapLocker.RUnlock()
+		return mtp, nil
+	}
+	s.moduleTransportMapLocker.RUnlock()
+	return nil, errors.New("transport not found")
 }
