@@ -770,8 +770,6 @@ func (s *SysConfigManage) configModuleProxyMap() error {
 			}).DialContext,
 			//单机最大连接数
 			MaxConnsPerHost: 0,
-			//单机最大空闲连接数
-			MaxIdleConnsPerHost: 1000,
 			//最大空闲链接数
 			MaxIdleConns: currentModule.LoadBalance.MaxIdleConn,
 			//链接最大空闲时间

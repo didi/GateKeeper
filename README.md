@@ -232,7 +232,6 @@ go run main.go
         forbid_list = "10.90.165.32:8072" #禁用目标ip
         proxy_connect_timeout = 10001 #连接目标服务器超时时间
         proxy_header_timeout = 10002 #获取header头超时
-        proxy_body_timeout = 10003 #获取body内容超时
         max_idle_conn = 200 #连接最大空闲时间
         idle_conn_timeout = 10004 #最大空闲连接数
         
