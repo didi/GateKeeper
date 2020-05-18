@@ -1,6 +1,7 @@
 # <img src="https://raw.githubusercontent.com/didi/gatekeeper/master/tmpl/static/images/logo.png"/> GateKeeper [![Build Status](https://www.travis-ci.org/didi/gatekeeper.svg?branch=master)](https://www.travis-ci.org/didi/gatekeeper) [![Go Report Card](https://goreportcard.com/badge/github.com/didi/gatekeeper)](https://goreportcard.com/report/github.com/didi/gatekeeper) [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](https://github.com/didi/gatekeeper/blob/master/LICENSE) [![GoDoc](https://godoc.org/github.com/didi/gatekeeper?status.svg)](https://godoc.org/github.com/didi/gatekeeper)
 
-`GateKeeper` 是一个使用 `Go` (`golang`) 编写的不依赖分布式数据库的 `API` 网关, 使用它可以高效进行服务代理 以及 在线化服务配置并且你无需重启服务器。
+
+GateKeeper 是一个 Go 编写的不依赖分布式数据库的 API 网关，使用它可以高效进行服务代理，支持在线化热更新服务配置 以及 纯文件方式服务配置，支持主动探测方式自动剔除故障节点以及手动方式关闭下游节点流量，还可以通过自定义中间件方式灵活拓展其他功能。
 
 
 - [特性](#%E7%89%B9%E6%80%A7)
