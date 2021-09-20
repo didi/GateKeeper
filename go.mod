@@ -16,14 +16,13 @@ require (
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
 	github.com/garyburd/redigo v1.6.0
 	github.com/gin-gonic/contrib v0.0.0-20191209060500-d6e26eeaa607
-	github.com/gin-gonic/gin v1.4.0
-	github.com/go-playground/locales v0.12.1
-	github.com/go-playground/universal-translator v0.16.0
+	github.com/gin-gonic/gin v1.7.0
+	github.com/go-playground/locales v0.13.0
+	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
 	github.com/gorilla/sessions v1.1.3 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.1 // indirect
-	github.com/leodido/go-urn v1.1.0 // indirect
 	github.com/lib/pq v1.7.1 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
 	github.com/mwitkow/grpc-proxy v0.0.0-20181017164139-0f1106ef9c76 // indirect
