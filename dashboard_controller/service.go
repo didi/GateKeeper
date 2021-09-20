@@ -354,54 +354,6 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 		dashboard_middleware.ResponseError(c, 2005, err)
 		return
 	}
-	//serviceModel.ID
-	// httpRule := &model.HttpRule{
-	// 	ServiceID:      serviceModel.ID,
-	// 	RuleType:       params.RuleType,
-	// 	Rule:           params.Rule,
-	// 	NeedHttps:      params.NeedHttps,
-	// 	NeedStripUri:   params.NeedStripUri,
-	// 	NeedWebsocket:  params.NeedWebsocket,
-	// 	UrlRewrite:     params.UrlRewrite,
-	// 	HeaderTransfor: params.HeaderTransfor,
-	// }
-	// if err := httpRule.Save(c, tx); err != nil {
-	// 	tx.Rollback()
-	// 	dashboard_middleware.ResponseError(c, 2006, err)
-	// 	return
-	// }
-
-	// accessControl := &model.AccessControl{
-	// 	ServiceID:         serviceModel.ID,
-	// 	OpenAuth:          params.OpenAuth,
-	// 	BlackList:         params.BlackList,
-	// 	WhiteList:         params.WhiteList,
-	// 	ClientIPFlowLimit: params.ClientipFlowLimit,
-	// 	ServiceFlowLimit:  params.ServiceFlowLimit,
-	// }
-	// if err := accessControl.Save(c, tx); err != nil {
-	// 	tx.Rollback()
-	// 	dashboard_middleware.ResponseError(c, 2007, err)
-	// 	return
-	// }
-
-	// loadbalance := &model.LoadBalance{
-	// 	ServiceID:              serviceModel.ID,
-	// 	RoundType:              params.RoundType,
-	// 	DisfName:               params.DisfName,
-	// 	DisfClusterName:        params.DisfClusterName,
-	// 	IpList:                 params.IpList,
-	// 	WeightList:             params.WeightList,
-	// 	UpstreamConnectTimeout: params.UpstreamConnectTimeout,
-	// 	UpstreamHeaderTimeout:  params.UpstreamHeaderTimeout,
-	// 	UpstreamIdleTimeout:    params.UpstreamIdleTimeout,
-	// 	UpstreamMaxIdle:        params.UpstreamMaxIdle,
-	// }
-	// if err := loadbalance.Save(c, tx); err != nil {
-	// 	tx.Rollback()
-	// 	dashboard_middleware.ResponseError(c, 2008, err)
-	// 	return
-	// }
 	tx.Commit()
 	dashboard_middleware.ResponseSuccess(c, "")
 }
