@@ -1,0 +1,44 @@
+# This is base config
+
+[base]
+    debug_mode="release"
+    time_location="Asia/Chongqing"
+    ser_name="gatekeeper"
+
+[http]
+    addr =":8880"                       # 监听地址, default ":8700"
+    read_timeout = 10                   # 建立连接到读取请求内容超时时间
+    write_timeout = 10                  # 读取内容到响应的超时时间
+    max_header_bytes = 20               # 最大的header大小，二进制位长度
+    allow_ip = [                        # 白名单ip列表
+        "127.0.0.1",
+        "192.168.1.1"
+    ]
+
+[pprof]
+
+[session]
+    redis_server = "127.0.0.1:6379"     #redis session server
+    redis_password = ""
+
+[log]
+    on = true                          #日志开关，是否开启
+    level = "info"                      #日志级别，只支持小写
+    file_prefix = "didi"                #文件名前缀, 默认会加后缀.log 或者.log.wf
+    file_dir = "logs"                   #生成文件目录
+    auto_clear = false                   #是否自动清理日志
+    clear_hours = 3                     #保留日志 n 个小时的
+    clear_step = 3                      #清理时间从当前时间前推 n 个小时算起
+    separate = false                     #文件是否分离，分离文件以.wf结尾
+    disable_link = false                #是否启动link
+
+[cluster]
+    cluster_ip="127.0.0.1"
+    cluster_port="8080"
+    cluster_ssl_port="4433"
+
+[swagger]
+    title="gatekeeper swagger API"
+    desc="This is a sample server celler server."
+    host=""
+    base_path=""

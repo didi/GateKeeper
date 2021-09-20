@@ -1,0 +1,17 @@
+# This is base config
+
+[base]
+    debug_mode="release"
+    time_location="Asia/Chongqing"
+
+[http]
+    addr =":8080"                       # 监听地址, default ":8700"
+    read_timeout = 10                   # 读取超时时长
+    write_timeout = 10                  # 写入超时时长
+    max_header_bytes = 20               # 最大的header大小，二进制位长度
+
+[https]
+    addr =":4433"                       # 监听地址, default ":8700"
+    read_timeout = 10                   # 读取超时时长
+    write_timeout = 10                  # 写入超时时长
+    max_header_bytes = 20               # 最大的header大小，二进制位长度

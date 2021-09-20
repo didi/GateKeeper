@@ -1,0 +1,11 @@
+reviewers: weijingwu,shenjun
+owners: weijingwu,shenjun
+strategy: default
+lint:
+  force: false
+  language:
+    go:
+      standard: golint
+      exclude:
+        - (^vendor/)
+
