@@ -21,7 +21,7 @@ type ServiceInfo struct {
 	LoadBalanceStrategy string    `json:"load_balance_strategy" gorm:"column:load_balance_strategy" description:"负载策略"`
 	LoadBalanceType     string    `json:"load_balance_type" gorm:"column:load_balance_type" description:"负载类型"`
 	AuthType            string    `json:"auth_type" gorm:"column:auth_type" description:"鉴权类型"`
-	AuthStrategy        string    `json:"auth_strategy" gorm:"column:auth_strategy" description:"鉴权策略"`
+	UpstreamList        string    `json:"upstream_list" form:"upstream_list" comment:"下游服务器ip和权重"`
 	PluginConf          string    `json:"plugin_conf" gorm:"column:plugin_conf" description:"插件配置"`
 	CreatedAt           time.Time `json:"create_at" gorm:"column:create_at" description:"更新时间"`
 	UpdatedAt           time.Time `json:"update_at" gorm:"column:update_at" description:"添加时间"`
@@ -52,7 +52,7 @@ func (t *ServiceInfo) ServiceDetail(c *gin.Context, tx *gorm.DB, info *ServiceIn
 		pluginConf = tmp
 	}
 	detail := &ServiceDetail{
-		Info: info,
+		Info:       info,
 		PluginConf: pluginConf,
 	}
 	return detail, nil

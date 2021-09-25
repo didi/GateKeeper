@@ -95,7 +95,7 @@ CREATE TABLE `gateway_service_info` (
   `load_balance_strategy` varchar(255) NOT NULL DEFAULT '' COMMENT '负载策略',
   `load_balance_type` varchar(255) NOT NULL DEFAULT '' COMMENT '负载类型',
   `auth_type` varchar(255) NOT NULL DEFAULT '' COMMENT '鉴权类型',
-  `auth_strategy` varchar(255) NOT NULL DEFAULT '' COMMENT '鉴权策略',
+  `upstream_list` varchar(255) NOT NULL DEFAULT '' COMMENT '下游服务器ip和权重',
   `plugin_conf` mediumtext COMMENT '插件配置',
   `create_at` datetime NOT NULL DEFAULT '1971-01-01 00:00:00' COMMENT '添加时间',
   `update_at` datetime NOT NULL DEFAULT '1971-01-01 00:00:00' COMMENT '更新时间',
