@@ -33,7 +33,7 @@
     field_default_value = "0"
     field_unique_name = "service_flow_limit_num"
     field_display_name = "服务限流数"
-    field_required = true
+    field_required = false
     field_valid_rule = "/[0-9]/"
 
   [[http.items]]
@@ -59,7 +59,7 @@
     field_default_value = "0"
     field_unique_name = "clientip_flow_limit_num"
     field_display_name = "客户IP限流数"
-    field_required = true
+    field_required = false
     field_valid_rule = "/[0-9]/"
 
   [[http.items]]

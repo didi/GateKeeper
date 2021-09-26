@@ -213,8 +213,8 @@ func (service *ServiceController) ServiceDetail(c *gin.Context) {
 		"http_paths":            serviceInfo.HTTPPaths,
 		"need_strip_uri":        serviceInfo.NeedStripUri,
 		"load_balance_strategy": serviceInfo.LoadBalanceStrategy,
-		"auth_strategy":         serviceInfo.AuthStrategy,
 		"auth_type":             serviceInfo.AuthType,
+		"upstream_list":         serviceInfo.UpstreamList,
 		"load_balance_type":     serviceInfo.LoadBalanceType,
 	})
 }
@@ -346,7 +346,7 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 		LoadBalanceStrategy: params.LoadBalanceStrategy,
 		LoadBalanceType:     params.LoadBalanceType,
 		AuthType:            params.AuthType,
-		AuthStrategy:        params.AuthStrategy,
+		UpstreamList:        params.UpstreamList,
 		PluginConf:          params.PluginConf,
 	}
 	if err := serviceModel.Save(c, tx); err != nil {
@@ -392,7 +392,7 @@ func (service *ServiceController) ServiceUpdate(c *gin.Context) {
 		dashboard_middleware.ResponseError(c, 2003, errors.New("服务不存在"))
 		return
 	}
-	serviceInfo.AuthStrategy = params.AuthStrategy
+	serviceInfo.UpstreamList = params.UpstreamList
 	serviceInfo.AuthType = params.AuthType
 	serviceInfo.HTTPHosts = params.HTTPHosts
 	serviceInfo.HTTPPaths = params.HTTPPaths

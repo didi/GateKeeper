@@ -10,18 +10,18 @@ func (param *ServiceUpdateInput) BindValidParam(c *gin.Context) error {
 }
 
 type ServiceUpdateInput struct {
-	ID          int64  `json:"id" form:"id" comment:"服务ID" example:"62" validate:"required,min=1"`                                //服务ID
-	ServiceName string `json:"service_name" form:"service_name" comment:"服务名称" example:"" validate:"required,valid_service_name"` //服务名称
-	ServiceDesc string `json:"service_desc" form:"service_desc" comment:"服务描述" example:"" validate:"required,max=255,min=1"`      //服务描述
-	LoadType    int    `json:"load_type" form:"load_type" comment:"负载类型 0=http 1=tcp 2=grpc"`
-	HTTPHosts    string `json:"http_hosts" form:"http_hosts" comment:"域名信息" example:""`
-	HTTPPaths    string `json:"http_paths" form:"http_paths" comment:"路径信息" example:""`
-	NeedStripUri string `json:"need_strip_uri" form:"need_strip_uri" comment:"启用strip_uri" example:"" validate:"max=1,min=0"` //启用strip_uri
+	ID                  int64  `json:"id" form:"id" comment:"服务ID" example:"62" validate:"required,min=1"`                                //服务ID
+	ServiceName         string `json:"service_name" form:"service_name" comment:"服务名称" example:"" validate:"required,valid_service_name"` //服务名称
+	ServiceDesc         string `json:"service_desc" form:"service_desc" comment:"服务描述" example:"" validate:"required,max=255,min=1"`      //服务描述
+	LoadType            int    `json:"load_type" form:"load_type" comment:"负载类型 0=http 1=tcp 2=grpc"`
+	HTTPHosts           string `json:"http_hosts" form:"http_hosts" comment:"域名信息" example:""`
+	HTTPPaths           string `json:"http_paths" form:"http_paths" comment:"路径信息" example:""`
+	NeedStripUri        string `json:"need_strip_uri" form:"need_strip_uri" comment:"启用strip_uri" example:"" validate:"max=1,min=0"` //启用strip_uri
 	Port                int    `json:"port" form:"port" comment:"tcp/grpc端口"`
 	LoadBalanceStrategy string `json:"load_balance_strategy" form:"load_balance_strategy" comment:"负载策略"`
 	LoadBalanceType     string `json:"load_balance_type" form:"load_balance_type" comment:"负载类型"`
 	AuthType            string `json:"auth_type" form:"auth_type" comment:"鉴权类型"`
-	AuthStrategy        string `json:"auth_strategy" form:"auth_strategy" comment:"鉴权策略"`
+	UpstreamList        string `json:"upstream_list" form:"upstream_list" comment:"下游服务器ip和权重"`
 	PluginConf          string `json:"plugin_conf" form:"plugin_conf" comment:"插件配置"`
 }
 
@@ -30,17 +30,17 @@ func (param *ServiceAddInput) BindValidParam(c *gin.Context) error {
 }
 
 type ServiceAddInput struct {
-	ServiceName string `json:"service_name" form:"service_name" comment:"服务名称" example:"" validate:"required,valid_service_name"` //服务名称
-	ServiceDesc string `json:"service_desc" form:"service_desc" comment:"服务描述" example:"" validate:"required,max=255,min=1"`      //服务描述
-	LoadType    int    `json:"load_type" form:"load_type" comment:"负载类型 0=http 1=tcp 2=grpc"`
-	HTTPHosts    string `json:"http_hosts" form:"http_hosts" comment:"域名信息" example:""`
-	HTTPPaths    string `json:"http_paths" form:"http_paths" comment:"路径信息" example:""`
-	NeedStripUri string `json:"need_strip_uri" form:"need_strip_uri" comment:"启用strip_uri" example:"" validate:"max=1,min=0"` //启用strip_uri
+	ServiceName         string `json:"service_name" form:"service_name" comment:"服务名称" example:"" validate:"required,valid_service_name"` //服务名称
+	ServiceDesc         string `json:"service_desc" form:"service_desc" comment:"服务描述" example:"" validate:"required,max=255,min=1"`      //服务描述
+	LoadType            int    `json:"load_type" form:"load_type" comment:"负载类型 0=http 1=tcp 2=grpc"`
+	HTTPHosts           string `json:"http_hosts" form:"http_hosts" comment:"域名信息" example:""`
+	HTTPPaths           string `json:"http_paths" form:"http_paths" comment:"路径信息" example:""`
+	NeedStripUri        string `json:"need_strip_uri" form:"need_strip_uri" comment:"启用strip_uri" example:"" validate:"max=1,min=0"` //启用strip_uri
 	Port                int    `json:"port" form:"port" comment:"tcp/grpc端口"`
 	LoadBalanceStrategy string `json:"load_balance_strategy" form:"load_balance_strategy" comment:"负载策略"`
 	LoadBalanceType     string `json:"load_balance_type" form:"load_balance_type" comment:"负载类型"`
 	AuthType            string `json:"auth_type" form:"auth_type" comment:"鉴权类型"`
-	AuthStrategy        string `json:"auth_strategy" form:"auth_strategy" comment:"鉴权策略"`
+	UpstreamList        string `json:"upstream_list" form:"upstream_list" comment:"下游服务器ip和权重"`
 	PluginConf          string `json:"plugin_conf" form:"plugin_conf" comment:"插件配置"`
 }
 
