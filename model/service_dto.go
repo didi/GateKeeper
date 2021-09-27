@@ -30,12 +30,12 @@ func (param *ServiceAddInput) BindValidParam(c *gin.Context) error {
 }
 
 type ServiceAddInput struct {
-	ServiceName         string `json:"service_name" form:"service_name" comment:"服务名称" example:"" validate:"required"` //服务名称
-	ServiceDesc         string `json:"service_desc" form:"service_desc" comment:"服务描述" example:"" validate:"required"` //服务描述
+	ServiceName         string `json:"service_name" form:"service_name" comment:"服务名称" example:"" validate:""`              //服务名称
+	ServiceDesc         string `json:"service_desc" form:"service_desc" comment:"服务描述" example:"" validate:"max=255,min=1"` //服务描述
 	LoadType            int    `json:"load_type" form:"load_type" comment:"负载类型 0=http 1=tcp 2=grpc"`
-	HTTPHosts           string `json:"http_hosts" form:"http_hosts" comment:"域名信息" example:"" validate:"required"`
-	HTTPPaths           string `json:"http_paths" form:"http_paths" comment:"路径信息" example:"" validate:"required"`
-	NeedStripUri        string `json:"need_strip_uri" form:"need_strip_uri" comment:"启用strip_uri" example:"" validate:"max=1,min=0"` //启用strip_uri
+	HTTPHosts           string `json:"http_hosts" form:"http_hosts" comment:"域名信息" example:"" validate:""`
+	HTTPPaths           string `json:"http_paths" form:"http_paths" comment:"路径信息" example:"" validate:""`
+	NeedStripUri        string `json:"need_strip_uri" form:"need_strip_uri" comment:"启用strip_uri" example:"" validate:""` //启用strip_uri
 	Port                int    `json:"port" form:"port" comment:"tcp/grpc端口"`
 	LoadBalanceStrategy string `json:"load_balance_strategy" form:"load_balance_strategy" comment:"负载策略"`
 	LoadBalanceType     string `json:"load_balance_type" form:"load_balance_type" comment:"负载类型"`

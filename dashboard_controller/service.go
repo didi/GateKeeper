@@ -2,6 +2,7 @@ package dashboard_controller
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -309,7 +310,36 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 		dashboard_middleware.ResponseError(c, 2000, err)
 		return
 	}
-
+	if params.ServiceName == "" {
+		dashboard_middleware.ResponseError(c, 2001, errors.New("服务名称不能为空"))
+		return
+	} else {
+		reg, _ := regexp.MatchString(`^[0-9a-zA-Z_]{1,}$`, params.ServiceName)
+		if !reg { //解释失败，返回false
+			fmt.Println("服务名称格式错误")
+			return
+		}
+	}
+	if params.HTTPHosts == "" && params.LoadType != 1 {
+		dashboard_middleware.ResponseError(c, 2001, errors.New("域名信息不能为空"))
+		return
+	}
+	if params.HTTPPaths == "" && params.LoadType != 1 {
+		dashboard_middleware.ResponseError(c, 2001, errors.New("路径信息不能为空"))
+		return
+	}
+	if params.NeedStripUri == "" && params.LoadType != 1 {
+		dashboard_middleware.ResponseError(c, 2001, errors.New("strip_url请选择是否开启"))
+		return
+	}
+	if params.LoadBalanceStrategy == "" {
+		dashboard_middleware.ResponseError(c, 2001, errors.New("loadbalance策略不能为空"))
+		return
+	}
+	if params.UpstreamList == "" {
+		dashboard_middleware.ResponseError(c, 2001, errors.New("下游服务器ip和权重不能为空"))
+		return
+	}
 	// if len(strings.Split(params.IpList, ",")) != len(strings.Split(params.WeightList, ",")) {
 	// 	dashboard_middleware.ResponseError(c, 2004, errors.New("IP列表与权重列表数量不一致"))
 	// 	return
@@ -329,9 +359,9 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 	}
 
 	serviceInfo = &model.ServiceInfo{HTTPHosts: params.HTTPHosts, HTTPPaths: params.HTTPPaths}
-	if _, err := serviceInfo.Find(c, tx, serviceInfo); err == nil {
+	if _, err := serviceInfo.Find(c, tx, serviceInfo); err == nil && params.LoadType != 1 {
 		tx.Rollback()
-		dashboard_middleware.ResponseError(c, 2003, errors.New("服务接入前缀或域名已存在"))
+		dashboard_middleware.ResponseError(c, 2003, errors.New("服务路径或域名已存在"))
 		return
 	}
 
