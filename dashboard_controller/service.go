@@ -320,17 +320,31 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 			return
 		}
 	}
-	if params.HTTPHosts == "" && params.LoadType != 1 {
-		dashboard_middleware.ResponseError(c, 2001, errors.New("域名信息不能为空"))
-		return
-	}
-	if params.HTTPPaths == "" && params.LoadType != 1 {
-		dashboard_middleware.ResponseError(c, 2001, errors.New("路径信息不能为空"))
-		return
-	}
-	if params.NeedStripUri == "" && params.LoadType != 1 {
-		dashboard_middleware.ResponseError(c, 2001, errors.New("strip_url请选择是否开启"))
-		return
+	if params.LoadType != 1 {
+		if params.HTTPHosts == "" {
+			dashboard_middleware.ResponseError(c, 2001, errors.New("服务域名不能为空"))
+			return
+		} else {
+			reg, _ := regexp.MatchString(`^(?=^.{3,255}$)(http(s)?:\/\/)?(www\.)?[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)*(\/\w+\.\w+)*$`, params.ServiceName)
+			if !reg { //解释失败，返回false
+				fmt.Println("服务域名格式错误")
+				return
+			}
+		}
+		if params.HTTPPaths == "" {
+			dashboard_middleware.ResponseError(c, 2001, errors.New("服务地址不能为空"))
+			return
+		} else {
+			reg, _ := regexp.MatchString(`^(/[\w\-]+)+`, params.ServiceName)
+			if !reg { //解释失败，返回false
+				fmt.Println("服务地址格式错误")
+				return
+			}
+		}
+		if params.NeedStripUri == "" {
+			dashboard_middleware.ResponseError(c, 2001, errors.New("strip_url请选择是否开启"))
+			return
+		}
 	}
 	if params.LoadBalanceStrategy == "" {
 		dashboard_middleware.ResponseError(c, 2001, errors.New("loadbalance策略不能为空"))
