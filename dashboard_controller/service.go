@@ -316,7 +316,7 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 	} else {
 		reg, _ := regexp.MatchString(`^[0-9a-zA-Z_]{1,}$`, params.ServiceName)
 		if !reg { //解释失败，返回false
-			fmt.Println("服务名称格式错误")
+			dashboard_middleware.ResponseError(c, 2001, errors.New("服务名称格式错误"))
 			return
 		}
 	}
@@ -325,9 +325,9 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 			dashboard_middleware.ResponseError(c, 2001, errors.New("服务域名不能为空"))
 			return
 		} else {
-			reg, _ := regexp.MatchString(`^(?=^.{3,255}$)(http(s)?:\/\/)?(www\.)?[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)*(\/\w+\.\w+)*$`, params.ServiceName)
+			reg, _ := regexp.MatchString(`^(?=^.{3,255}$)(http(s)?:\/\/)?(www\.)?[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)*(\/\w+\.\w+)*$`, params.HTTPHosts)
 			if !reg { //解释失败，返回false
-				fmt.Println("服务域名格式错误")
+				dashboard_middleware.ResponseError(c, 2001, errors.New("服务域名格式错误"))
 				return
 			}
 		}
@@ -335,9 +335,9 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 			dashboard_middleware.ResponseError(c, 2001, errors.New("服务地址不能为空"))
 			return
 		} else {
-			reg, _ := regexp.MatchString(`^(/[\w\-]+)+`, params.ServiceName)
+			reg, _ := regexp.MatchString(`^(/[\w\-]+)+`, params.HTTPPaths)
 			if !reg { //解释失败，返回false
-				fmt.Println("服务地址格式错误")
+				dashboard_middleware.ResponseError(c, 2001, errors.New("服务地址格式错误"))
 				return
 			}
 		}
