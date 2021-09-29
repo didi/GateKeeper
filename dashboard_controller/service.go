@@ -74,11 +74,18 @@ func (service *ServiceController) ServiceList(c *gin.Context) {
 			dashboard_middleware.ResponseError(c, 2003, err)
 			return
 		}
-		serviceAddr := "unknow"
-		clusterIP := lib.GetStringConf("base.cluster.cluster_ip")
-		serviceAddr = fmt.Sprintf("%s:%d", clusterIP, serviceDetail.Info.Port)
+		serviceAddr := ""
 		if serviceDetail.Info.LoadType == public.LoadTypeHTTP {
-			serviceAddr = fmt.Sprintf("%s%s", serviceDetail.Info.HTTPHosts, serviceDetail.Info.HTTPPaths)
+			host := strings.Split(serviceDetail.Info.HTTPHosts, "\n")
+			paths := strings.Split(serviceDetail.Info.HTTPPaths, "\n")
+			for _, v := range host {
+				for _, vs := range paths {
+					serviceAddr = serviceAddr + fmt.Sprintf("%s%s,", v, vs)
+				}
+			}
+		} else {
+			clusterIP := lib.GetStringConf("base.cluster.cluster_ip")
+			serviceAddr = fmt.Sprintf("%s:%d", clusterIP, serviceDetail.Info.Port)
 		}
 		tmpstring := serviceDetail.PluginConf.GetPath("upstream_config", "upstream_list").MustString()
 		upConf, err := model.GetUpstreamConfigFromString(tmpstring)
@@ -320,17 +327,22 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 			return
 		}
 	}
+	if params.ServiceName == "" {
+		dashboard_middleware.ResponseError(c, 2001, errors.New("服务描述不能为空"))
+		return
+	}
 	if params.LoadType != 1 {
 		if params.HTTPHosts == "" {
 			dashboard_middleware.ResponseError(c, 2001, errors.New("服务域名不能为空"))
 			return
-		} else {
-			reg, _ := regexp.MatchString(`^(?=^.{3,255}$)(http(s)?:\/\/)?(www\.)?[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\d+)*(\/\w+\.\w+)*$`, params.HTTPHosts)
-			if !reg { //解释失败，返回false
-				dashboard_middleware.ResponseError(c, 2001, errors.New("服务域名格式错误"))
-				return
-			}
 		}
+		// else {
+		// reg, _ := regexp.MatchString(`^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$`, params.HTTPHosts)
+		// if !reg { //解释失败，返回false
+		// 	dashboard_middleware.ResponseError(c, 2001, errors.New("服务域名格式错误"))
+		// 	return
+		// }
+		// }
 		if params.HTTPPaths == "" {
 			dashboard_middleware.ResponseError(c, 2001, errors.New("服务地址不能为空"))
 			return

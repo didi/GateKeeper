@@ -30,8 +30,8 @@ func (param *ServiceAddInput) BindValidParam(c *gin.Context) error {
 }
 
 type ServiceAddInput struct {
-	ServiceName         string `json:"service_name" form:"service_name" comment:"服务名称" example:"" validate:""`              //服务名称
-	ServiceDesc         string `json:"service_desc" form:"service_desc" comment:"服务描述" example:"" validate:"max=255,min=1"` //服务描述
+	ServiceName         string `json:"service_name" form:"service_name" comment:"服务名称" example:"" validate:""` //服务名称
+	ServiceDesc         string `json:"service_desc" form:"service_desc" comment:"服务描述" example:"" validate:""` //服务描述
 	LoadType            int    `json:"load_type" form:"load_type" comment:"负载类型 0=http 1=tcp 2=grpc"`
 	HTTPHosts           string `json:"http_hosts" form:"http_hosts" comment:"域名信息" example:"" validate:""`
 	HTTPPaths           string `json:"http_paths" form:"http_paths" comment:"路径信息" example:"" validate:""`
