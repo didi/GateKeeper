@@ -327,7 +327,7 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 			return
 		}
 	}
-	if params.ServiceName == "" {
+	if params.ServiceDesc == "" {
 		dashboard_middleware.ResponseError(c, 2001, errors.New("服务描述不能为空"))
 		return
 	}
