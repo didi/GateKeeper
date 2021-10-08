@@ -203,7 +203,7 @@ func (service *ServiceController) ServiceDetail(c *gin.Context) {
 		loadType = "tcp"
 		pluginConfVal = conf.TCP
 	} else {
-		loadType = "grcp"
+		loadType = "grpc"
 		pluginConfVal = conf.GRCP
 	}
 	for _, v := range pluginConfVal {
