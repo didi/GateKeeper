@@ -94,9 +94,6 @@ func (c *ConsistentHashStrategy) RemoveAll() error {
 
 func init() {
 	RegisterLoadBalanceStrategyHandler("consistent_hash", func() LoadBalanceStrategy {
-		return &ConsistentHashStrategy{
-			keys:    UInt32Slice{},
-			hashMap: map[uint32]string{},
-		}
+		return NewConsistentHashStrategy(32, nil)
 	})
 }

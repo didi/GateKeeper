@@ -49,3 +49,11 @@ func GetCmdConfPath() string {
 func GetCmdPanelType() string {
 	return panelType
 }
+
+func SetCmdConfPath(path string) {
+	confPath = path
+}
+
+func SetCmdPanelType(paneltype string) {
+	panelType = paneltype
+}

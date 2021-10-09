@@ -3,7 +3,6 @@ package public
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/didi/gatekeeper/golang_common/lib"
 	"github.com/gin-gonic/gin"
 	"strings"
 )
@@ -31,12 +30,20 @@ type Response struct {
 
 func ResponseError(c *gin.Context, code ResponseCode, err error) {
 	traceContext := GetGinTraceContext(c)
-	stack := ""
-	if c.Query("is_debug") == "1" || lib.GetConfEnv() == "dev" {
-		stack = strings.Replace(fmt.Sprintf("%+v", err), err.Error()+"\n", "", -1)
-	}
+	errMsg := fmt.Sprintf("%+v", err)
 
-	resp := &Response{ErrorCode: code, ErrorMsg: err.Error(), Data: "", TraceId: traceContext.TraceId, Stack: stack}
+	straceMsg := ""
+	tmpStack := strings.Split(errMsg, "||")
+	if len(tmpStack) == 2 {
+		errMsg = tmpStack[0]
+		straceMsg = tmpStack[1]
+	}
+	strackList := strings.Split(straceMsg, "\n")
+	for i, t := range strackList {
+		t = strings.Replace(t, "\t", "  ", -1)
+		strackList[i] = t
+	}
+	resp := &Response{ErrorCode: code, ErrorMsg: errMsg, Data: "", TraceId: traceContext.TraceId, Stack: strackList}
 	c.JSON(200, resp)
 	response, _ := json.Marshal(resp)
 	c.Set("response", string(response))

@@ -103,8 +103,10 @@ func (s *LoadBalanceCheckConf) UpdateConf(conf []string) {
 }
 
 func NewLoadBalanceCheckConf(service *model.ServiceDetail) (LoadBalanceConf, error) {
-	tmpstring := service.PluginConf.GetPath("upstream_config", "upstream_list").MustString()
-	upConf, err := model.GetUpstreamConfigFromString(tmpstring)
+	//tmpstring := service.PluginConf.GetPath("upstream_config", "upstream_list").MustString()
+	//fmt.Println("service.Info.UpstreamList")
+	//fmt.Println(service.Info.UpstreamList)
+	upConf, err := model.GetUpstreamConfigFromString(service.Info.UpstreamList)
 	if err != nil {
 		return nil, err
 	}
