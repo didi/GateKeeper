@@ -159,6 +159,22 @@ func (s *ServiceManager) LoadService() *ServiceManager {
 	return ns
 }
 
+
+func (s *ServiceManager) Load() error {
+	log.Info().Msg(lib.Purple("watching load service config from resource"))
+	ns := s.LoadService()
+	if ns.err != nil {
+		return ns.err
+	}
+	s.ServiceSlice = ns.ServiceSlice
+	s.ServiceMap = ns.ServiceMap
+	s.UpdateAt = ns.UpdateAt
+	e := &ServiceEvent{AddService: ns.ServiceSlice}
+	s.Notify(e)
+	return s.err
+}
+
+
 func (s *ServiceManager) LoadAndWatch() error {
 	log.Info().Msg(lib.Purple("watching load service config from resource"))
 	ns := s.LoadService()

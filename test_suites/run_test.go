@@ -24,6 +24,7 @@ func TestRunSuite(t *testing.T) {
 	defer TearDown()
 	time.Sleep(500 * time.Millisecond)
 	runCase(t, TestGoConvey)
+	runCase(t, TestHostServiceVisit)
 }
 
 func runCase(t *testing.T, testCase func(*testing.T)) {
@@ -52,11 +53,13 @@ func SetUp() {
 	go func() {
 		grpc_proxy_router.GrpcManagerHandler.GrpcServerRun()
 	}()
-	//testHTTP = testhttp.NewTestHTTPDestServer()
-	//httpAddrSlice := lib.GetStringSliceConf("test_dest.http_dest.addrs")
-	//for _, addr := range httpAddrSlice {
-	//	testHTTP.Run(addr)
-	//}
+
+	testHTTP = testhttp.NewTestHTTPDestServer()
+	httpAddrSlice := []string{":8881", ":8882"}
+	for _, addr := range httpAddrSlice {
+		testHTTP.Run(addr)
+	}
+	time.Sleep(500 * time.Millisecond)
 	//testTCP = thriftserver.NewTestTCPDestServer()
 	//tcpAddrSlice := lib.GetStringSliceConf("test_dest.tcp_dest.addrs")
 	//for _, addr := range tcpAddrSlice {

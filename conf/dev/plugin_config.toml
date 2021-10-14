@@ -95,7 +95,7 @@
     field_valid_rule = "/^[\\S]+$/"
 
 [[http]]
-  display_name = "白名单 & 黑名单 & host白名单 & url白名单"
+  display_name = "白名单"
   sort = 2
   postion = "normal"
   unique_name = "http_whiteblacklist"
