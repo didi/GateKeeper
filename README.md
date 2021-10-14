@@ -34,8 +34,8 @@ go mod tidy
 - 创建 db 并导入数据
 
 ```
-mysql -h localhost -u root -p -e "CREATE DATABASE gatekeeper DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
-mysql -h localhost -u root -p gatekeeper < gatekeeper.sql --default-character-set=utf8
+mysql -h 127.0.0.1 -u root -p -e "CREATE DATABASE gatekeeper DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;"
+mysql -h 127.0.0.1 -u root -p gatekeeper < gatekeeper.sql --default-character-set=utf8
 ```
 
 - 调整 mysql、redis 配置文件

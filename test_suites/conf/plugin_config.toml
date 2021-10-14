@@ -95,7 +95,7 @@
     field_valid_rule = "/^[\\S]+$/"
 
 [[http]]
-  display_name = "白名单"
+  display_name = "白名单 & 黑名单 & host白名单 & url白名单"
   sort = 2
   postion = "normal"
   unique_name = "http_whiteblacklist"
@@ -110,6 +110,19 @@
     field_default_value = ""
     field_unique_name = "ip_white_list"
     field_display_name = "IP白名单"
+    field_required = false
+    field_valid_rule = "/^[\\S]+$/"
+
+  [[http.items]]
+    field_type = "textarea"
+    field_display = ""
+    field_clear = ""
+    field_placeholder = ""
+    field_option = ""
+    field_value = ""
+    field_default_value = ""
+    field_unique_name = "ip_black_list"
+    field_display_name = "IP黑名单"
     field_required = false
     field_valid_rule = "/^[\\S]+$/"
 
@@ -187,7 +200,7 @@
     field_type = "textarea"
     field_display = ""
     field_clear = ""
-    field_placeholder = "每个规则一行 如：grpc://127.0.0.1:8701 100"
+    field_placeholder = "每个规则一行 如：http://127.0.0.1:8701 100"
     field_option = ""
     field_value = ""
     field_default_value = ""
@@ -255,7 +268,7 @@
     field_valid_rule = "/^[0-9]$/"
 
 [[tcp]]
-  display_name = "白名单"
+  display_name = "白名单 & 黑名单 & host白名单"
   sort = 2
   postion = "normal"
   unique_name = "tcp_whiteblacklist"
@@ -309,14 +322,14 @@
     field_type = "textarea"
     field_display = ""
     field_clear = ""
-    field_placeholder = "每个规则一行 如：grpc://127.0.0.1:8701 100 "
+    field_placeholder = "每个规则一行 如：tcp://127.0.0.1:8701 100"
     field_option = ""
     field_value = ""
     field_default_value = ""
     field_unique_name = "upstream_list"
     field_display_name = "下游服务器ip+权重"
     field_required = false
-    field_valid_rule = "/[\\S]+ [\\S]+/"
+    field_valid_rule = "/^[\\S]+ [\\S]+$/"
 
 [[grpc]]
   display_name = "限流中间件"
@@ -457,4 +470,4 @@
     field_unique_name = "upstream_list"
     field_display_name = "下游服务器ip+权重"
     field_required = false
-    field_valid_rule = "/[\\S]+ [\\S]+/"
+    field_valid_rule = "/^[\\S]+ [\\S]+$/"

@@ -1,13 +1,13 @@
 -- MySQL dump 10.13  Distrib 8.0.26, for macos11.3 (x86_64)
 --
--- Host: localhost    Database: gatekeeper
+-- Host: 127.0.0.1    Database: gatekeeper
 -- ------------------------------------------------------
 -- Server version	8.0.26
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
+/*!50503 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -101,7 +101,7 @@ CREATE TABLE `gateway_service_info` (
   `update_at` datetime NOT NULL DEFAULT '1971-01-01 00:00:00' COMMENT '更新时间',
   `is_delete` tinyint DEFAULT '0' COMMENT '是否删除 1=删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3 COMMENT='网关基本信息表';
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 COMMENT='网关基本信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -110,7 +110,7 @@ CREATE TABLE `gateway_service_info` (
 
 LOCK TABLES `gateway_service_info` WRITE;
 /*!40000 ALTER TABLE `gateway_service_info` DISABLE KEYS */;
-INSERT INTO `gateway_service_info` VALUES (1,0,'test_service_name','test_service_desc',0,'','/test_service_name','0','random','','http://127.0.0.1:8881 100','3','{\"url_rewrite\":{\"rewrite_rule\":\"\"},\"http_flow_limit\":{\"service_flow_limit_num\":\"\",\"service_flow_limit_type\":\"0\",\"clientip_flow_limit_num\":\"\",\"clientip_flow_limit_type\":\"\"},\"header_transfer\":{\"transfer_rule\":\"\"},\"http_whiteblacklist\":{\"ip_white_list\":\"\",\"ip_black_list\":\"\",\"host_white_list\":\"\",\"url_white_list\":\"\"},\"http_upstream_transport\":{\"http_upstream_connection_timeout\":\"\",\"http_upstream_header_timeout\":\"\"},\"jwt_auth\":{},\"upstream_config\":{\"upstream_list\":\"http://127.0.0.1:8881 100\\nhttp://127.0.0.1:8882 100\"}}','2021-09-20 10:55:46','2021-09-20 11:37:50',0);
+INSERT INTO `gateway_service_info` VALUES (1,0,'test_service_name','test_service_desc',0,'www.test.com\ntest.com','/test_service_name\n/test_svc','0','consistent_hash','upstream_config','','http://127.0.0.1:8881 100\nhttp://127.0.0.1:8882 100','{\"url_rewrite\":{\"rewrite_rule\":\"\"},\"http_flow_limit\":{\"service_flow_limit_num\":\"\",\"service_flow_limit_type\":\"0\",\"clientip_flow_limit_num\":\"\",\"clientip_flow_limit_type\":\"\"},\"header_transfer\":{\"transfer_rule\":\"\"},\"http_whiteblacklist\":{\"ip_white_list\":\"\",\"host_white_list\":\"\",\"url_white_list\":\"\"},\"http_upstream_transport\":{\"http_upstream_connection_timeout\":\"100\",\"http_upstream_header_timeout\":\"100\"},\"upstream_config\":{\"upstream_list\":\"\"}}','2021-09-20 10:55:46','2021-10-14 15:36:06',0),(3,0,'test_svc2','test_svc2',0,'www.testsvc2.com','/test_service_name','0','weight_round','upstream_config','','http://127.0.0.1:80 100','{\"url_rewrite\":{\"rewrite_rule\":\"\"},\"http_flow_limit\":{\"service_flow_limit_num\":\"\",\"service_flow_limit_type\":\"\",\"clientip_flow_limit_num\":\"\",\"clientip_flow_limit_type\":\"\"},\"header_transfer\":{\"transfer_rule\":\"\"},\"http_whiteblacklist\":{\"ip_white_list\":\"\",\"host_white_list\":\"\",\"url_white_list\":\"\"},\"http_upstream_transport\":{\"http_upstream_connection_timeout\":\"\",\"http_upstream_header_timeout\":\"\"},\"upstream_config\":{\"upstream_list\":\"\"}}','2021-10-14 15:37:44','2021-10-14 15:37:56',0);
 /*!40000 ALTER TABLE `gateway_service_info` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -123,4 +123,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-09-20 13:48:17
+-- Dump completed on 2021-10-14 15:50:28

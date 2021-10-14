@@ -65,11 +65,13 @@ func (lbr *LoadBalancer) GetLoadBalancer(service *model.ServiceDetail) (*load_ba
 			return lbrItem.LoadBanlance, nil
 		}
 	}
+	//fmt.Println("service.Info.LoadBalanceType", service.Info.LoadBalanceType)
 	confHandler := load_balance.GetCheckConfigHandler(service.Info.LoadBalanceType)
 	checkConf, err := confHandler(service)
 	if err != nil {
 		return nil, err
 	}
+	//fmt.Println("service.Info.LoadBalanceStrategy", service.Info.LoadBalanceStrategy)
 	lb := load_balance.LoadBanlanceFactorWithStrategy(load_balance.GetLoadBalanceStrategy(service.Info.LoadBalanceStrategy), checkConf)
 	matched := false
 	for _, lbrItem := range lbr.LoadBanlanceSlice {

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/didi/gatekeeper/golang_common/lib"
-	"github.com/didi/gatekeeper/public"
 	"github.com/didi/gatekeeper/golang_common/trace"
+	"github.com/didi/gatekeeper/public"
 	"github.com/gin-gonic/gin"
 	"runtime/debug"
 )
@@ -20,13 +20,8 @@ func HTTPRecoveryMiddleware() gin.HandlerFunc {
 						"stack": string(debug.Stack()),
 					})
 				}
-				if lib.ConfBase.Base.DebugMode != "debug" {
-					public.ResponseError(c, 500, errors.New("内部错误"))
-					return
-				} else {
-					public.ResponseError(c, 500, errors.New(string(debug.Stack())))
-					return
-				}
+				public.ResponseError(c, 500, errors.New(fmt.Sprint(err)+"||"+string(debug.Stack())))
+				return
 			}
 		}()
 		c.Next()

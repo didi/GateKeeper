@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -39,14 +40,20 @@ type ServiceSubject interface {
 }
 
 func (s *ServiceManager) Regist(ob ServiceObserver) {
+	s.Lock()
+	defer s.Unlock()
 	s.Observers[ob] = true
 }
 
 func (s *ServiceManager) Deregist(ob ServiceObserver) {
+	s.Lock()
+	defer s.Unlock()
 	delete(s.Observers, ob)
 }
 
 func (s *ServiceManager) Notify(e *ServiceEvent) {
+	s.RLock()
+	defer s.RUnlock()
 	for ob, _ := range s.Observers {
 		ob.Update(e)
 	}
@@ -58,6 +65,7 @@ type ServiceManager struct {
 	err          error
 	UpdateAt     time.Time
 	Observers    map[ServiceObserver]bool
+	sync.RWMutex
 }
 
 func NewServiceManager() *ServiceManager {
@@ -97,10 +105,6 @@ func (s *ServiceManager) HTTPAccessMode(c *gin.Context) (*model.ServiceDetail, e
 		}
 		hosts := strings.Split(serviceItem.Info.HTTPHosts, "\n")
 		paths := strings.Split(serviceItem.Info.HTTPPaths, "\n")
-		//log.Info().Msgf("host=%s", c.Request.Host)
-		//log.Info().Msgf("path=%s", c.Request.URL.Path)
-		//log.Info().Msgf("host=%s", hosts)
-		//log.Info().Msgf("path=%s", paths)
 		for _, path := range paths {
 			if strings.HasPrefix(c.Request.URL.Path, path) {
 				//log.Info().Msgf("new_matched, path=%s", paths)
@@ -154,6 +158,22 @@ func (s *ServiceManager) LoadService() *ServiceManager {
 	}
 	return ns
 }
+
+
+func (s *ServiceManager) Load() error {
+	log.Info().Msg(lib.Purple("watching load service config from resource"))
+	ns := s.LoadService()
+	if ns.err != nil {
+		return ns.err
+	}
+	s.ServiceSlice = ns.ServiceSlice
+	s.ServiceMap = ns.ServiceMap
+	s.UpdateAt = ns.UpdateAt
+	e := &ServiceEvent{AddService: ns.ServiceSlice}
+	s.Notify(e)
+	return s.err
+}
+
 
 func (s *ServiceManager) LoadAndWatch() error {
 	log.Info().Msg(lib.Purple("watching load service config from resource"))
