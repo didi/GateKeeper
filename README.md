@@ -1,19 +1,25 @@
-# 快速安装（Quick Start）
+# 快速开始（Quick Start）
 
-- xxxx
+## 环境要求 >= go 1.12.0
 
-# 手动安装服务
-
-- 首先git clone 本项目
-
-`git clone git@github.com:didi/gatekeeper.git`
-
-- 确保本地环境安装了Go 1.12+版本
+## 校验 go version
 
 ```
 go version
 go version go1.12.15 darwin/amd64
 ```
+
+
+# 服务初始化
+
+## 自动初始化
+
+```
+cd install
+go run main.go
+```
+
+## 手动初始化
 
 - 下载类库依赖
 
@@ -50,4 +56,4 @@ go run main.go run -c ./conf/dev/ -p proxy
 
 # 自动化集成测试
 
-请参照 test_suites/README.md
+请参照 [test_suites/README.md](https://github.com/didi/Gatekeeper/blob/master/test_suites/README.md)

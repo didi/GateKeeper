@@ -9,8 +9,9 @@ import (
 )
 
 var (
-	ConfPath = InstallDestDir + "/" + InstallName + "/conf/dev/"
+	ConfPath = GateKeeperPath + "/conf/dev/"
 )
+
 func InitConf() error {
 
 	tool.LogInfo.Println("init conf start")

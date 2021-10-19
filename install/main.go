@@ -12,17 +12,12 @@ func main() {
 	)
 
 	tool.InitSystem()
-	err = check.InitGateway(); if err != nil{
-		tool.LogError.Println(err)
-		os.Exit(-1)
-	}
 
 	err = check.InitRedis(); if err != nil{
 		tool.LogError.Println("connect redis error")
 		tool.LogError.Println(err)
 		os.Exit(-1)
 	}
-
 
 	err = check.InitDb(); if err != nil{
 		tool.LogError.Println(err)

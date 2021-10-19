@@ -3,110 +3,14 @@ package check
 import (
 	"fmt"
 	"gatekeeper/install/tool"
-	"io"
-	"net/http"
-	"os"
+	"strings"
 )
 
 
 var (
-	GitHubUrl  		string = "https://github.com/didi/Gatekeeper/archive/refs/heads/master.zip"
-	GitClone		string = "https://github.com/didi/Gatekeeper.git"
-	GatekeeperZip 	string = "gatekeeper.zip"
-	InstallDestDir	string = tool.GetCurrentPath()
-	InstallName		string = "Gatekeeper"
-	CmdRun			string = fmt.Sprintf("cd %s/%s; %s run main.go run -c %s/%s/conf/dev/ -p control",
-		 InstallDestDir, InstallName, GoPath, InstallDestDir, InstallName)
+	GateKeeperPath	string = gatekeeperPath()
+	CmdRun			string = "cd %s && %s run main.go run -c %s/conf/dev/ -p control"
 )
-
-
-func InitGateway() error {
-	InstallDestDir, err:= tool.Input("please enter install dir (default:" + InstallDestDir + "):", InstallDestDir)
-	if err != nil{
-		return err
-	}
-	tool.LogInfo.Println("install path: " + InstallDestDir)
-
-	err = gitClone(); if err != nil{
-		tool.LogWarning.Println(err)
-		err = download(); if err != nil{
-			return err
-		}
-	}
-	return nil
-}
-
-
-func download() error{
-	_, err = os.Stat(InstallDestDir)
-	if err != nil {
-		if os.IsNotExist(err) {
-			tool.LogInfo.Println("install dir not exists")
-			tool.LogInfo.Println("create install dir :" + InstallDestDir)
-			err = os.Mkdir(InstallDestDir, 0666)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	tool.LogInfo.Println("download gatekeeper service from: " + GitHubUrl)
-
-	res, err := http.Get(GitHubUrl)
-	tool.LogInfo.Println("download gatekeeper service start")
-
-	if err != nil {
-		//panic(err)
-		tool.LogInfo.Println("download gatekeeper service error")
-		return err
-	}
-	f, err := os.Create(InstallDestDir + "/" + GatekeeperZip)
-	if err != nil {
-		tool.LogInfo.Println("download gatekeeper service error")
-		//panic(err)
-		return err
-	}
-
-	_, err = io.Copy(f, res.Body)
-	if err != nil{
-		tool.LogInfo.Println("download gatekeeper service error")
-		//return err
-	}
-	tool.LogInfo.Println("download gatekeeper service end")
-
-	tool.LogInfo.Println("unpack gatekeeper service start")
-	err = unzip()
-	if err != nil{
-		return err
-	}
-	tool.LogInfo.Println("unpack gatekeeper service end")
-
-	return nil
-}
-
-
-func gitClone() error{
-	cmdClone := fmt.Sprintf("git clone %s %s/%s", GitClone, InstallDestDir, InstallName)
-	tool.LogInfo.Println(cmdClone)
-	err := tool.RunCmd(cmdClone)
-	if err != nil{
-		return err
-	}
-	return nil
-}
-
-
-func unzip() error {
-	err = tool.Unzip(InstallDestDir + "/" + GatekeeperZip, InstallDestDir)
-	if err != nil{
-		return err
-	}
-	err = os.Rename(InstallDestDir + "/Gatekeeper-master", InstallDestDir + "/" + InstallName)
-	if err != nil{
-		return err
-	}
-	return nil
-}
 
 
 func RunGateKeeper() error{
@@ -114,6 +18,7 @@ func RunGateKeeper() error{
 	if err != nil{
 		return err
 	}
+	CmdRun := fmt.Sprintf(CmdRun, GateKeeperPath, GoPath, GateKeeperPath)
 	if boolRunGatekeeper {
 		tool.LogInfo.Println(CmdRun)
 		err := tool.RunCmd(CmdRun)
@@ -122,4 +27,14 @@ func RunGateKeeper() error{
 		}
 	}
 	return nil
+}
+
+
+func gatekeeperPath() string{
+	path := tool.GetCurrentPath()
+	pathArr := strings.Split(path, "/")
+	index := len(pathArr)
+	pathArr = pathArr[0:index-1]
+	path = strings.Join(pathArr, "/")
+	return path
 }

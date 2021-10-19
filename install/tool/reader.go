@@ -33,7 +33,7 @@ func Input(describe string, defaultString string) (string, error) {
 		fmt.Println(err)
 		return  "", err
 	}
-
+	readStdin = strings.Trim(readStdin, "\r")
 	if readStdin == "" {
 		readStdin = defaultString
 	}
@@ -47,7 +47,7 @@ func Confirm(describe string, retry int) (bool, error)  {
 
 	i := 1
 	for i <= retry {
-		isConfirm, err :=confirm(describe)
+		isConfirm, err := confirm(describe)
 		if err != nil{
 			fmt.Println(err)
 			i++
@@ -65,7 +65,7 @@ func confirm(describe string) (bool, error){
 	if err != nil{
 		return false, err
 	}
-	isConfirm = strings.ToLower(isConfirm)
+	isConfirm = strings.ToLower(strings.Trim(isConfirm, "\r"))
 	if  isConfirm == "n" || isConfirm == "no"{
 		return false, nil
 	}
