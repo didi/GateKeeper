@@ -1,5 +1,4 @@
 # This is base config
-
 [base]
     debug_mode="release"
     time_location="Asia/Chongqing"

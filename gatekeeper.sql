@@ -53,7 +53,7 @@ DROP TABLE IF EXISTS `gateway_app`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `gateway_app` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
-  `app_id` varchar(255) NOT NULL DEFAULT '' COMMENT '租户id',
+  `app_id` varchar(255) NOT NULL DEFAULT '' COMMENT '租户id',
   `name` varchar(255) NOT NULL DEFAULT '' COMMENT '租户名称',
   `secret` varchar(255) NOT NULL DEFAULT '' COMMENT '密钥',
   `white_ips` varchar(1000) NOT NULL DEFAULT '' COMMENT 'ip白名单，支持前缀匹配',
@@ -85,13 +85,13 @@ DROP TABLE IF EXISTS `gateway_service_info`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `gateway_service_info` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `load_type` tinyint NOT NULL DEFAULT '0' COMMENT '负载类型 0=http 1=tcp 2=grpc',
+  `service_type` tinyint NOT NULL DEFAULT '0' COMMENT '服务类型 0=http 1=tcp 2=grpc',
   `service_name` varchar(255) NOT NULL DEFAULT '' COMMENT '服务名称 6-128 数字字母下划线',
   `service_desc` varchar(255) NOT NULL DEFAULT '' COMMENT '服务描述',
-  `port` int unsigned NOT NULL DEFAULT '0' COMMENT 'tcp/grpc端口',
-  `http_hosts` varchar(1000) NOT NULL DEFAULT '' COMMENT '域名信息',
-  `http_paths` varchar(1000) NOT NULL DEFAULT '' COMMENT '路径信息',
-  `need_strip_uri` varchar(255) NOT NULL DEFAULT '' COMMENT '是否需要strip_uri',
+  `service_port` int unsigned NOT NULL DEFAULT '0' COMMENT '服务端口(只针对 tcp/grpc)',
+  `http_hosts` varchar(1000) NOT NULL DEFAULT '' COMMENT 'http域名信息',
+  `http_paths` varchar(1000) NOT NULL DEFAULT '' COMMENT 'http路径信息',
+  `http_strip_prefix` tinyint NOT NULL DEFAULT '1' COMMENT 'http转发前剥离前缀',
   `load_balance_strategy` varchar(255) NOT NULL DEFAULT '' COMMENT '负载策略',
   `load_balance_type` varchar(255) NOT NULL DEFAULT '' COMMENT '负载类型',
   `auth_type` varchar(255) NOT NULL DEFAULT '' COMMENT '鉴权类型',
@@ -101,7 +101,7 @@ CREATE TABLE `gateway_service_info` (
   `update_at` datetime NOT NULL DEFAULT '1971-01-01 00:00:00' COMMENT '更新时间',
   `is_delete` tinyint DEFAULT '0' COMMENT '是否删除 1=删除',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3 COMMENT='网关基本信息表';
+) ENGINE=InnoDB AUTO_INCREMENT DEFAULT CHARSET=utf8mb3 COMMENT='网关基本信息表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

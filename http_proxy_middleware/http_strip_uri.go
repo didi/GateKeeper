@@ -15,7 +15,7 @@ func HTTPStripUriMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		if serviceDetail.Info.NeedStripUri == "1" {
+		if serviceDetail.Info.HTTPStripPrefix == 1 {
 			c.Request.URL.Path = strings.Replace(c.Request.URL.Path, serviceDetail.Info.HTTPPaths, "", 1)
 		}
 		c.Next()

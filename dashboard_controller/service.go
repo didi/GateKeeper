@@ -219,7 +219,7 @@ func (service *ServiceController) ServiceDetail(c *gin.Context) {
 		"service_desc":          serviceInfo.ServiceDesc,
 		"http_hosts":            serviceInfo.HTTPHosts,
 		"http_paths":            serviceInfo.HTTPPaths,
-		"need_strip_uri":        serviceInfo.NeedStripUri,
+		"http_strip_prefix":     serviceInfo.HTTPStripPrefix,
 		"load_balance_strategy": serviceInfo.LoadBalanceStrategy,
 		"auth_type":             serviceInfo.AuthType,
 		"upstream_list":         serviceInfo.UpstreamList,
@@ -353,10 +353,10 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 				return
 			}
 		}
-		if params.NeedStripUri == "" {
-			dashboard_middleware.ResponseError(c, 2001, errors.New("strip_url请选择是否开启"))
-			return
-		}
+		//if params.NeedStripUri == 0 {
+		//	dashboard_middleware.ResponseError(c, 2001, errors.New("strip_url请选择是否开启"))
+		//	return
+		//}
 	}
 	if params.LoadBalanceStrategy == "" {
 		dashboard_middleware.ResponseError(c, 2001, errors.New("loadbalance策略不能为空"))
@@ -398,7 +398,7 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 		Port:                params.Port,
 		HTTPHosts:           params.HTTPHosts,
 		HTTPPaths:           params.HTTPPaths,
-		NeedStripUri:        params.NeedStripUri,
+		HTTPStripPrefix:     params.NeedStripUri,
 		LoadBalanceStrategy: params.LoadBalanceStrategy,
 		LoadBalanceType:     params.LoadBalanceType,
 		AuthType:            params.AuthType,
@@ -454,7 +454,7 @@ func (service *ServiceController) ServiceUpdate(c *gin.Context) {
 	serviceInfo.HTTPPaths = params.HTTPPaths
 	serviceInfo.LoadBalanceStrategy = params.LoadBalanceStrategy
 	serviceInfo.LoadBalanceType = params.LoadBalanceType
-	serviceInfo.NeedStripUri = params.NeedStripUri
+	serviceInfo.HTTPStripPrefix = params.NeedStripUri
 	serviceInfo.PluginConf = params.PluginConf
 	serviceInfo.ServiceName = params.ServiceName
 	serviceInfo.ServiceDesc = params.ServiceDesc
@@ -466,7 +466,7 @@ func (service *ServiceController) ServiceUpdate(c *gin.Context) {
 	}
 	//httpRule := serviceDetail.HTTPRule
 	//httpRule.NeedHttps = params.NeedHttps
-	//httpRule.NeedStripUri = params.NeedStripUri
+	//httpRule.HTTPStripPrefix = params.HTTPStripPrefix
 	//httpRule.NeedWebsocket = params.NeedWebsocket
 	//httpRule.UrlRewrite = params.UrlRewrite
 	//httpRule.HeaderTransfor = params.HeaderTransfor
