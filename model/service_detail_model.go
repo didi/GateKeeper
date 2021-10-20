@@ -2,15 +2,16 @@ package model
 
 import (
 	"errors"
+	"regexp"
+	"strings"
+
 	"github.com/bitly/go-simplejson"
 	"github.com/didi/gatekeeper/public"
 	"github.com/gin-gonic/gin"
-	"regexp"
-	"strings"
 )
 
 type ServiceDetail struct {
-	Info *ServiceInfo `json:"info" description:"基本信息"`
+	Info       *ServiceInfo     `json:"info" description:"基本信息"`
 	PluginConf *simplejson.Json `json:"plugin_conf" description:"plugin_conf"`
 }
 

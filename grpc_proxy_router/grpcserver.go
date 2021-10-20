@@ -37,7 +37,7 @@ type warpGrpcServer struct {
 }
 
 func (g *GrpcManager) grpcOneServerRun(service *model.ServiceDetail) {
-	addr := fmt.Sprintf(":%d", service.Info.Port)
+	addr := fmt.Sprintf(":%d", service.Info.ServicePort)
 	rb, err := handler.LoadBalancerHandler.GetLoadBalancer(service)
 	if err != nil {
 		log.Printf(" [ERROR] GetTcpLoadBalancer %v err:%v\n", addr, err)
@@ -89,7 +89,7 @@ func (g *GrpcManager) Update(e *handler.ServiceEvent) {
 	log.Printf("GrpcManager.Update")
 	delList := e.DeleteService
 	for _, delService := range delList {
-		if delService.Info.LoadType == public.LoadTypeGRPC {
+		if delService.Info.ServiceType == public.LoadTypeGRPC {
 			continue
 		}
 		for _, tcpServer := range GrpcManagerHandler.ServerList {
@@ -102,7 +102,7 @@ func (g *GrpcManager) Update(e *handler.ServiceEvent) {
 	}
 	addList := e.AddService
 	for _, addService := range addList {
-		if addService.Info.LoadType != public.LoadTypeGRPC {
+		if addService.Info.ServiceType != public.LoadTypeGRPC {
 			continue
 		}
 		go g.grpcOneServerRun(addService)

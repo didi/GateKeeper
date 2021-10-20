@@ -11,13 +11,13 @@ import (
 
 type ServiceInfo struct {
 	ID                  int64     `json:"id" gorm:"primary_key"`
-	LoadType            int       `json:"load_type" gorm:"column:load_type" description:"负载类型 0=http 1=tcp 2=grpc"`
+	ServiceType         int       `json:"service_type" gorm:"column:service_type" description:"服务类型 0=http 1=tcp 2=grpc"`
 	ServiceName         string    `json:"service_name" gorm:"column:service_name" description:"服务名称"`
 	ServiceDesc         string    `json:"service_desc" gorm:"column:service_desc" description:"服务描述"`
-	Port                int       `json:"port" gorm:"column:port" description:"tcp/grpc端口"`
+	ServicePort         int       `json:"service_port" gorm:"column:service_port" description:"服务端口(只针对 tcp/grpc)"`
 	HTTPHosts           string    `json:"http_hosts" gorm:"column:http_hosts" description:"域名信息"`
 	HTTPPaths           string    `json:"http_paths" gorm:"column:http_paths" description:"路径信息"`
-	NeedStripUri        string    `json:"need_strip_uri" gorm:"column:need_strip_uri" description:"是否需要strip_uri"`
+	HttpStripPrefix     int       `json:"http_strip_prefix" gorm:"column:http_strip_prefix" description:"http转发前剥离前缀"`
 	LoadBalanceStrategy string    `json:"load_balance_strategy" gorm:"column:load_balance_strategy" description:"负载策略"`
 	LoadBalanceType     string    `json:"load_balance_type" gorm:"column:load_balance_type" description:"负载类型"`
 	AuthType            string    `json:"auth_type" gorm:"column:auth_type" description:"鉴权类型"`
