@@ -19,7 +19,7 @@ go version go1.12.15 darwin/amd64
 
 ```
 cd install
-sh install.sh
+sh install.sh # windows 可直接双击运行
 ```
 
 ## 手动初始化
