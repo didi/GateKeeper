@@ -181,7 +181,7 @@
   display_name = "默认后端配置"
   sort = 2
   postion = "loadbalance"
-  unique_name = "upstream_config"
+  unique_name = "upstream_config_new"
 
   [[http.items]]
     field_type = "textarea"
@@ -303,7 +303,7 @@
   display_name = "默认后端配置"
   sort = 2
   postion = "loadbalance"
-  unique_name = "upstream_config"
+  unique_name = "upstream_config_new"
 
   [[tcp.items]]
     field_type = "textarea"
@@ -444,7 +444,7 @@
   display_name = "默认后端配置"
   sort = 2
   postion = "loadbalance"
-  unique_name = "upstream_config"
+  unique_name = "upstream_config_new"
 
   [[grpc.items]]
     field_type = "textarea"

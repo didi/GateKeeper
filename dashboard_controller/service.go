@@ -87,8 +87,7 @@ func (service *ServiceController) ServiceList(c *gin.Context) {
 			clusterIP := lib.GetStringConf("base.cluster.cluster_ip")
 			serviceAddr = fmt.Sprintf("%s:%d", clusterIP, serviceDetail.Info.ServicePort)
 		}
-		tmpstring := serviceDetail.PluginConf.GetPath("upstream_config", "upstream_list").MustString()
-		upConf, err := model.GetUpstreamConfigFromString(tmpstring)
+		upConf, err := model.GetUpstreamConfigFromString(serviceDetail.Info.UpstreamList)
 		if err != nil {
 			dashboard_middleware.ResponseError(c, 200, err)
 			return
@@ -366,6 +365,16 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 	if params.UpstreamList == "" {
 		dashboard_middleware.ResponseError(c, 2001, errors.New("下游服务器ip和权重不能为空"))
 		return
+	} else {
+		tmpLine := strings.Split(params.UpstreamList, "\n")
+		for _, tmp := range tmpLine {
+			r, _ := regexp.Compile("^(.*://)(.*?)\\s(.*?)$")
+			submatch := r.FindStringSubmatch(tmp)
+			if len(submatch) != 4 {
+				dashboard_middleware.ResponseError(c, 2001, errors.New("下游服务器ip和权重 format error"))
+				return
+			}
+		}
 	}
 	// if len(strings.Split(params.IpList, ",")) != len(strings.Split(params.WeightList, ",")) {
 	// 	dashboard_middleware.ResponseError(c, 2004, errors.New("IP列表与权重列表数量不一致"))
@@ -467,7 +476,7 @@ func (service *ServiceController) ServiceUpdate(c *gin.Context) {
 	}
 	//httpRule := serviceDetail.HTTPRule
 	//httpRule.NeedHttps = params.NeedHttps
-	//httpRule.NeedStripUri = params.NeedStripUri
+	//httpRule.HTTPStripPrefix = params.HTTPStripPrefix
 	//httpRule.NeedWebsocket = params.NeedWebsocket
 	//httpRule.UrlRewrite = params.UrlRewrite
 	//httpRule.HeaderTransfor = params.HeaderTransfor

@@ -53,7 +53,7 @@ DROP TABLE IF EXISTS `gateway_app`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `gateway_app` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
-  `app_id` varchar(255) NOT NULL DEFAULT '' COMMENT '租户id',
+  `app_id` varchar(255) NOT NULL DEFAULT '' COMMENT '租户id',
   `name` varchar(255) NOT NULL DEFAULT '' COMMENT '租户名称',
   `secret` varchar(255) NOT NULL DEFAULT '' COMMENT '密钥',
   `white_ips` varchar(1000) NOT NULL DEFAULT '' COMMENT 'ip白名单，支持前缀匹配',
@@ -85,13 +85,13 @@ DROP TABLE IF EXISTS `gateway_service_info`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `gateway_service_info` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-  `load_type` tinyint NOT NULL DEFAULT '0' COMMENT '负载类型 0=http 1=tcp 2=grpc',
+  `service_type` tinyint NOT NULL DEFAULT '0' COMMENT '服务类型 0=http 1=tcp 2=grpc',
   `service_name` varchar(255) NOT NULL DEFAULT '' COMMENT '服务名称 6-128 数字字母下划线',
   `service_desc` varchar(255) NOT NULL DEFAULT '' COMMENT '服务描述',
-  `port` int unsigned NOT NULL DEFAULT '0' COMMENT 'tcp/grpc端口',
-  `http_hosts` varchar(1000) NOT NULL DEFAULT '' COMMENT '域名信息',
-  `http_paths` varchar(1000) NOT NULL DEFAULT '' COMMENT '路径信息',
-  `need_strip_uri` varchar(255) NOT NULL DEFAULT '' COMMENT '是否需要strip_uri',
+  `service_port` int unsigned NOT NULL DEFAULT '0' COMMENT '服务端口(只针对 tcp/grpc)',
+  `http_hosts` varchar(1000) NOT NULL DEFAULT '' COMMENT 'http域名信息',
+  `http_paths` varchar(1000) NOT NULL DEFAULT '' COMMENT 'http路径信息',
+  `http_strip_prefix` tinyint NOT NULL DEFAULT '1' COMMENT 'http转发前剥离前缀',
   `load_balance_strategy` varchar(255) NOT NULL DEFAULT '' COMMENT '负载策略',
   `load_balance_type` varchar(255) NOT NULL DEFAULT '' COMMENT '负载类型',
   `auth_type` varchar(255) NOT NULL DEFAULT '' COMMENT '鉴权类型',
@@ -110,7 +110,7 @@ CREATE TABLE `gateway_service_info` (
 
 LOCK TABLES `gateway_service_info` WRITE;
 /*!40000 ALTER TABLE `gateway_service_info` DISABLE KEYS */;
-INSERT INTO `gateway_service_info` VALUES (1,0,'test_service_name','test_service_desc',0,'','/test_service_name','0','random','','http://127.0.0.1:8881 100','3','{\"url_rewrite\":{\"rewrite_rule\":\"\"},\"http_flow_limit\":{\"service_flow_limit_num\":\"\",\"service_flow_limit_type\":\"0\",\"clientip_flow_limit_num\":\"\",\"clientip_flow_limit_type\":\"\"},\"header_transfer\":{\"transfer_rule\":\"\"},\"http_whiteblacklist\":{\"ip_white_list\":\"\",\"ip_black_list\":\"\",\"host_white_list\":\"\",\"url_white_list\":\"\"},\"http_upstream_transport\":{\"http_upstream_connection_timeout\":\"\",\"http_upstream_header_timeout\":\"\"},\"jwt_auth\":{},\"upstream_config\":{\"upstream_list\":\"http://127.0.0.1:8881 100\\nhttp://127.0.0.1:8882 100\"}}','2021-09-20 10:55:46','2021-09-20 11:37:50',0);
+INSERT INTO gateway_service_info VALUES (1,0,'test_service_name','test_service_desc',0,'','/test_service_name',1,'random','','3','http://127.0.0.1:8881 100','{\"url_rewrite\":{\"rewrite_rule\":\"\"},\"http_flow_limit\":{\"service_flow_limit_num\":\"\",\"service_flow_limit_type\":\"0\",\"clientip_flow_limit_num\":\"\",\"clientip_flow_limit_type\":\"\"},\"header_transfer\":{\"transfer_rule\":\"\"},\"http_whiteblacklist\":{\"ip_white_list\":\"\",\"ip_black_list\":\"\",\"host_white_list\":\"\",\"url_white_list\":\"\"},\"http_upstream_transport\":{\"http_upstream_connection_timeout\":\"\",\"http_upstream_header_timeout\":\"\"},\"jwt_auth\":{},\"upstream_config\":{\"upstream_list\":\"http://127.0.0.1:8881 100\nhttp://127.0.0.1:8882 100\"}}','2021-09-20 10:55:46','2021-09-20 11:37:50',0);
 /*!40000 ALTER TABLE `gateway_service_info` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
