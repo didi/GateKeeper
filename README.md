@@ -2,7 +2,10 @@
 
 ## 环境要求 >= go 1.12.0
 
-## 校验 go version
+[GO环境安装](https://www.runoob.com/go/go-environment.html)
+
+
+## Go 版本校验
 
 ```
 go version
@@ -16,7 +19,7 @@ go version go1.12.15 darwin/amd64
 
 ```
 cd install
-go run main.go
+sh install.sh
 ```
 
 ## 手动初始化
