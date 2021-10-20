@@ -1,7 +1,6 @@
 package tool
 
 import (
-	//"fmt"
 	"os"
 	"os/exec"
 	"runtime"
@@ -12,6 +11,7 @@ var (
 	SystemType  string
 	CommandType string
 	CommandArgs string
+	GateKeeperPath	string = gatekeeperPath()
 )
 
 
@@ -67,4 +67,14 @@ func RunCmd(command string) error{
 func GetCurrentPath() string{
 	path, _ := os.Getwd()
 	return strings.Replace(path, "\\", "/", -1)
+}
+
+
+func gatekeeperPath() string{
+	path := GetCurrentPath()
+	pathArr := strings.Split(path, "/")
+	index := len(pathArr)
+	pathArr = pathArr[0:index-1]
+	path = strings.Join(pathArr, "/")
+	return path
 }
