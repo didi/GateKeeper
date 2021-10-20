@@ -60,7 +60,8 @@ func (r *Redis) Init() error{
 	})
 	_, err := client.Ping().Result()
 	if err != nil {
-		return err
+		tool.LogWarning.Println(err)
+		return InitRedis()
 	}
 	tool.LogInfo.Println("connect redis success")
 	return nil

@@ -26,17 +26,17 @@ var (
 )
 
 
-func (m Mysql) Init() (error){
+func (m Mysql) Init() error{
 
 	// connect mysql
 	mysqlLink := fmt.Sprintf("%s:%s@tcp(%s:%s)/", m.User, m.Pwd, m.Host, m.Port)
 
 	db, _ := sql.Open("mysql", mysqlLink)
 	if err := db.Ping(); err != nil {
-		tool.LogError.Println(err)
-		return errors.New("connect mysql error")
+		tool.LogWarning.Println(err)
+		return InitDb()
+		//return errors.New("connect mysql error")
 	}
-
 	// check connect
 	db.SetConnMaxLifetime(time.Second * 30)
 	DbPool, err = db.Begin()
