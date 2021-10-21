@@ -1,10 +1,11 @@
 package http_proxy_middleware
 
 import (
+	"strings"
+
 	"github.com/didi/gatekeeper/model"
 	"github.com/didi/gatekeeper/public"
 	"github.com/gin-gonic/gin"
-	"strings"
 )
 
 func HTTPStripUriMiddleware() gin.HandlerFunc {
@@ -15,7 +16,7 @@ func HTTPStripUriMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		if serviceDetail.Info.NeedStripUri == "1" {
+		if serviceDetail.Info.HttpStripPrefix == 1 {
 			c.Request.URL.Path = strings.Replace(c.Request.URL.Path, serviceDetail.Info.HTTPPaths, "", 1)
 		}
 		c.Next()

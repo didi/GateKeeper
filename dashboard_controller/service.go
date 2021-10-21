@@ -75,7 +75,7 @@ func (service *ServiceController) ServiceList(c *gin.Context) {
 			return
 		}
 		serviceAddr := ""
-		if serviceDetail.Info.LoadType == public.LoadTypeHTTP {
+		if serviceDetail.Info.ServiceType == public.LoadTypeHTTP {
 			host := strings.Split(serviceDetail.Info.HTTPHosts, "\n")
 			paths := strings.Split(serviceDetail.Info.HTTPPaths, "\n")
 			for _, v := range host {
@@ -85,10 +85,9 @@ func (service *ServiceController) ServiceList(c *gin.Context) {
 			}
 		} else {
 			clusterIP := lib.GetStringConf("base.cluster.cluster_ip")
-			serviceAddr = fmt.Sprintf("%s:%d", clusterIP, serviceDetail.Info.Port)
+			serviceAddr = fmt.Sprintf("%s:%d", clusterIP, serviceDetail.Info.ServicePort)
 		}
-		tmpstring := serviceDetail.PluginConf.GetPath("upstream_config", "upstream_list").MustString()
-		upConf, err := model.GetUpstreamConfigFromString(tmpstring)
+		upConf, err := model.GetUpstreamConfigFromString(serviceDetail.Info.UpstreamList)
 		if err != nil {
 			dashboard_middleware.ResponseError(c, 200, err)
 			return
@@ -100,7 +99,7 @@ func (service *ServiceController) ServiceList(c *gin.Context) {
 		}
 		outItem := model.ServiceListItemOutput{
 			ID:          listItem.ID,
-			LoadType:    listItem.LoadType,
+			LoadType:    listItem.ServiceType,
 			ServiceName: listItem.ServiceName,
 			ServiceDesc: listItem.ServiceDesc,
 			ServiceAddr: serviceAddr,
@@ -196,10 +195,10 @@ func (service *ServiceController) ServiceDetail(c *gin.Context) {
 	// plugin_config的样式信息和值信息组合
 	var pluginConfVal []model.PluginConfig
 	loadType := ""
-	if serviceInfo.LoadType == 0 {
+	if serviceInfo.ServiceType == 0 {
 		loadType = "http"
 		pluginConfVal = conf.HTTP
-	} else if serviceInfo.LoadType == 1 {
+	} else if serviceInfo.ServiceType == 1 {
 		loadType = "tcp"
 		pluginConfVal = conf.TCP
 	} else {
@@ -216,10 +215,11 @@ func (service *ServiceController) ServiceDetail(c *gin.Context) {
 	dashboard_middleware.ResponseSuccess(c, map[string]interface{}{
 		loadType:                pluginConfVal,
 		"service_name":          serviceInfo.ServiceName,
+		"port":                  serviceInfo.ServicePort,
 		"service_desc":          serviceInfo.ServiceDesc,
 		"http_hosts":            serviceInfo.HTTPHosts,
 		"http_paths":            serviceInfo.HTTPPaths,
-		"need_strip_uri":        serviceInfo.NeedStripUri,
+		"need_strip_uri":        serviceInfo.HttpStripPrefix,
 		"load_balance_strategy": serviceInfo.LoadBalanceStrategy,
 		"auth_type":             serviceInfo.AuthType,
 		"upstream_list":         serviceInfo.UpstreamList,
@@ -353,10 +353,10 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 				return
 			}
 		}
-		if params.NeedStripUri == "" {
-			dashboard_middleware.ResponseError(c, 2001, errors.New("strip_url请选择是否开启"))
-			return
-		}
+		// if params.NeedStripUri == 0 {
+		// 	dashboard_middleware.ResponseError(c, 2001, errors.New("strip_url请选择是否开启"))
+		// 	return
+		// }
 	}
 	if params.LoadBalanceStrategy == "" {
 		dashboard_middleware.ResponseError(c, 2001, errors.New("loadbalance策略不能为空"))
@@ -365,6 +365,16 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 	if params.UpstreamList == "" {
 		dashboard_middleware.ResponseError(c, 2001, errors.New("下游服务器ip和权重不能为空"))
 		return
+	} else {
+		tmpLine := strings.Split(params.UpstreamList, "\n")
+		for _, tmp := range tmpLine {
+			r, _ := regexp.Compile("^(.*://)(.*?)\\s(.*?)$")
+			submatch := r.FindStringSubmatch(tmp)
+			if len(submatch) != 4 {
+				dashboard_middleware.ResponseError(c, 2001, errors.New("下游服务器ip和权重 format error"))
+				return
+			}
+		}
 	}
 	// if len(strings.Split(params.IpList, ",")) != len(strings.Split(params.WeightList, ",")) {
 	// 	dashboard_middleware.ResponseError(c, 2004, errors.New("IP列表与权重列表数量不一致"))
@@ -392,13 +402,13 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 	}
 
 	serviceModel := &model.ServiceInfo{
-		LoadType:            params.LoadType,
+		ServiceType:         params.LoadType,
 		ServiceName:         params.ServiceName,
 		ServiceDesc:         params.ServiceDesc,
-		Port:                params.Port,
+		ServicePort:         params.Port,
 		HTTPHosts:           params.HTTPHosts,
 		HTTPPaths:           params.HTTPPaths,
-		NeedStripUri:        params.NeedStripUri,
+		HttpStripPrefix:     params.NeedStripUri,
 		LoadBalanceStrategy: params.LoadBalanceStrategy,
 		LoadBalanceType:     params.LoadBalanceType,
 		AuthType:            params.AuthType,
@@ -454,11 +464,11 @@ func (service *ServiceController) ServiceUpdate(c *gin.Context) {
 	serviceInfo.HTTPPaths = params.HTTPPaths
 	serviceInfo.LoadBalanceStrategy = params.LoadBalanceStrategy
 	serviceInfo.LoadBalanceType = params.LoadBalanceType
-	serviceInfo.NeedStripUri = params.NeedStripUri
+	serviceInfo.HttpStripPrefix = params.NeedStripUri
 	serviceInfo.PluginConf = params.PluginConf
 	serviceInfo.ServiceName = params.ServiceName
 	serviceInfo.ServiceDesc = params.ServiceDesc
-	serviceInfo.Port = params.Port
+	serviceInfo.ServicePort = params.Port
 	if err := serviceInfo.Save(c, tx); err != nil {
 		tx.Rollback()
 		dashboard_middleware.ResponseError(c, 2005, err)
@@ -466,7 +476,7 @@ func (service *ServiceController) ServiceUpdate(c *gin.Context) {
 	}
 	//httpRule := serviceDetail.HTTPRule
 	//httpRule.NeedHttps = params.NeedHttps
-	//httpRule.NeedStripUri = params.NeedStripUri
+	//httpRule.HTTPStripPrefix = params.HTTPStripPrefix
 	//httpRule.NeedWebsocket = params.NeedWebsocket
 	//httpRule.UrlRewrite = params.UrlRewrite
 	//httpRule.HeaderTransfor = params.HeaderTransfor
@@ -564,7 +574,7 @@ func (admin *ServiceController) ServiceAddTcp(c *gin.Context) {
 
 	tx := dbPool.Begin()
 	info := &model.ServiceInfo{
-		LoadType:    public.LoadTypeTCP,
+		ServiceType: public.LoadTypeTCP,
 		ServiceName: params.ServiceName,
 		ServiceDesc: params.ServiceDesc,
 	}
@@ -762,7 +772,7 @@ func (admin *ServiceController) ServiceAddGrpc(c *gin.Context) {
 
 	tx := dbPool.Begin()
 	info := &model.ServiceInfo{
-		LoadType:    public.LoadTypeGRPC,
+		ServiceType: public.LoadTypeGRPC,
 		ServiceName: params.ServiceName,
 		ServiceDesc: params.ServiceDesc,
 	}

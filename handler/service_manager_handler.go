@@ -2,16 +2,17 @@ package handler
 
 import (
 	"fmt"
+	"net/http/httptest"
+	"strings"
+	"sync"
+	"time"
+
 	"github.com/didi/gatekeeper/golang_common/lib"
 	"github.com/didi/gatekeeper/golang_common/zerolog/log"
 	"github.com/didi/gatekeeper/model"
 	"github.com/didi/gatekeeper/public"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"net/http/httptest"
-	"strings"
-	"sync"
-	"time"
 )
 
 var ServiceManagerHandler *ServiceManager = NewServiceManager()
@@ -80,7 +81,7 @@ func (s *ServiceManager) GetTcpServiceList() []*model.ServiceDetail {
 	list := []*model.ServiceDetail{}
 	for _, serverItem := range s.ServiceSlice {
 		tempItem := serverItem
-		if tempItem.Info.LoadType == public.LoadTypeTCP {
+		if tempItem.Info.ServiceType == public.LoadTypeTCP {
 			list = append(list, tempItem)
 		}
 	}
@@ -91,7 +92,7 @@ func (s *ServiceManager) GetGrpcServiceList() []*model.ServiceDetail {
 	list := []*model.ServiceDetail{}
 	for _, serverItem := range s.ServiceSlice {
 		tempItem := serverItem
-		if tempItem.Info.LoadType == public.LoadTypeGRPC {
+		if tempItem.Info.ServiceType == public.LoadTypeGRPC {
 			list = append(list, tempItem)
 		}
 	}
@@ -100,7 +101,7 @@ func (s *ServiceManager) GetGrpcServiceList() []*model.ServiceDetail {
 
 func (s *ServiceManager) HTTPAccessMode(c *gin.Context) (*model.ServiceDetail, error) {
 	for _, serviceItem := range s.ServiceSlice {
-		if serviceItem.Info.LoadType != public.LoadTypeHTTP {
+		if serviceItem.Info.ServiceType != public.LoadTypeHTTP {
 			continue
 		}
 		hosts := strings.Split(serviceItem.Info.HTTPHosts, "\n")
@@ -159,7 +160,6 @@ func (s *ServiceManager) LoadService() *ServiceManager {
 	return ns
 }
 
-
 func (s *ServiceManager) Load() error {
 	log.Info().Msg(lib.Purple("watching load service config from resource"))
 	ns := s.LoadService()
@@ -173,7 +173,6 @@ func (s *ServiceManager) Load() error {
 	s.Notify(e)
 	return s.err
 }
-
 
 func (s *ServiceManager) LoadAndWatch() error {
 	log.Info().Msg(lib.Purple("watching load service config from resource"))

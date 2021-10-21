@@ -16,7 +16,7 @@ type ServiceUpdateInput struct {
 	LoadType            int    `json:"load_type" form:"load_type" comment:"负载类型 0=http 1=tcp 2=grpc"`
 	HTTPHosts           string `json:"http_hosts" form:"http_hosts" comment:"域名信息" example:""`
 	HTTPPaths           string `json:"http_paths" form:"http_paths" comment:"路径信息" example:""`
-	NeedStripUri        string `json:"need_strip_uri" form:"need_strip_uri" comment:"启用strip_uri" example:"" validate:""` //启用strip_uri  max=1,min=0
+	NeedStripUri        int    `json:"need_strip_uri" form:"need_strip_uri" comment:"启用strip_uri" example:"" validate:""` //启用strip_uri  max=1,min=0
 	Port                int    `json:"port" form:"port" comment:"tcp/grpc端口"`
 	LoadBalanceStrategy string `json:"load_balance_strategy" form:"load_balance_strategy" comment:"负载策略"`
 	LoadBalanceType     string `json:"load_balance_type" form:"load_balance_type" comment:"负载类型"`
@@ -35,7 +35,7 @@ type ServiceAddInput struct {
 	LoadType            int    `json:"load_type" form:"load_type" comment:"负载类型 0=http 1=tcp 2=grpc"`
 	HTTPHosts           string `json:"http_hosts" form:"http_hosts" comment:"域名信息" example:"" validate:""`
 	HTTPPaths           string `json:"http_paths" form:"http_paths" comment:"路径信息" example:"" validate:""`
-	NeedStripUri        string `json:"need_strip_uri" form:"need_strip_uri" comment:"启用strip_uri" example:"" validate:""` //启用strip_uri
+	NeedStripUri        int    `json:"need_strip_uri" form:"need_strip_uri" comment:"启用strip_uri" example:"" validate:""` //启用strip_uri
 	Port                int    `json:"port" form:"port" comment:"tcp/grpc端口"`
 	LoadBalanceStrategy string `json:"load_balance_strategy" form:"load_balance_strategy" comment:"负载策略"`
 	LoadBalanceType     string `json:"load_balance_type" form:"load_balance_type" comment:"负载类型"`

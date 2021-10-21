@@ -3,14 +3,15 @@ package tcp_proxy_router
 import (
 	"context"
 	"fmt"
+	"log"
+	"sync"
+
 	"github.com/didi/gatekeeper/handler"
 	"github.com/didi/gatekeeper/model"
 	"github.com/didi/gatekeeper/public"
 	"github.com/didi/gatekeeper/reverse_proxy"
 	"github.com/didi/gatekeeper/tcp_proxy_middleware"
 	"github.com/didi/gatekeeper/tcp_server"
-	"log"
-	"sync"
 )
 
 type TcpManager struct {
@@ -28,7 +29,7 @@ func NewTcpManager() *TcpManager {
 var TcpManagerHandler *TcpManager
 
 func (t *TcpManager) tcpOneServerRun(service *model.ServiceDetail) {
-	addr := fmt.Sprintf(":%d", service.Info.Port)
+	addr := fmt.Sprintf(":%d", service.Info.ServicePort)
 	rb, err := handler.LoadBalancerHandler.GetLoadBalancer(service)
 	if err != nil {
 		log.Fatalf(" [INFO] GetTcpLoadBalancer %v err:%v\n", addr, err)
@@ -79,7 +80,7 @@ func (t *TcpManager) Update(e *handler.ServiceEvent) {
 	log.Printf("TcpManager.Update")
 	delList := e.DeleteService
 	for _, delService := range delList {
-		if delService.Info.LoadType == public.LoadTypeTCP {
+		if delService.Info.ServiceType == public.LoadTypeTCP {
 			continue
 		}
 		for _, tcpServer := range TcpManagerHandler.ServerList {
@@ -92,7 +93,7 @@ func (t *TcpManager) Update(e *handler.ServiceEvent) {
 	}
 	addList := e.AddService
 	for _, addService := range addList {
-		if addService.Info.LoadType != public.LoadTypeTCP {
+		if addService.Info.ServiceType != public.LoadTypeTCP {
 			continue
 		}
 		go t.tcpOneServerRun(addService)
