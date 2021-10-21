@@ -8,7 +8,7 @@ import (
 
 var (
 	GateKeeperPath	string = tool.GateKeeperPath
-	CmdRun			string = "cd %s && %s run main.go run -c %s/conf/dev/ -p control"
+	CmdRun			string = "cd %s && export GO111MODULE=on && export GOPROXY=https://goproxy.cn && %s run main.go run -c %s/conf/dev/ -p control"
 )
 
 
