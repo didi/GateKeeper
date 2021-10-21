@@ -3,13 +3,12 @@ package check
 import (
 	"fmt"
 	"gatekeeper/install/tool"
-	"strings"
 )
 
 
 var (
-	GateKeeperPath	string = gatekeeperPath()
-	CmdRun			string = "cd %s && %s run main.go run -c %s/conf/dev/ -p control"
+	GateKeeperPath	string = tool.GateKeeperPath
+	CmdRun			string = "cd %s && export GO111MODULE=on && export GOPROXY=https://goproxy.cn && %s run main.go run -c %s/conf/dev/ -p control"
 )
 
 
@@ -27,14 +26,4 @@ func RunGateKeeper() error{
 		}
 	}
 	return nil
-}
-
-
-func gatekeeperPath() string{
-	path := tool.GetCurrentPath()
-	pathArr := strings.Split(path, "/")
-	index := len(pathArr)
-	pathArr = pathArr[0:index-1]
-	path = strings.Join(pathArr, "/")
-	return path
 }

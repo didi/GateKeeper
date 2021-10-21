@@ -59,6 +59,12 @@ func (m Mysql) Init() error{
 
 
 	// check table
+	err = template.InitSql()
+	if err != nil{
+		tool.LogInfo.Println("init mysql table end")
+		DbPool.Rollback()
+		return err
+	}
 	tool.LogInfo.Println("init mysql table start")
 	err = checkTable(m.Database)
 	if err != nil{
@@ -74,7 +80,6 @@ func (m Mysql) Init() error{
 
 
 func InitDb() error{
-
 	host, err := tool.Input("please enter mysql host (default:127.0.0.1):", "127.0.0.1")
 	//mysqlLinkInfo, err := inputHost(mysqlLinkInfo)
 	if err != nil{
@@ -232,6 +237,9 @@ func checkTable(database string) error {
 
 func createTable(database string, createSql []string) error {
 	for _, execSql := range createSql{
+		if execSql == ""{
+			continue
+		}
 		tool.LogInfo.Println(execSql)
 		_, err := DbPool.Exec(execSql); if err != nil{
 			return err
