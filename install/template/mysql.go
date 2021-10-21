@@ -32,6 +32,7 @@ func getCreateSql() error{
 	tableName := ""
 	tablePre := regexp.MustCompile(`gateway_[a-z_]*`)
 	f, _ := os.Open(sqlFilePath)
+	defer f.Close()
 	r := bufio.NewReader(f)
 	for {
 		lineSql, err := tool.ReadLine(r)
