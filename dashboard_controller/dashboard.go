@@ -86,7 +86,7 @@ func (service *DashboardController) ServiceStat(c *gin.Context) {
 	for index, item := range list {
 		name, ok := public.LoadTypeMap[item.LoadType]
 		if !ok {
-			dashboard_middleware.ResponseError(c, 2003, errors.New("load_type not found"))
+			dashboard_middleware.ResponseError(c, 2003, errors.New("service_type not found"))
 			return
 		}
 		list[index].Name = name

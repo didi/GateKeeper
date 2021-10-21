@@ -87,13 +87,13 @@ func gateway_service_info() []string  {
 		"DROP TABLE IF EXISTS `gateway_service_info`;",
 		"CREATE TABLE `gateway_service_info` (" +
 			"`id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键'," +
-			"`load_type` tinyint NOT NULL DEFAULT '0' COMMENT '负载类型 0=http 1=tcp 2=grpc'," +
+			"`service_type` tinyint NOT NULL DEFAULT '0' COMMENT '负载类型 0=http 1=tcp 2=grpc'," +
 			"`service_name` varchar(255) NOT NULL DEFAULT '' COMMENT '服务名称 6-128 数字字母下划线'," +
 			"`service_desc` varchar(255) NOT NULL DEFAULT '' COMMENT '服务描述'," +
-			"`port` int unsigned NOT NULL DEFAULT '0' COMMENT 'tcp/grpc端口'," +
+			"`service_port` int unsigned NOT NULL DEFAULT '0' COMMENT 'tcp/grpc端口'," +
 			"`http_hosts` varchar(1000) NOT NULL DEFAULT '' COMMENT '域名信息'," +
 			"`http_paths` varchar(1000) NOT NULL DEFAULT '' COMMENT '路径信息'," +
-			"`need_strip_uri` varchar(255) NOT NULL DEFAULT '' COMMENT '是否需要strip_uri'," +
+			"`http_strip_prefix` varchar(255) NOT NULL DEFAULT '' COMMENT '是否需要strip_uri'," +
 			"`load_balance_strategy` varchar(255) NOT NULL DEFAULT '' COMMENT '负载策略'," +
 			"`load_balance_type` varchar(255) NOT NULL DEFAULT '' COMMENT '负载类型'," +
 			"`auth_type` varchar(255) NOT NULL DEFAULT '' COMMENT '鉴权类型'," +
