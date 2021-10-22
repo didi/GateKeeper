@@ -11,6 +11,7 @@ var (
 	SystemType  string
 	CommandType string
 	CommandArgs string
+	CmdRun 		string
 	GateKeeperPath	string = gatekeeperPath()
 )
 
@@ -20,13 +21,16 @@ func InitSystem()  {
 	if SystemType == "windows"{
 		CommandType = "cmd"
 		CommandArgs = "/C"
+		CmdRun = "SET GO111MODULE=on&& SET GOPROXY=https://goproxy.cn"
 	} else {
 		CommandType = "sh"
 		CommandArgs = "-c"
+		CmdRun = "export GO111MODULE=on && export GOPROXY=https://goproxy.cn"
 	}
 }
 
 func Cmd(command string) (string, error){
+	LogInfo.Println(command)
 	cmd := exec.Command(CommandType, CommandArgs, command)
 	str, err := cmd.Output()
 	LogInfo.Println(string(str))
