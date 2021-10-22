@@ -77,7 +77,7 @@ func (t *TcpManager) TcpServerRun() {
 }
 
 func (t *TcpManager) Update(e *handler.ServiceEvent) {
-	log.Printf("TcpManager.Update")
+	//log.Printf("TcpManager.Update")
 	delList := e.DeleteService
 	for _, delService := range delList {
 		if delService.Info.ServiceType == public.LoadTypeTCP {

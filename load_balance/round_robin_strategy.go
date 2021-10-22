@@ -45,7 +45,7 @@ func (r *RoundRobinStrategy) RemoveAll() error {
 }
 
 func init() {
-	RegisterLoadBalanceStrategyHandler("round_robin", func() LoadBalanceStrategy {
+	RegisterLoadBalanceStrategyHandler("round", func() LoadBalanceStrategy {
 		return &RoundRobinStrategy{}
 	})
 }
