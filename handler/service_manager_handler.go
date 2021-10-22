@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"net/http/httptest"
 	"strings"
@@ -12,7 +13,6 @@ import (
 	"github.com/didi/gatekeeper/model"
 	"github.com/didi/gatekeeper/public"
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 )
 
 var ServiceManagerHandler *ServiceManager = NewServiceManager()
@@ -194,7 +194,6 @@ func (s *ServiceManager) LoadAndWatch() error {
 				continue
 			}
 			if ns.UpdateAt != s.UpdateAt || len(ns.ServiceSlice) != len(s.ServiceSlice) {
-				log.Info().Msg(lib.Purple(fmt.Sprintf("found config change source.UpdateAt:%v new.UpdateAt:%v", s.UpdateAt.Format(lib.TimeFormat), ns.UpdateAt.Format(lib.TimeFormat))))
 				e := &ServiceEvent{}
 				for _, service := range s.ServiceSlice {
 					matched := false
@@ -229,10 +228,19 @@ func (s *ServiceManager) LoadAndWatch() error {
 						e.UpdateService = append(e.UpdateService, newService)
 					}
 				}
+				for _, item := range e.DeleteService {
+					log.Info().Msg(lib.Purple(fmt.Sprintf("found config delete service[%v] update_time[%v]", item.Info.ServiceName, ns.UpdateAt.Format(lib.TimeFormat))))
+				}
+				for _, item := range e.AddService {
+					log.Info().Msg(lib.Purple(fmt.Sprintf("found config add service[%v] update_time[%v]", item.Info.ServiceName, ns.UpdateAt.Format(lib.TimeFormat))))
+				}
+				for _, item := range e.UpdateService {
+					log.Info().Msg(lib.Purple(fmt.Sprintf("found config update service[%v] update_time[%v]", item.Info.ServiceName, ns.UpdateAt.Format(lib.TimeFormat))))
+				}
 				s.ServiceSlice = ns.ServiceSlice
 				s.ServiceMap = ns.ServiceMap
 				s.UpdateAt = ns.UpdateAt
-				log.Info().Msg(lib.Purple(fmt.Sprintf("e:%v", e)))
+				//log.Info().Msg(lib.Purple(fmt.Sprintf("e:%v", e)))
 				s.Notify(e)
 			}
 		}

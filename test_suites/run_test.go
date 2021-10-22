@@ -25,6 +25,7 @@ func TestRunSuite(t *testing.T) {
 	time.Sleep(500 * time.Millisecond)
 	runCase(t, TestGoConvey)
 	runCase(t, TestHostServiceVisit)
+	//xxx
 }
 
 func runCase(t *testing.T, testCase func(*testing.T)) {

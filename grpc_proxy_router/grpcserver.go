@@ -86,7 +86,6 @@ func (g *GrpcManager) GrpcServerRun() {
 }
 
 func (g *GrpcManager) Update(e *handler.ServiceEvent) {
-	log.Printf("GrpcManager.Update")
 	delList := e.DeleteService
 	for _, delService := range delList {
 		if delService.Info.ServiceType == public.LoadTypeGRPC {
