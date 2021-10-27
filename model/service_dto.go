@@ -79,6 +79,7 @@ type ServiceListItemOutput struct {
 	Qps         int64  `json:"qps" form:"qps"`                   //qps
 	Qpd         int64  `json:"qpd" form:"qpd"`                   //qpd
 	TotalNode   int    `json:"total_node" form:"total_node"`     //节点数
+	ActiveNode  int    `json:"active_node" form:"active_node"`   //活跃的节点数
 }
 
 type ServiceListOutput struct {

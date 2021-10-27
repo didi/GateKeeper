@@ -9,6 +9,7 @@ import (
 	"github.com/didi/gatekeeper/dashboard_middleware"
 	"github.com/didi/gatekeeper/golang_common/lib"
 	"github.com/didi/gatekeeper/handler"
+	"github.com/didi/gatekeeper/load_balance"
 	"github.com/didi/gatekeeper/model"
 	"github.com/didi/gatekeeper/public"
 	"github.com/gin-gonic/gin"
@@ -97,6 +98,14 @@ func (service *ServiceController) ServiceList(c *gin.Context) {
 			dashboard_middleware.ResponseError(c, 200, err)
 			return
 		}
+
+		// 获取活跃的节点信息
+		LoadBalanceConf, err := load_balance.GetCheckConfigHandler("upstream_config")(serviceDetail)
+		if err != nil {
+			dashboard_middleware.ResponseError(c, 200, err)
+			return
+		}
+
 		outItem := model.ServiceListItemOutput{
 			ID:          listItem.ID,
 			LoadType:    listItem.ServiceType,
@@ -106,6 +115,7 @@ func (service *ServiceController) ServiceList(c *gin.Context) {
 			Qps:         counter.QPS,
 			Qpd:         counter.TotalCount,
 			TotalNode:   len(upConf.IpList),
+			ActiveNode:  len(LoadBalanceConf.GetConf()),
 		}
 		outList = append(outList, outItem)
 	}
