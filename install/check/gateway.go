@@ -8,7 +8,7 @@ import (
 
 var (
 	GateKeeperPath	string = tool.GateKeeperPath
-	CmdRun			string = "cd %s && export GO111MODULE=on && export GOPROXY=https://goproxy.cn && %s run main.go run -c %s/conf/dev/ -p control"
+	CmdRun			string = "cd %s && %s run main.go run -c %s/conf/dev/ -p control"
 )
 
 
@@ -17,7 +17,7 @@ func RunGateKeeper() error{
 	if err != nil{
 		return err
 	}
-	CmdRun := fmt.Sprintf(CmdRun, GateKeeperPath, GoPath, GateKeeperPath)
+	CmdRun := fmt.Sprintf(tool.CmdRun + "&&" + CmdRun, GateKeeperPath, GoPath, GateKeeperPath)
 	if boolRunGatekeeper {
 		tool.LogInfo.Println(CmdRun)
 		err := tool.RunCmd(CmdRun)
