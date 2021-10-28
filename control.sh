@@ -10,7 +10,11 @@ app=gatekeeper
 
 action=$1
 case $action in
-    "start" )
+    "start_proxy" )
+        ps aux | grep gatekeeper | grep -v 'grep' | awk '{print $2}' | xargs kill -9
+        nohup ./bin/gatekeeper -config=./conf/dev/ >> /home/webroot/logs/gatekeeper/gatekeeper.log &
+        ;;
+    "start_panel" )
         ps aux | grep gatekeeper | grep -v 'grep' | awk '{print $2}' | xargs kill -9
         nohup ./bin/gatekeeper -config=./conf/dev/ >> /home/webroot/logs/gatekeeper/gatekeeper.log &
         ;;

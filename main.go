@@ -30,6 +30,7 @@ func startControl() {
 	log.Info().Msg(lib.Purple("start controller application"))
 	lib.InitConf(lib.GetCmdConfPath())
 	defer lib.DestroyConf()
+	handler.ServiceManagerHandler.LoadAndWatch()
 	dashboard_router.HttpServerRun()
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
