@@ -99,12 +99,12 @@ func (service *ServiceController) ServiceList(c *gin.Context) {
 		}
 
 		// 获取活跃的节点信息
-		lb,err:=handler.LoadBalancerHandler.GetLoadBalancer(serviceDetail)
+		lb, err := handler.LoadBalancerHandler.GetLoadBalancer(serviceDetail)
 		if err != nil {
 			dashboard_middleware.ResponseError(c, 200, err)
 			return
 		}
-		activeNode,err:=lb.GetAll()
+		activeNode, err := lb.GetAll()
 		if err != nil {
 			dashboard_middleware.ResponseError(c, 200, err)
 			return
@@ -288,7 +288,6 @@ func (service *ServiceController) ServiceStat(c *gin.Context) {
 		dashboard_middleware.ResponseError(c, 2003, err)
 		return
 	}
-
 	counter, err := handler.ServiceCounterHandler.GetCounter(public.FlowServicePrefix + serviceDetail.Info.ServiceName)
 	if err != nil {
 		dashboard_middleware.ResponseError(c, 2004, err)
