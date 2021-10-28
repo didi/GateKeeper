@@ -109,7 +109,7 @@ func (service *ServiceController) ServiceList(c *gin.Context) {
 			dashboard_middleware.ResponseError(c, 200, err)
 			return
 		}
-		
+
 		outItem := model.ServiceListItemOutput{
 			ID:          listItem.ID,
 			LoadType:    listItem.ServiceType,
