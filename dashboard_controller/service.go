@@ -2,7 +2,6 @@ package dashboard_controller
 
 import (
 	"fmt"
-	"regexp"
 	"strings"
 	"time"
 
@@ -330,20 +329,17 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 		dashboard_middleware.ResponseError(c, 2000, err)
 		return
 	}
-	if params.ServiceName == "" {
-		dashboard_middleware.ResponseError(c, 2001, errors.New("服务名称不能为空"))
+	// 服务名称校验
+	if err := public.ServiceNameValidate(params.ServiceName); err != nil {
+		dashboard_middleware.ResponseError(c, 2001, err)
 		return
-	} else {
-		reg, _ := regexp.MatchString(`^[0-9a-zA-Z_]{1,}$`, params.ServiceName)
-		if !reg { //解释失败，返回false
-			dashboard_middleware.ResponseError(c, 2001, errors.New("服务名称格式错误"))
-			return
-		}
 	}
+	// 服务描述校验
 	if params.ServiceDesc == "" {
 		dashboard_middleware.ResponseError(c, 2001, errors.New("服务描述不能为空"))
 		return
 	}
+	// 负载类型校验
 	if params.LoadType != 1 {
 		if params.HTTPHosts == "" {
 			dashboard_middleware.ResponseError(c, 2001, errors.New("服务域名不能为空"))
@@ -356,38 +352,25 @@ func (service *ServiceController) ServiceAdd(c *gin.Context) {
 		// 	return
 		// }
 		// }
-		if params.HTTPPaths == "" {
-			dashboard_middleware.ResponseError(c, 2001, errors.New("服务地址不能为空"))
+		// 服务地址校验
+		if err := public.HTTPPathsValidate(params.HTTPPaths); err != nil {
+			dashboard_middleware.ResponseError(c, 2001, err)
 			return
-		} else {
-			reg, _ := regexp.MatchString(`^(/[\w\-]+)+`, params.HTTPPaths)
-			if !reg { //解释失败，返回false
-				dashboard_middleware.ResponseError(c, 2001, errors.New("服务地址格式错误"))
-				return
-			}
 		}
 		// if params.NeedStripUri == 0 {
 		// 	dashboard_middleware.ResponseError(c, 2001, errors.New("strip_url请选择是否开启"))
 		// 	return
 		// }
 	}
+	// loadbalance策略校验
 	if params.LoadBalanceStrategy == "" {
 		dashboard_middleware.ResponseError(c, 2001, errors.New("loadbalance策略不能为空"))
 		return
 	}
-	if params.UpstreamList == "" {
-		dashboard_middleware.ResponseError(c, 2001, errors.New("下游服务器ip和权重不能为空"))
+	// 下游服务器ip和权重校验
+	if err := public.UpstreamListValidate(params.UpstreamList); err != nil {
+		dashboard_middleware.ResponseError(c, 2001, err)
 		return
-	} else {
-		tmpLine := strings.Split(params.UpstreamList, "\n")
-		for _, tmp := range tmpLine {
-			r, _ := regexp.Compile("^(.*://)(.*?)\\s(.*?)$")
-			submatch := r.FindStringSubmatch(tmp)
-			if len(submatch) != 4 {
-				dashboard_middleware.ResponseError(c, 2001, errors.New("下游服务器ip和权重 format error"))
-				return
-			}
-		}
 	}
 	// if len(strings.Split(params.IpList, ",")) != len(strings.Split(params.WeightList, ",")) {
 	// 	dashboard_middleware.ResponseError(c, 2004, errors.New("IP列表与权重列表数量不一致"))
@@ -453,6 +436,51 @@ func (service *ServiceController) ServiceUpdate(c *gin.Context) {
 		dashboard_middleware.ResponseError(c, 2000, err)
 		return
 	}
+
+	// 服务名称校验
+	if err := public.ServiceNameValidate(params.ServiceName); err != nil {
+		dashboard_middleware.ResponseError(c, 2001, err)
+		return
+	}
+	// 服务描述校验
+	if params.ServiceDesc == "" {
+		dashboard_middleware.ResponseError(c, 2001, errors.New("服务描述不能为空"))
+		return
+	}
+	// 负载类型校验
+	if params.LoadType != 1 {
+		if params.HTTPHosts == "" {
+			dashboard_middleware.ResponseError(c, 2001, errors.New("服务域名不能为空"))
+			return
+		}
+		// else {
+		// reg, _ := regexp.MatchString(`^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$`, params.HTTPHosts)
+		// if !reg { //解释失败，返回false
+		// 	dashboard_middleware.ResponseError(c, 2001, errors.New("服务域名格式错误"))
+		// 	return
+		// }
+		// }
+		// 服务地址校验
+		if err := public.HTTPPathsValidate(params.HTTPPaths); err != nil {
+			dashboard_middleware.ResponseError(c, 2001, err)
+			return
+		}
+		// if params.NeedStripUri == 0 {
+		// 	dashboard_middleware.ResponseError(c, 2001, errors.New("strip_url请选择是否开启"))
+		// 	return
+		// }
+	}
+	// loadbalance策略校验
+	if params.LoadBalanceStrategy == "" {
+		dashboard_middleware.ResponseError(c, 2001, errors.New("loadbalance策略不能为空"))
+		return
+	}
+	// 下游服务器ip和权重校验
+	if err := public.UpstreamListValidate(params.UpstreamList); err != nil {
+		dashboard_middleware.ResponseError(c, 2001, err)
+		return
+	}
+
 	// //fmt.Println(public.Obj2Json(params))
 	// if len(strings.Split(params.IpList, ",")) != len(strings.Split(params.WeightList, ",")) {
 	// 	dashboard_middleware.ResponseError(c, 2001, errors.New("IP列表与权重列表数量不一致"))
