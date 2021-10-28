@@ -90,7 +90,7 @@ func UpstreamListValidate(upstreamList string) error {
 	} else {
 		tmpLine := strings.Split(upstreamList, "\n")
 		for _, tmp := range tmpLine {
-			r, _ := regexp.Compile(`^(.*://)(.*?)\\s(.*?)$`)
+			r, _ := regexp.Compile(`^(\S*\:\/\/)(\S*?)\s(.*?)$`)
 			submatch := r.FindStringSubmatch(tmp)
 			if len(submatch) != 4 {
 				return errors.New("下游服务器ip和权重 format error")
