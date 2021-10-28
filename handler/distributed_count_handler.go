@@ -20,9 +20,9 @@ type DistributedCountService struct {
 	closeChan   chan bool
 }
 
-func NewDistributedCountService(appID string, interval time.Duration) *DistributedCountService {
+func NewDistributedCountService(name string, interval time.Duration) *DistributedCountService {
 	reqCounter := &DistributedCountService{
-		Name:     appID,
+		Name:     name,
 		Interval: interval,
 		QPS:      0,
 		Unix:     0,

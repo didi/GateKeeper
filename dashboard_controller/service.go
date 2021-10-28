@@ -287,7 +287,6 @@ func (service *ServiceController) ServiceStat(c *gin.Context) {
 		dashboard_middleware.ResponseError(c, 2003, err)
 		return
 	}
-
 	counter, err := handler.ServiceCounterHandler.GetCounter(public.FlowServicePrefix + serviceDetail.Info.ServiceName)
 	if err != nil {
 		dashboard_middleware.ResponseError(c, 2004, err)
