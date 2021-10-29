@@ -1,13 +1,13 @@
 -- MySQL dump 10.13  Distrib 8.0.26, for macos11.3 (x86_64)
 --
--- Host: localhost    Database: gatekeeper
+-- Host: 127.0.0.1    Database: gatekeeper
 -- ------------------------------------------------------
 -- Server version	8.0.26
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
+/*!50503 SET NAMES utf8 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -110,7 +110,7 @@ CREATE TABLE `gateway_service_info` (
 
 LOCK TABLES `gateway_service_info` WRITE;
 /*!40000 ALTER TABLE `gateway_service_info` DISABLE KEYS */;
-INSERT INTO gateway_service_info VALUES (1,0,'test_service_name','test_service_desc',0,'','/test_service_name',1,'random','','','http://127.0.0.1:8881 100','{\"url_rewrite\":{\"rewrite_rule\":\"\"},\"http_flow_limit\":{\"service_flow_limit_num\":\"\",\"service_flow_limit_type\":\"0\",\"clientip_flow_limit_num\":\"\",\"clientip_flow_limit_type\":\"\"},\"header_transfer\":{\"transfer_rule\":\"\"},\"http_whiteblacklist\":{\"ip_white_list\":\"\",\"ip_black_list\":\"\",\"host_white_list\":\"\",\"url_white_list\":\"\"},\"http_upstream_transport\":{\"http_upstream_connection_timeout\":\"\",\"http_upstream_header_timeout\":\"\"},\"jwt_auth\":{},\"upstream_config\":{\"upstream_list\":\"http://127.0.0.1:8881 100\nhttp://127.0.0.1:8882 100\"}}','2021-09-20 10:55:46','2021-09-20 11:37:50',0);
+INSERT INTO `gateway_service_info` VALUES (1,0,'test_service_name','test_service_desc',0,'','/test_service_name',1,'round','default_loadbalance','','http://127.0.0.1:8881 100','{\"url_rewrite\":{\"rewrite_rule\":\"^/test_service(*) $1\"},\"http_flow_limit\":{\"service_flow_limit_num\":\"60\",\"service_flow_limit_type\":\"1\",\"clientip_flow_limit_num\":\"3\",\"clientip_flow_limit_type\":\"\"},\"header_transfer\":{\"header_transfer_rule\":\"add gatekeeper_power v2.0.1\"},\"http_whiteblacklist\":{\"ip_white_list\":\"127.0.0.1\\n127.0.0.2\",\"hostname_white_list\":\"localhost\",\"url_white_list\":\"/xxxx\"},\"http_upstream_transport\":{\"http_upstream_connection_timeout\":\"111\",\"http_upstream_header_timeout\":\"112\"},\"default_loadbalance\":{}}','2021-09-20 10:55:46','2021-10-28 19:44:02',0);
 /*!40000 ALTER TABLE `gateway_service_info` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -123,4 +123,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-09-20 13:48:17
+-- Dump completed on 2021-10-28 20:03:43

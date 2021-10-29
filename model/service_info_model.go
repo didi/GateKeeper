@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/bitly/go-simplejson"
@@ -41,11 +42,12 @@ func (t *ServiceInfo) Delete(c *gin.Context, tx *gorm.DB, search *ServiceInfo) e
 
 func (t *ServiceInfo) ServiceDetail(c *gin.Context, tx *gorm.DB, info *ServiceInfo) (*ServiceDetail, error) {
 	if info.ServiceName == "" {
-		info, err := t.Find(c, tx, info)
+		fmt.Println("Find", public.Obj2Json(info))
+		tmp, err := t.Find(c, tx, info)
 		if err != nil {
 			return nil, err
 		}
-		info = info
+		info = tmp
 	}
 	pluginConf := simplejson.New()
 	if tmp, err := simplejson.NewJson([]byte(info.PluginConf)); err == nil {
