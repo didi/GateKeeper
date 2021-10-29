@@ -18,6 +18,7 @@ function checkGoVerion() {
 
 
 function initInstall() {
+  export GO111MODULE=on && export GOPROXY=https://goproxy.cn
   go run main.go
 }
 

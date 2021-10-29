@@ -32,7 +32,10 @@ func getCreateSql() error{
 	tool.LogInfo.Println("sql file path :" + sqlFilePath)
 	tableName := ""
 	tablePre := regexp.MustCompile(`gateway_[a-z_]*`)
-	f, _ := os.Open(sqlFilePath)
+	f, err := os.Open(sqlFilePath)
+	if err != nil{
+		return err
+	}
 	defer f.Close()
 	r := bufio.NewReader(f)
 	for {

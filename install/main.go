@@ -29,15 +29,15 @@ func main() {
 		os.Exit(-1)
 	}
 
-	err = check.InitGo(); if err != nil{
-		tool.LogWarning.Println(err)
-		os.Exit(-1)
-	}
-
-	err = check.RunGateKeeper(); if err != nil{
-		tool.LogError.Println(err)
-		os.Exit(-1)
-	}
+	//err = check.InitGo(); if err != nil{
+	//	tool.LogWarning.Println(err)
+	//	os.Exit(-1)
+	//}
+	//
+	//err = check.RunGateKeeper(); if err != nil{
+	//	tool.LogError.Println(err)
+	//	os.Exit(-1)
+	//}
 
 }
 
