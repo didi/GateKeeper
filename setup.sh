@@ -78,11 +78,11 @@ function install() {
 
   # init gatekeeper conf
   gatekeeper_install_dir="${install_dir}/install"
-  cd ${gatekeeper_install_dir} &&  chmod 755 install.* && ./install
+  cd ${gatekeeper_install_dir} &&  chmod 755 install && ./install
 
-  printf "you can sh ${gatekeeper_dir}/control.sh [start_proxy || start_control]"
-  printf "demo: [ cd ${install_dir} && sh control.sh start_proxy ] start gatekeeper proxy"
-  printf "or you can run gatekeeper binary file [ gatekeeper ]"
+  printf "you can sh ${gatekeeper_dir}/control.sh [start_proxy || start_control]\n"
+  printf "demo: [ cd ${install_dir} && sh control.sh start_proxy ] start gatekeeper proxy\n"
+  printf "or you can run gatekeeper binary file [ gatekeeper ]\n"
   printf "demo: [ cd ${install_dir} && ./gatekeeper run -c conf/dev/ -p proxy]"
 }
 
