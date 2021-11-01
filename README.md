@@ -13,22 +13,22 @@ _源码环境要求_
 [Redis安装](https://github.com/tporadowski/redis/releases) || [教程](https://www.runoob.com/redis/redis-install.html)
 
 
-## 网关服务安装
-1. 源码运行 gatekeeper 服务
-2. 下载编译包from: https://github.com/didi/GateKeeper/releases
+## 网关服务安装方式(二选一)
+1. 源码运行
+2. 下载编译包: https://github.com/didi/GateKeeper/releases
 
 
+### 服务初始化(二选一)
 
-### 服务初始化
 _首次运行时需要_
 
-#### (1)自动初始化
+#### (1)自动初始化(二选一)
 
-_①下载编译包自动初始化_
-- curl -L ‘ https://github.com/didi/GateKeeper/releases’| sh
+_①下载对应版本编译包自动初始化并安装_
+- curl -L 'https://github.com/didi/GateKeeper/releases/download/v1.0.0/setup.sh' | sh
 
 _②手动执行自动初始化脚本_
-- cd install & sh install.sh 
+- cd install && sh install.sh 
 
 
 #### (2)手动初始化
@@ -52,16 +52,18 @@ mysql -h 127.0.0.1 -u root -p gatekeeper < gatekeeper.sql --default-character-se
 
 修改 ./conf/dev/mysql.toml 和 ./conf/dev/redis.toml 为自己的环境配置。
 
-# 运行服务
 
-## 运行管理面板
+
+## 运行服务
+
+### 运行管理面板
 
 ```
 sh control.sh start_control 
 ```
 
 
-## 运行代理服务
+### 运行代理服务
 
 ```
 sh control.sh start_proxy 
