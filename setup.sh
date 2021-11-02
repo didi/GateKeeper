@@ -95,10 +95,10 @@ function install() {
     exit -1
   fi
 
-  printf "you can sh ${gatekeeper_dir}/control.sh [ ${YELOW}start_proxy || start_control${RES}]\n"
-  printf "demo: [ ${GREEN_SHAN}cd ${install_dir} && sh control.sh start_proxy${RES} ] start gatekeeper proxy\n"
+  printf "you can sh ${gatekeeper_dir}/control.sh [ ${YELOW}start_proxy || start_control || start_both ${RES} ]\n"
+  printf "demo: [ ${GREEN_SHAN}cd ${install_dir} && sh control.sh start_both${RES} ] start gatekeeper proxy\n"
   printf "or you can run gatekeeper binary file [ ${YELOW}gatekeeper${RES} ]\n"
-  printf "demo: [ ${GREEN_SHAN}cd ${install_dir} && ./gatekeeper run -c conf/dev/ -p proxy${RES} ]"
+  printf "demo: [ ${GREEN_SHAN}cd ${install_dir} && ./gatekeeper run -c conf/dev/ -p both${RES} ]"
 }
 
 setup

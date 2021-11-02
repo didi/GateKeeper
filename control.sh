@@ -50,8 +50,9 @@ function help() {
     echo -e "\t[command]"
     echo -e "\n"
     echo -e "Available Commands:"
-    echo -e "\tstart_proxy \t start gatekeeper proxt"
+    echo -e "\tstart_proxy \t start gatekeeper proxy"
     echo -e "\tstart_control \t start gatekeeper control"
+    echo -e "\tstart_both \t start gatekeeper control && proxy"
     echo -e "\n"
     echo -e "Flags:"
     echo -e "\t-h,\t--help\thelp for this command"
@@ -68,6 +69,9 @@ case $action in
     "start_control" )
         run control
         ;;
+    "start_both" )
+      run both
+      ;;
     * )
         help
         ;;
