@@ -18,8 +18,8 @@ var cmdRun = &cobra.Command{
 		if ok, _ := PathExists(confPath); !ok {
 			return errors.New("conf_path is not a real dir")
 		}
-		if !InArrayString(panelType, []string{"proxy", "control"}) {
-			return errors.New("panel_type error，Choose one from proxy, control")
+		if !InArrayString(panelType, []string{"proxy", "control", "both"}) {
+			return errors.New("panel_type error，choose one from both/proxy/control")
 		}
 		return nil
 	},
@@ -28,8 +28,8 @@ var cmdRun = &cobra.Command{
 }
 
 func CmdExecute() error {
-	cmdRun.Flags().StringVarP(&panelType, "panel_type", "p", "", "Set panel type(control/proxy)")
-	cmdRun.Flags().StringVarP(&confPath, "conf_path", "c", "", "Set configuration path(./conf/dev/)")
+	cmdRun.Flags().StringVarP(&panelType, "panel_type", "p", "", "set panel type like 'both/proxy/control'")
+	cmdRun.Flags().StringVarP(&confPath, "conf_path", "c", "", "set configuration path like './conf/dev/'")
 	cmdRun.MarkFlagRequired("panel_type")
 	cmdRun.MarkFlagRequired("conf_path")
 	var rootCmd = &cobra.Command{

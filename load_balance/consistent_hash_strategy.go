@@ -29,6 +29,7 @@ type ConsistentHashStrategy struct {
 	hash     Hash
 	replicas int               //复制因子
 	keys     UInt32Slice       //已排序的节点hash切片
+	nodes    []string          //已排序的节点nodes切片
 	hashMap  map[uint32]string //节点哈希和Key的map,键是hash值，值是节点key
 }
 
@@ -55,6 +56,7 @@ func (c *ConsistentHashStrategy) Add(params ...string) error {
 	addr := params[0]
 	c.mux.Lock()
 	defer c.mux.Unlock()
+	c.nodes = append(c.nodes, addr)
 	for i := 0; i < c.replicas; i++ {
 		hash := c.hash([]byte(strconv.Itoa(i) + addr))
 		c.keys = append(c.keys, hash)
@@ -79,15 +81,12 @@ func (c *ConsistentHashStrategy) Get(key string) (string, error) {
 }
 
 func (r *ConsistentHashStrategy) GetAll() ([]string, error) {
-	iplist := []string{}
-	for _, item := range r.hashMap {
-		iplist = append(iplist, item)
-	}
-	return iplist, nil
+	return r.nodes, nil
 }
 
 func (c *ConsistentHashStrategy) RemoveAll() error {
 	c.keys = UInt32Slice{}
+	c.nodes = []string{}
 	c.hashMap = map[uint32]string{}
 	return nil
 }

@@ -60,7 +60,7 @@ func HttpServerStop() {
 	if err := HttpSrvHandler.Shutdown(ctx); err != nil {
 		log.Error().Msg(lib.Purple(fmt.Sprintf("http_proxy_stop err:%v", err)))
 	}
-	log.Error().Msg(lib.Purple(fmt.Sprintf("http_proxy_stop %v stopped", lib.GetStringConf("proxy.http.addr"))))
+	log.Info().Msg(lib.Purple(fmt.Sprintf("stop HTTP proxy service [%s]", lib.GetStringConf("proxy.http.addr"))))
 }
 
 func HttpsServerStop() {
@@ -69,5 +69,5 @@ func HttpsServerStop() {
 	if err := HttpsSrvHandler.Shutdown(ctx); err != nil {
 		log.Error().Msg(lib.Purple(fmt.Sprintf("https_proxy_stop err:%v", err)))
 	}
-	log.Error().Msg(lib.Purple(fmt.Sprintf("https_proxy_stop %v stopped", lib.GetStringConf("proxy.http.addr"))))
+	log.Info().Msg(lib.Purple(fmt.Sprintf("stop HTTPS proxy service [%s]", lib.GetStringConf("proxy.https.addr"))))
 }

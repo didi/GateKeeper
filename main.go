@@ -24,6 +24,9 @@ func main() {
 	if lib.GetCmdPanelType() == "control" {
 		startControl()
 	}
+	if lib.GetCmdPanelType() == "both" {
+		startBoth()
+	}
 }
 
 func startControl() {
@@ -60,6 +63,36 @@ func startProxy() {
 	quit := make(chan os.Signal)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
+	tcp_proxy_router.TcpManagerHandler.TcpServerStop()
+	grpc_proxy_router.GrpcManagerHandler.GrpcServerStop()
+	http_proxy_router.HttpServerStop()
+	http_proxy_router.HttpsServerStop()
+}
+
+func startBoth() {
+	log.Info().Msg(lib.Purple("start proxy application"))
+	lib.InitConf(lib.GetCmdConfPath())
+	defer lib.DestroyConf()
+	handler.ServiceManagerHandler.LoadAndWatch()
+	handler.AppManagerHandler.LoadAndWatch()
+	dashboard_router.HttpServerRun()
+	go func() {
+		http_proxy_router.HttpServerRun()
+	}()
+	go func() {
+		http_proxy_router.HttpsServerRun()
+	}()
+	go func() {
+		tcp_proxy_router.TcpManagerHandler.TcpServerRun()
+	}()
+	go func() {
+		grpc_proxy_router.GrpcManagerHandler.GrpcServerRun()
+	}()
+
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	dashboard_router.HttpServerStop()
 	tcp_proxy_router.TcpManagerHandler.TcpServerStop()
 	grpc_proxy_router.GrpcManagerHandler.GrpcServerStop()
 	http_proxy_router.HttpServerStop()
