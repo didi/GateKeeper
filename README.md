@@ -41,7 +41,7 @@ git clone https://github.com/didi/GateKeeper.git
 
 ```
 export GO111MODULE=on && export GOPROXY=https://goproxy.cn
-cd gatekeeper
+cd GateKeeper
 go mod tidy
 ```
 
@@ -90,4 +90,4 @@ sh control.sh start_both
 
 # 自动化集成测试
 
-### [自动化集成测试](https://github.com/didi/Gatekeeper/blob/master/test_suites/README.md)
+### [自动化集成测试](https://github.com/didi/GateKeeper/blob/master/test_suites/README.md)

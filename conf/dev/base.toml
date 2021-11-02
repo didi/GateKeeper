@@ -16,10 +16,6 @@
 
 [pprof]
 
-[session]
-    redis_server = "127.0.0.1:6379"     #redis session server
-    redis_password = ""
-
 [log]
     on = true                          #日志开关，是否开启
     level = "info"                      #日志级别，只支持小写
