@@ -2,13 +2,13 @@ package http_proxy_middleware
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"github.com/didi/gatekeeper/dashboard_middleware"
 	"github.com/didi/gatekeeper/handler"
 	"github.com/didi/gatekeeper/model"
 	"github.com/didi/gatekeeper/public"
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 	"strconv"
 )
 
@@ -42,8 +42,8 @@ func HTTPFlowLimitMiddleware() gin.HandlerFunc {
 
 		clientIpFlowNumString := serviceDetail.PluginConf.GetPath("http_flow_limit", "clientip_flow_limit_num").MustString()
 		clientIpFlowTypeString := serviceDetail.PluginConf.GetPath("http_flow_limit", "clientip_flow_limit_type").MustString()
-		clientIpFlowNum, _ := strconv.ParseInt(clientIpFlowNumString, 64, 10)
-		clientIpFlowType, _ := strconv.ParseInt(clientIpFlowTypeString, 64, 10)
+		clientIpFlowNum, _ := strconv.ParseInt(clientIpFlowNumString, 10, 64)
+		clientIpFlowType, _ := strconv.ParseInt(clientIpFlowTypeString, 10, 64)
 		if clientIpFlowNum > 0 {
 			cLimiterBuffer := bytes.NewBufferString(public.FlowServicePrefix)
 			cLimiterBuffer.WriteString(serviceDetail.Info.ServiceName)

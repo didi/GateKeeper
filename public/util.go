@@ -36,7 +36,7 @@ func InIPSliceStr(targetIP, ipSliceStr string) bool {
 		return false
 	}
 
-	inputSlice := strings.Split(ipSliceStr, ",")
+	inputSlice := strings.Split(ipSliceStr, "\n")
 	var ipSlice []string
 	for _, input := range inputSlice {
 		ipSlice = append(ipSlice, strings.TrimSpace(input))
@@ -74,4 +74,3 @@ func InArrayString(s string, arr []string) bool {
 	}
 	return false
 }
-

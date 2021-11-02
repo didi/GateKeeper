@@ -2,10 +2,9 @@ package handler
 
 import (
 	"github.com/didi/gatekeeper/golang_common/lib"
-	"github.com/didi/gatekeeper/public"
 	"github.com/didi/gatekeeper/golang_common/zerolog/log"
+	"github.com/didi/gatekeeper/public"
 	"github.com/garyburd/redigo/redis"
-	"io/ioutil"
 	"math"
 	"time"
 )
@@ -52,12 +51,20 @@ func RedisScript(script string, args ...interface{}) (interface{}, error) {
 }
 
 func (d *DistributedLimiter) Allow() bool {
-	luaScript, err := ioutil.ReadFile("distributed_limit.lua")
-	if err != nil {
-		log.Printf("read failed %v", err)
-		return false
-	}
-
+	luaScript := `--$lua = <<<SCRIPT
+local key = KEYS[1]               --每秒一个，如：sv1_1625898937
+local limit = tonumber(ARGV[1])   --限流大小，如：20
+local current = tonumber(redis.call('get', key) or "0")
+if ( current + 1 > limit )
+then
+    return 0
+else
+    redis.call("INCRBY", key,"1") --自增
+    redis.call("expire", key,"2") --2秒超时
+    return 1
+end
+--SCRIPT;
+`
 	allow, err := RedisScript(string(luaScript), d.Name, d.Capacity)
 	if err != nil {
 		log.Printf("DistributedLimiter RedisScript Error: %v\n", err)

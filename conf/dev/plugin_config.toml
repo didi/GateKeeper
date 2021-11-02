@@ -113,32 +113,6 @@
     field_required = false
     field_valid_rule = "/^[\\S]+$/is"
 
-  [[http.items]]
-    field_type = "textarea"
-    field_display = ""
-    field_clear = ""
-    field_placeholder = "格式：localhost，放行的部署机HOSTNAME"
-    field_option = ""
-    field_value = ""
-    field_default_value = ""
-    field_unique_name = "hostname_white_list"
-    field_display_name = "HOSTNAME白名单"
-    field_required = false
-    field_valid_rule = "/^[\\S]+$/is"
-
-  [[http.items]]
-    field_type = "textarea"
-    field_display = ""
-    field_clear = ""
-    field_placeholder = "格式：/xxx，放行的下游URL地址"
-    field_option = ""
-    field_value = ""
-    field_default_value = ""
-    field_unique_name = "url_white_list"
-    field_display_name = "URL白名单"
-    field_required = false
-    field_valid_rule = "/^[\\S]+$/is"
-
 [[http]]
   display_name = "连接池设置"
   sort = 2
