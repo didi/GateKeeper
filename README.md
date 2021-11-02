@@ -76,10 +76,6 @@ vim ./conf/dev/base.toml
 # set session redis_password = "redisPwd"
 ```
 ---
-```math
-E = mc^2
-```
-
 
 > ## 运行服务
 
@@ -93,6 +89,11 @@ sh control.sh start_control
 
 ```
 sh control.sh start_proxy 
+```
+
+### 运行控制面板 & 代理服务
+```
+sh control.sh start_both
 ```
 
 ---
