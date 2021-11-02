@@ -21,9 +21,6 @@ _源码环境要求_
 # step 1  get gatekeeper server 
 git clone https://github.com/didi/GateKeeper.git
 
-# or download zip
-# wget https://hub.fastgit.org/didi/GateKeeper/archive/refs/heads/master.zip
-
 # step 2  set go proxy & download library dependency
 export GO111MODULE=on && export GOPROXY=https://goproxy.cn
 cd gatekeeper
@@ -37,7 +34,7 @@ go mod tidy
 
 ```
 # step 1  get release gatekeeper server 
-curl -L 'https://github.com/didi/GateKeeper/releases/download/v1.0.0/setup.sh' | sh
+bash <(curl -s -S -L 'https://download.fastgit.org/didi/GateKeeper/releases/download/v1.0.0/setup.sh')  
 # step 2  run gatekeeper
 # setup already automatic init config
 ```
@@ -47,8 +44,6 @@ curl -L 'https://github.com/didi/GateKeeper/releases/download/v1.0.0/setup.sh' |
 > ## 服务配置初始化(二选一)
 
 _源码环境&&首次运行时需要_
-
-[config详解](https://github.com/didi/Gatekeeper/blob/master/doc/config/README.md)
 
 ### 1. 自动初始化
 ```

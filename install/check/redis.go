@@ -22,19 +22,16 @@ var (
 func InitRedis() error{
 	host, err := tool.Input("please enter redis host (default:127.0.0.1)", "127.0.0.1")
 	if err != nil{
-		tool.LogError.Println("inner error")
 		return err
 	}
 
 	port, err := tool.Input("please enter redis port (default:6379)", "6379")
 	if err != nil{
-		tool.LogError.Println("inner error")
 		return err
 	}
 
 	pwd, err := tool.Input("please enter redis pwd (default:null)", "")
 	if err != nil{
-		tool.LogError.Println("inner error")
 		return err
 	}
 

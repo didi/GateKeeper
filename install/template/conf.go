@@ -63,7 +63,7 @@ func redisConf() string {
 		"[list.default]\n        " +
 		"proxy_list = [\"#REDIS_CLIENT\"]\n        " +
 		"conn_timeout = 500\n        " +
-		"password = \"\"\n        " +
+		"password = \"#REDIS_PWD\"\n        " +
 		"db = 0\n        " +
 		"read_timeout = 1000\n        " +
 		"write_timeout = 1000\n        " +

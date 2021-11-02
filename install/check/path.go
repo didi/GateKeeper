@@ -52,7 +52,6 @@ func checkVersion() error{
 func enterGoPath() error{
 	goPath, err := tool.Input("please enter go path (/use/bin/go):", "")
 	if err != nil{
-		tool.LogError.Println("inner error")
 		return err
 	}
 	if goPath == ""{

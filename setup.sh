@@ -90,6 +90,10 @@ function install() {
   # init gatekeeper conf
   gatekeeper_install_dir="${install_dir}/install"
   cd ${gatekeeper_install_dir} &&  chmod 755 install && ./install
+  if [ $? != 0 ]; then
+    error_msg "init conf error"
+    exit -1
+  fi
 
   printf "you can sh ${gatekeeper_dir}/control.sh [ ${YELOW}start_proxy || start_control${RES}]\n"
   printf "demo: [ ${GREEN_SHAN}cd ${install_dir} && sh control.sh start_proxy${RES} ] start gatekeeper proxy\n"

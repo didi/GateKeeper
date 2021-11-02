@@ -30,7 +30,8 @@ func Input(describe string, defaultString string) (string, error) {
 	reader := NewReader()
 	readStdin, err := ReadStdin(reader, describe)
 	if err != nil {
-		fmt.Println(err)
+		LogError.Println(err)
+		LogError.Println("read input error")
 		return  "", err
 	}
 	readStdin = strings.Trim(readStdin, "\r")
@@ -49,7 +50,8 @@ func Confirm(describe string, retry int) (bool, error)  {
 	for i <= retry {
 		isConfirm, err := confirm(describe)
 		if err != nil{
-			fmt.Println(err)
+			LogError.Println(err)
+			LogError.Println("read input error")
 			i++
 			continue
 		}

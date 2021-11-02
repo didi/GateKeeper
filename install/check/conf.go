@@ -42,6 +42,7 @@ func initBase() error {
 	fileName := ConfPath + "base.toml"
 	redisClient := RedisClient.Host + ":" + RedisClient.Port
 	baseConf := strings.Replace(template.BaseConf, "#REDIS_CLIENT", redisClient, 1)
+	baseConf = strings.Replace(baseConf, "#REDIS_PWD", RedisClient.Pwd, 1)
 	err := ioutil.WriteFile(fileName, []byte(baseConf), 0666); if err != nil{
 		return err
 	}
@@ -56,6 +57,7 @@ func initRedis() error {
 	fileName := ConfPath + "redis_map.toml"
 	redisClient := RedisClient.Host + ":" + RedisClient.Port
 	redisConf := strings.Replace(template.RedisConf, "#REDIS_CLIENT", redisClient, 1)
+	redisConf = strings.Replace(redisConf, "#REDIS_PWD", RedisClient.Pwd, 1)
 	err := ioutil.WriteFile(fileName, []byte(redisConf), 0666); if err != nil{
 		return err
 	}

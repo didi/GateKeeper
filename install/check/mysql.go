@@ -83,33 +83,28 @@ func InitDb() error{
 	host, err := tool.Input("please enter mysql host (default:127.0.0.1):", "127.0.0.1")
 	//mysqlLinkInfo, err := inputHost(mysqlLinkInfo)
 	if err != nil{
-		tool.LogError.Println("inner error")
 		return err
 	}
 
 	port, err := tool.Input("please enter mysql port (default:3306):", "3306")
 	//port, err := inputPort(mysqlLinkInfo)
 	if err != nil{
-		tool.LogError.Println("inner error")
 		return err
 	}
 
 	user, err := tool.Input("please enter mysql user (default:root):", "root")
 	if err != nil{
-		tool.LogError.Println("inner error")
 		return err
 	}
 
 
 	pwd, err := tool.Input("please enter mysql pwd (default:root):", "root")
 	if err != nil{
-		tool.LogError.Println("inner error")
 		return err
 	}
 
 	database, err := tool.Input("please enter database (default:gatekeeper):", "gatekeeper")
 	if err != nil{
-		tool.LogError.Println("inner error")
 		return err
 	}
 	mysql := Mysql{
@@ -176,18 +171,20 @@ func checkTable(database string) error {
 	tables := template.Tables
 	for table, createTableSql := range tables{
 		// check table exist
-		checkTableSql := fmt.Sprintf(
-			"SELECT COLUMN_NAME fName,column_comment fDesc,DATA_TYPE dataType, " +
-				"IS_NULLABLE isNull,IFNULL(CHARACTER_MAXIMUM_LENGTH,0) sLength " +
-				"FROM information_schema.columns " +
-				"WHERE " +
-				"table_schema = '%s' " +
-				"AND table_name = '%s'",
-			database,
-			table)
+		//checkTableSql := fmt.Sprintf(
+		//	"SELECT COLUMN_NAME fName,column_comment fDesc,DATA_TYPE dataType, " +
+		//		"IS_NULLABLE isNull,IFNULL(CHARACTER_MAXIMUM_LENGTH,0) sLength " +
+		//		"FROM information_schema.columns " +
+		//		"WHERE " +
+		//		"table_schema = '%s' " +
+		//		"AND table_name = '%s'",
+		//	database,
+		//	table)
+		checkTableSql := fmt.Sprintf("SHOW CREATE TABLE %s.%s", database, table)
 		tool.LogInfo.Println("check table [" + table + "]")
 		tool.LogInfo.Println(checkTableSql)
 		rows, err := DbPool.Query(checkTableSql)
+		rows.Close()
 		if err != nil{
 			// table not exist
 			if strings.Contains(err.Error(), "doesn't exist") {
@@ -202,18 +199,18 @@ func checkTable(database string) error {
 			return err
 		} else{
 			// create table
-			type Field struct {
-				fieldName string
-				fieldDesc string
-				dataType  string
-				isNull    string
-				length    int
-			}
-			for rows.Next() {
-				var f Field
-				err = rows.Scan(&f.fieldName, &f.fieldDesc, &f.dataType, &f.isNull, &f.length)
-				tool.LogInfo.Println(f)
-			}
+			//type Field struct {
+			//	fieldName string
+			//	fieldDesc string
+			//	dataType  string
+			//	isNull    string
+			//	length    int
+			//}
+			//for rows.Next() {
+			//	var f Field
+			//	err = rows.Scan(&f.fieldName, &f.fieldDesc, &f.dataType, &f.isNull, &f.length)
+			//	tool.LogInfo.Println(f)
+			//}
 
 
 			boolReplace, err := tool.Confirm("table [" + table + "] exists need replace?", 3)
