@@ -25,9 +25,9 @@ func HttpServerRun() {
 		MaxHeaderBytes: 1 << uint(lib.GetIntConf("base.http.max_header_bytes")),
 	}
 	go func() {
-		log.Info().Msg(lib.Purple(fmt.Sprintf("start HTTP server service [http://127.0.0.1%s/dist/]", lib.GetStringConf("base.http.addr"))))
+		log.Info().Msg(lib.Purple(fmt.Sprintf("start HTTP control service [http://127.0.0.1%s/dist/]", lib.GetStringConf("base.http.addr"))))
 		if err := HttpSrvHandler.ListenAndServe(); err != nil {
-			log.Error().Msg(lib.Purple(fmt.Sprintf("failed to start HTTP service service [%s] %v", lib.GetStringConf("proxy.http.addr"), err)))
+			log.Error().Msg(lib.Purple(fmt.Sprintf("failed to start HTTP service service [%s] %v", lib.GetStringConf("base.http.addr"), err)))
 		}
 	}()
 }
@@ -38,5 +38,5 @@ func HttpServerStop() {
 	if err := HttpSrvHandler.Shutdown(ctx); err != nil {
 		log.Error().Msg(lib.Purple(fmt.Sprintf("HttpServerStop err:%v", err)))
 	}
-	log.Info().Msg("HttpServerStop stopped")
+	log.Error().Msg(lib.Purple(fmt.Sprintf("stop HTTP control service [%s]", lib.GetStringConf("base.http.addr"))))
 }

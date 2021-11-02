@@ -8,16 +8,15 @@ import (
 	"strings"
 )
 
-//匹配接入方式 基于请求信息
 func HTTPUrlRewriteMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		serviceDetail,err:= model.GetServiceDetailFromGinContext(c)
-		if err!=nil {
+		serviceDetail, err := model.GetServiceDetailFromGinContext(c)
+		if err != nil {
 			public.ResponseError(c, 2001, err)
 			c.Abort()
 			return
 		}
-		rewriteUrl:=serviceDetail.PluginConf.GetPath("rewrite_rule","rewrite_rule").MustString()
+		rewriteUrl := serviceDetail.PluginConf.GetPath("url_rewrite", "rewrite_rule").MustString()
 		if rewriteUrl == "" {
 			c.Next()
 			return
