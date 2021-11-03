@@ -59,10 +59,6 @@ vim ./conf/dev/mysql_map.toml
 vim ./conf/dev/redis_map.toml
 # set proxy_list = "redisIP:redsiPort"
 # set password = "redisPwd"
-
-vim ./conf/dev/base.toml
-# set session redis_service = "redsiIp:redisPort"
-# set session redis_password = "redisPwd"
 ```
 
 #### 2.5 create database & import data
