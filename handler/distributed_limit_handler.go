@@ -55,17 +55,31 @@ func (d *DistributedLimiter) Allow() bool {
 local key = KEYS[1]               --每秒一个，如：sv1_1625898937
 local limit = tonumber(ARGV[1])   --限流大小，如：20
 local current = tonumber(redis.call('get', key) or "0")
+local expire = tostring(ARGV[2])
+if ( current == 0 )
+then
+	redis.call("INCRBY", key,"1") --自增
+    redis.call("expire", key,expire) --2s,1m,1h超时
+	return 1
+end
 if ( current + 1 > limit )
 then
     return 0
 else
     redis.call("INCRBY", key,"1") --自增
-    redis.call("expire", key,"2") --2秒超时
     return 1
 end
 --SCRIPT;
 `
-	allow, err := RedisScript(string(luaScript), d.Name, d.Capacity)
+	expire := 2
+	if d.Dtype == DataTypeMinute {
+		expire = 60
+	}
+	if d.Dtype == DataTypeHour {
+		expire = 3600
+	}
+
+	allow, err := RedisScript(string(luaScript), d.Name, d.Capacity, expire)
 	if err != nil {
 		log.Printf("DistributedLimiter RedisScript Error: %v\n", err)
 		return false
