@@ -6,6 +6,7 @@ import (
 	"github.com/didi/gatekeeper/golang_common/lib"
 	"github.com/didi/gatekeeper/golang_common/zerolog/log"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -34,6 +35,8 @@ func (t *HTTPDestServer) Run(addr string, showLog ...bool) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", t.getPath)
 	mux.HandleFunc("/get_path", t.getPath)
+	mux.HandleFunc("/get_timeout", t.getTimeout)
+	mux.HandleFunc("/get_header", t.getHeader)
 	mux.HandleFunc("/get_host", t.getHost(fmt.Sprintf("127.0.0.1%s", addr)))
 	mux.HandleFunc("/ping", t.ping)
 	mux.HandleFunc("/goods_list", t.goodsList)
@@ -76,6 +79,17 @@ func (t *HTTPDestServer) getHost(addr string) func(w http.ResponseWriter, r *htt
 
 func (t *HTTPDestServer) getPath(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, r.URL.Path)
+}
+
+func (t *HTTPDestServer) getHeader(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "%v", r.Header)
+}
+
+func (t *HTTPDestServer) getTimeout(w http.ResponseWriter, r *http.Request) {
+	timeoutStr := r.URL.Query().Get("timeout")
+	timeout, _ := strconv.ParseInt(timeoutStr, 10, 64)
+	time.Sleep(time.Duration(int(timeout)) * time.Second)
+	fmt.Fprintf(w, "%v", r.Header)
 }
 
 func (t *HTTPDestServer) goodsList(w http.ResponseWriter, r *http.Request) {

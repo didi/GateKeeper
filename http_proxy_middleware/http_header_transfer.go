@@ -15,19 +15,22 @@ func HTTPHeaderTransferMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		transferRule := serviceDetail.PluginConf.GetPath("header_transfer","transfer_rule").MustString()
-		for _, item := range strings.Split(transferRule, ",") {
+		transferRule := serviceDetail.PluginConf.GetPath("header_transfer", "header_transfer_rule").MustString()
+		for _, item := range strings.Split(transferRule, "\n") {
 			if item == "" {
 				continue
 			}
 			items := strings.Split(item, " ")
-			if len(items) != 3 {
+			if len(items) == 3 {
+				if items[0] == "add" {
+					c.Request.Header.Add(items[1], items[2])
+				}
+				if items[0] == "edit" {
+					c.Request.Header.Set(items[1], items[2])
+				}
 				continue
 			}
-			if items[0] == "add" || items[0] == "edit" {
-				c.Request.Header.Set(items[1], items[2])
-			}
-			if items[0] == "del" {
+			if len(items) == 2 && items[0] == "del" {
 				c.Request.Header.Del(items[1])
 			}
 		}
