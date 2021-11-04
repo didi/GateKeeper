@@ -449,17 +449,6 @@ func (service *ServiceController) ServiceUpdate(c *gin.Context) {
 	}
 	// 负载类型校验
 	if params.LoadType != 1 {
-		if params.HTTPHosts == "" {
-			dashboard_middleware.ResponseError(c, 2001, errors.New("服务域名不能为空"))
-			return
-		}
-		// else {
-		// reg, _ := regexp.MatchString(`^(?=^.{3,255}$)[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+$`, params.HTTPHosts)
-		// if !reg { //解释失败，返回false
-		// 	dashboard_middleware.ResponseError(c, 2001, errors.New("服务域名格式错误"))
-		// 	return
-		// }
-		// }
 		// 服务地址校验
 		if err := public.HTTPPathsValidate(params.HTTPPaths); err != nil {
 			dashboard_middleware.ResponseError(c, 2001, err)
