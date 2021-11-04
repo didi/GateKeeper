@@ -92,7 +92,7 @@
     field_unique_name = "header_transfer_rule"
     field_display_name = "HEADER头转换"
     field_required = false
-    field_valid_rule = "/^[\\S]+ [\\S]+ [\\S]+$/is"
+    field_valid_rule = "/^([\\S]+ [\\S]+ [\\S]+)|([\\S]+ [\\S]+)$/is"
 
 [[http]]
   display_name = "白名单"
@@ -113,11 +113,37 @@
     field_required = false
     field_valid_rule = "/^[\\S]+$/is"
 
+  [[http.items]]
+    field_type = "textarea"
+    field_display = ""
+    field_clear = ""
+    field_placeholder = ""
+    field_option = ""
+    field_value = ""
+    field_default_value = ""
+    field_unique_name = "url_white_list"
+    field_display_name = "URL白名单"
+    field_required = false
+    field_valid_rule = "/^[\\S]+$/"
+
 [[http]]
   display_name = "连接池设置"
   sort = 2
   postion = "normal"
   unique_name = "http_upstream_transport"
+
+  [[http.items]]
+    field_type = "input"
+    field_display = ""
+    field_clear = ""
+    field_placeholder = ""
+    field_option = ""
+    field_value = ""
+    field_default_value = ""
+    field_unique_name = "http_upstream_connection_idle_num"
+    field_display_name = "下游最大空闲连接数"
+    field_required = false
+    field_valid_rule = "/^[\\d]+$/"
 
   [[http.items]]
     field_type = "input"

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"regexp"
 	"strings"
 )
 
@@ -29,6 +30,24 @@ func MD5(s string) string {
 func Obj2Json(s interface{}) string {
 	bts, _ := json.MarshalIndent(s, "", "\t")
 	return string(bts)
+}
+
+func InURLSliceStr(urlStr, urlSliceStr string) bool {
+	if urlStr == "" || urlSliceStr == "" {
+		return false
+	}
+	inputSlice := strings.Split(urlSliceStr, "\n")
+	var urlSlice []string
+	for _, input := range inputSlice {
+		urlSlice = append(urlSlice, strings.TrimSpace(input))
+	}
+	for _, urlSliceNode := range urlSlice {
+		reg, _ := regexp.MatchString(urlSliceNode, urlStr)
+		if reg {
+			return true
+		}
+	}
+	return false
 }
 
 func InIPSliceStr(targetIP, ipSliceStr string) bool {
