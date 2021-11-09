@@ -25,15 +25,7 @@ func HTTPWhiteListMiddleware() gin.HandlerFunc {
 				return
 			}
 		}
-
-		urlWhiteUrlString := serviceDetail.PluginConf.GetPath("http_whiteblacklist", "url_white_list").MustString()
-		if urlWhiteUrlString != "" {
-			if !public.InURLSliceStr(c.Request.URL.Path, urlWhiteUrlString) {
-				public.ResponseError(c, 3001, errors.New(fmt.Sprintf("%s not in white url list", c.Request.URL.Path)))
-				c.Abort()
-				return
-			}
-		}
+		c.Set("ip_white_list", ipWhiteListString)
 		c.Next()
 	}
 }
