@@ -1,11 +1,11 @@
 package http_proxy_middleware
 
 import (
+	"errors"
 	"fmt"
 	"github.com/didi/gatekeeper/model"
 	"github.com/didi/gatekeeper/public"
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 )
 
 func HTTPWhiteListMiddleware() gin.HandlerFunc {
@@ -17,15 +17,23 @@ func HTTPWhiteListMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		whiteListString := serviceDetail.PluginConf.GetPath("http_whiteblacklist", "ip_white_list").MustString()
-		if whiteListString != "" {
-			if !public.InIPSliceStr(c.ClientIP(), whiteListString) {
+		ipWhiteListString := serviceDetail.PluginConf.GetPath("http_whiteblacklist", "ip_white_list").MustString()
+		if ipWhiteListString != "" {
+			if !public.InIPSliceStr(c.ClientIP(), ipWhiteListString) {
 				public.ResponseError(c, 3001, errors.New(fmt.Sprintf("%s not in white ip list", c.ClientIP())))
 				c.Abort()
 				return
 			}
 		}
 
+		urlWhiteUrlString := serviceDetail.PluginConf.GetPath("http_whiteblacklist", "url_white_list").MustString()
+		if urlWhiteUrlString != "" {
+			if !public.InURLSliceStr(c.Request.URL.Path, urlWhiteUrlString) {
+				public.ResponseError(c, 3001, errors.New(fmt.Sprintf("%s not in white url list", c.Request.URL.Path)))
+				c.Abort()
+				return
+			}
+		}
 		c.Next()
 	}
 }

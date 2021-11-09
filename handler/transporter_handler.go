@@ -4,6 +4,7 @@ import (
 	"github.com/didi/gatekeeper/model"
 	"net"
 	"net/http"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -65,8 +66,12 @@ func (t *Transportor) GetTrans(service *model.ServiceDetail) (*http.Transport, e
 			return transItem.Trans, nil
 		}
 	}
-	connectTimeout := service.PluginConf.GetPath("http_upstream_transport","http_upstream_connection_timeout").MustInt()
-	headerTimeout := service.PluginConf.GetPath("http_upstream_transport","http_upstream_header_timeout").MustInt()
+	idleNumStr := service.PluginConf.GetPath("http_upstream_transport", "http_upstream_connection_idle_num").MustString()
+	connectTimeoutStr := service.PluginConf.GetPath("http_upstream_transport", "http_upstream_connection_timeout").MustString()
+	headerTimeoutStr := service.PluginConf.GetPath("http_upstream_transport", "http_upstream_header_timeout").MustString()
+	idleNum,_:=strconv.ParseInt(idleNumStr,10,64)
+	connectTimeout,_:=strconv.ParseInt(connectTimeoutStr,10,64)
+	headerTimeout,_:=strconv.ParseInt(headerTimeoutStr,10,64)
 	trans := &http.Transport{
 		DialContext: (&net.Dialer{
 			Timeout:   time.Duration(connectTimeout) * time.Second,
@@ -74,6 +79,7 @@ func (t *Transportor) GetTrans(service *model.ServiceDetail) (*http.Transport, e
 			DualStack: true,
 		}).DialContext, //3次握手超时设置
 		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          int(idleNum),
 		WriteBufferSize:       1 << 18, //256m
 		ReadBufferSize:        1 << 18, //256m
 		TLSHandshakeTimeout:   10 * time.Second,

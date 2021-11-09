@@ -2,6 +2,7 @@ package http_proxy_router
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
 	"github.com/didi/gatekeeper/golang_common/lib"
 	"github.com/didi/gatekeeper/golang_common/zerolog/log"
@@ -49,7 +50,17 @@ func HttpsServerRun() {
 		httpsAddr = "https://127.0.0.1" + httpsAddr
 	}
 	log.Info().Msg(lib.Purple(fmt.Sprintf("start HTTPS proxy service [%s]", httpsAddr)))
-	if err := HttpsSrvHandler.ListenAndServeTLS("./cert_file/server.crt", "./cert_file/server.key"); err != nil && err != http.ErrServerClosed {
+
+	cfg := &tls.Config{}
+	cert, err := tls.LoadX509KeyPair("./cert_file/server.crt", "./cert_file/server.key")
+	if err != nil {
+		log.Fatal().Msg(err.Error())
+	}
+	cfg.Certificates = append(cfg.Certificates, cert)
+	cfg.BuildNameToCertificate()
+	HttpsSrvHandler.TLSConfig = cfg
+
+	if err := HttpsSrvHandler.ListenAndServeTLS("", ""); err != nil && err != http.ErrServerClosed {
 		log.Error().Msg(lib.Purple(fmt.Sprintf("failed to start HTTPS proxy service [%s] %v", httpsAddr, err)))
 	}
 }
