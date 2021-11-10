@@ -7,6 +7,7 @@ import (
 	"github.com/didi/gatekeeper/handler"
 	"github.com/didi/gatekeeper/http_proxy_router"
 	"github.com/didi/gatekeeper/tcp_proxy_router"
+	testsqlhandler "github.com/didi/gatekeeper/test_suites/SqlHandler"
 	"github.com/didi/gatekeeper/test_suites/testhttp"
 	"github.com/didi/gatekeeper/test_suites/testrpc/thriftserver"
 	"github.com/gin-gonic/gin"
@@ -24,7 +25,8 @@ func TestRunSuite(t *testing.T) {
 	defer TearDown()
 	time.Sleep(500 * time.Millisecond)
 	runCase(t, TestGoConvey)
-	runCase(t, TestHostServiceVisit)
+	//runCase(t, TestHostServiceVisit)
+	runCase(t, TestStripPrefix)
 	//xxx
 }
 
@@ -60,6 +62,7 @@ func SetUp() {
 	for _, addr := range httpAddrSlice {
 		testHTTP.Run(addr)
 	}
+	testsqlhandler.InitGORMHandler()
 	time.Sleep(500 * time.Millisecond)
 	//testTCP = thriftserver.NewTestTCPDestServer()
 	//tcpAddrSlice := lib.GetStringSliceConf("test_dest.tcp_dest.addrs")
