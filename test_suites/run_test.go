@@ -13,7 +13,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"os"
 	"testing"
-	"time"
 )
 
 var (
@@ -24,10 +23,10 @@ var (
 func TestRunSuite(t *testing.T) {
 	SetUp()
 	defer TearDown()
-	time.Sleep(500 * time.Millisecond)
 	//runCase(t, TestGoConvey)
 	//runCase(t, TestHostServiceVisit)
-	runCase(t, TestStripPrefix)
+	//runCase(t, TestStripPrefix)
+	runCase(t, TestUpstreamList)
 	//xxx
 }
 

@@ -68,7 +68,7 @@ func (t *HTTPDestServer) Stop(addr string) {
 }
 
 func (t *HTTPDestServer) ping(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "pong")
+	fmt.Fprintf(w, "test Http Server: pong")
 }
 
 func (t *HTTPDestServer) getHost(addr string) func(w http.ResponseWriter, r *http.Request) {
@@ -78,6 +78,7 @@ func (t *HTTPDestServer) getHost(addr string) func(w http.ResponseWriter, r *htt
 }
 
 func (t *HTTPDestServer) getPath(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("test Http Server: getPath")
 	fmt.Fprintf(w, r.URL.Path)
 }
 
