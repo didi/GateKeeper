@@ -7,6 +7,7 @@ import (
 	"github.com/didi/gatekeeper/model"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	//"github.com/e421083458/gorm"
 )
 
 var Db *gorm.DB
@@ -23,11 +24,11 @@ func InitGORMHandler() {
 	dsn := mysqlConf.DataSourceName
 	fmt.Println("TEST", dsn)
 	Db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
-
+	//tmp, err := lib.GetGormPool("default")
 	if err != nil {
 		panic("连接数据库失败, error=" + err.Error())
 	}
-
+	//Db = tmp
 	log.Info().Msg("InitConfig GORMHandler Success.")
 }
 
@@ -41,10 +42,28 @@ func GetServiceStripPrefix(serviceName string) int {
 	return task.HttpStripPrefix
 }
 
-func DeleteServiceInfo(serviceName string){
+func GetServiceLoadBalanceStrategy(serviceName string) string {
+	task := model.ServiceInfo{}
+	Db.Where("service_name = ?", serviceName).First(&task)
+	return task.LoadBalanceStrategy
+}
+
+func DeleteServiceInfo(serviceName string) {
 	Db.Where("service_name = ?", serviceName).Delete(model.ServiceInfo{})
 }
 
-func AddServiceInfo(serviceInfo *model.ServiceInfo){
+func AddServiceInfo(serviceInfo *model.ServiceInfo) {
 	Db.Create(serviceInfo)
 }
+
+//func Save(serviceInfo *model.ServiceInfo) {
+//	tmp, err := lib.GetGormPool("default")
+//	if err != nil {
+//		panic("连接数据库失败, error=" + err.Error())
+//	}
+//
+//	err = tmp.Save(serviceInfo).Error
+//	if err != nil {
+//		fmt.Println("SAVE:", err)
+//	}
+//}
