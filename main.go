@@ -13,7 +13,7 @@ import (
 	"os/signal"
 	"syscall"
 )
-
+ 
 func main() {
 	if err := lib.CmdExecute(); err != nil || lib.GetCmdPanelType() == "" {
 		os.Exit(1)
