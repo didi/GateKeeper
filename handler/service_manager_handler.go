@@ -161,7 +161,6 @@ func (s *ServiceManager) LoadService() *ServiceManager {
 }
 
 func (s *ServiceManager) Load() error {
-	log.Info().Msg(lib.Purple("watching load service config from resource"))
 	ns := s.LoadService()
 	if ns.err != nil {
 		return ns.err

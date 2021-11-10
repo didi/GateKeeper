@@ -2,17 +2,16 @@ package suites
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/didi/gatekeeper/golang_common/lib"
 	"github.com/didi/gatekeeper/golang_common/zerolog/log"
 	"github.com/didi/gatekeeper/handler"
 	"github.com/didi/gatekeeper/model"
-    "github.com/didi/gatekeeper/test_suites/SqlHandler"
+	"github.com/didi/gatekeeper/test_suites/SqlHandler"
 	"github.com/smartystreets/goconvey/convey"
 	"io/ioutil"
 	"net/http"
 	"testing"
-	"time"
-	"fmt"
 )
 
 func TestGoConvey(t *testing.T) {
@@ -54,13 +53,13 @@ func TestStripPrefix(t *testing.T) {
 			StripPrefixOpen  = 1
 		)
 		convey.Convey("清空测试库", func() {
-			//delete all
 			testsqlhandler.DeleteServiceInfo(columnServiceName)
 		})
 		convey.Convey("插入测试服务信息", func() {
 			//insert new service
 			serviceInfo := model.ServiceInfo{ID: 1, ServiceName: "test_service_name", ServiceDesc: "test_service_desc", HTTPPaths: "/test_service_name", HttpStripPrefix: 0, LoadBalanceStrategy: "round", LoadBalanceType: "default_loadbalance", UpstreamList: "http://127.0.0.1:8881 100", PluginConf: "{\"url_rewrite\":{\"rewrite_rule\":\"^/test_service(*) $1\"},\"http_flow_limit\":{\"service_flow_limit_num\":\"60\",\"service_flow_limit_type\":\"1\",\"clientip_flow_limit_num\":\"3\",\"clientip_flow_limit_type\":\"\"},\"header_transfer\":{\"header_transfer_rule\":\"add gatekeeper_power v2.0.1\"},\"http_whiteblacklist\":{\"ip_white_list\":\"\",\"url_white_list\":\"\"},\"http_upstream_transport\":{\"http_upstream_connection_timeout\":\"111\",\"http_upstream_header_timeout\":\"112\"},\"default_loadbalance\":{}}"}
 			testsqlhandler.AddServiceInfo(&serviceInfo)
+			handler.ServiceManagerHandler.Load()
 			fmt.Println("TEST ", testsqlhandler.GetServiceStripPrefix("test_service_name"))
 		})
 		convey.Convey("更新服务配置", func() {
@@ -76,6 +75,7 @@ func TestStripPrefix(t *testing.T) {
 		convey.Convey("清空测试库2", func() {
 			//delete all
 			testsqlhandler.DeleteServiceInfo(columnServiceName)
+			handler.ServiceManagerHandler.Load()
 		})
 		convey.Convey("插入测试服务信息2", func() {
 			//insert new service
@@ -98,7 +98,6 @@ func TestStripPrefix(t *testing.T) {
 func getURLContent(checkURL string) (string, error) {
 	client := http.Client{}
 	resp, err := client.Get(checkURL)
-	time.Sleep(100 * time.Millisecond)
 	if err != nil {
 		return "", err
 	}
