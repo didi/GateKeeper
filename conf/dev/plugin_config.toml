@@ -172,10 +172,58 @@
     field_valid_rule = "/^[\\d]+$/"
 
 [[http]]
-  display_name = "jwt验证"
+  display_name = "UPM-PC 验证"
   sort = 2
   postion = "auth"
-  unique_name = "jwt_auth"
+  unique_name = "upm-pc"
+  [[http.items]]
+    field_type = "input"
+    field_display = ""
+    field_clear = ""
+    field_placeholder = ""
+    field_option = ""
+    field_value = ""
+    field_default_value = ""
+    field_unique_name = "remote_host"
+    field_display_name = "请求地址"
+    field_required = false
+    field_valid_rule = ""
+  [[http.items]]
+    field_type = "input"
+    field_display = ""
+    field_clear = ""
+    field_placeholder = ""
+    field_option = ""
+    field_value = ""
+    field_default_value = ""
+    field_unique_name = "remote_path"
+    field_display_name = "请求路径"
+    field_required = false
+    field_valid_rule = ""
+  [[http.items]]
+    field_type = "input"
+    field_display = ""
+    field_clear = ""
+    field_placeholder = ""
+    field_option = ""
+    field_value = ""
+    field_default_value = ""
+    field_unique_name = "passport_login_url"
+    field_display_name = "跳转路径"
+    field_required = false
+    field_valid_rule = ""
+  [[http.items]]
+    field_type = "input"
+    field_display = ""
+    field_clear = ""
+    field_placeholder = ""
+    field_option = ""
+    field_value = ""
+    field_default_value = ""
+    field_unique_name = "req_host"
+    field_display_name = "验证域名"
+    field_required = false
+    field_valid_rule = ""
 
 [[http]]
   display_name = "默认后端配置"
@@ -183,6 +231,18 @@
   postion = "loadbalance"
   unique_name = "upstream_config_new"
 
+  [[http.items]]
+    field_type = "textarea"
+    field_display = ""
+    field_clear = ""
+    field_placeholder = "每个规则一行 如：grpc://127.0.0.1:8701 100"
+    field_option = ""
+    field_value = ""
+    field_default_value = ""
+    field_unique_name = "upstream_list"
+    field_display_name = "下游服务器ip+权重"
+    field_required = false
+    field_valid_rule = "/^[\\S]+ [\\S]+$/is"
   [[http.items]]
     field_type = "textarea"
     field_display = ""
