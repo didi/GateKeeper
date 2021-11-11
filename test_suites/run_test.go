@@ -2,6 +2,7 @@ package suites
 
 import (
 	"github.com/didi/gatekeeper/golang_common/lib"
+	"github.com/didi/gatekeeper/golang_common/zerolog"
 	"github.com/didi/gatekeeper/golang_common/zerolog/log"
 	"github.com/didi/gatekeeper/grpc_proxy_router"
 	"github.com/didi/gatekeeper/handler"
@@ -10,8 +11,8 @@ import (
 	"github.com/didi/gatekeeper/test_suites/testhttp"
 	"github.com/didi/gatekeeper/test_suites/testrpc/thriftserver"
 	"github.com/gin-gonic/gin"
+	"os"
 	"testing"
-	"time"
 )
 
 var (
@@ -22,16 +23,26 @@ var (
 func TestRunSuite(t *testing.T) {
 	SetUp()
 	defer TearDown()
-	time.Sleep(500 * time.Millisecond)
-	runCase(t, TestGoConvey)
-	runCase(t, TestHostServiceVisit)
+	//runCase(t, TestGoConvey)
+	//runCase(t, TestHostServiceVisit)
+	//runCase(t, TestStripPrefix)
+	runCase(t, TestUpstreamList)
 	//xxx
 }
 
 func runCase(t *testing.T, testCase func(*testing.T)) {
+	//consoleLogger切换为null
+	nullFile, _ := os.OpenFile("/dev/null", os.O_RDWR, 0)
+	fileLogger := zerolog.New(nullFile).With().Timestamp().Logger()
+	consoleLogger := log.Logger
+	log.Logger = fileLogger
+
 	FuncBefore()
 	defer FuncAfter()
+
 	testCase(t)
+	//null切换为consoleLogger
+	log.Logger = consoleLogger
 }
 
 func SetUp() {
@@ -39,7 +50,6 @@ func SetUp() {
 	lib.SetCmdConfPath("./conf/")
 	log.Info().Msg(lib.Purple("start proxy application"))
 	lib.InitConf(lib.GetCmdConfPath())
-	defer lib.DestroyConf()
 	handler.ServiceManagerHandler.LoadAndWatch()
 	handler.AppManagerHandler.LoadAndWatch()
 	go func() {
@@ -54,18 +64,11 @@ func SetUp() {
 	go func() {
 		grpc_proxy_router.GrpcManagerHandler.GrpcServerRun()
 	}()
-
 	testHTTP = testhttp.NewTestHTTPDestServer()
 	httpAddrSlice := []string{":8881", ":8882"}
 	for _, addr := range httpAddrSlice {
 		testHTTP.Run(addr)
 	}
-	time.Sleep(500 * time.Millisecond)
-	//testTCP = thriftserver.NewTestTCPDestServer()
-	//tcpAddrSlice := lib.GetStringSliceConf("test_dest.tcp_dest.addrs")
-	//for _, addr := range tcpAddrSlice {
-	//	testTCP.Run(addr)
-	//}
 }
 
 func FuncBefore() {
@@ -76,8 +79,8 @@ func TearDown() {
 	grpc_proxy_router.GrpcManagerHandler.GrpcServerStop()
 	http_proxy_router.HttpServerStop()
 	http_proxy_router.HttpsServerStop()
+	lib.DestroyConf()
 }
 
 func FuncAfter() {
-
 }
