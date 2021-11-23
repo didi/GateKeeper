@@ -44,7 +44,7 @@ bash <(curl -s -S -L 'https://download.fastgit.org/didi/GateKeeper/releases/down
 
 软件 | 版本 | 官网 | 安装教程
 ---|---|---|---
-golang | \>=1.12 | [官网](https://golang.google.cn/dl/) |  [教程](https://www.runoob.com/go/go-environment.html)
+golang | \>=1.16 | [官网](https://golang.google.cn/dl/) |  [教程](https://www.runoob.com/go/go-environment.html)
 
 #### 2.1 git clone code
 
