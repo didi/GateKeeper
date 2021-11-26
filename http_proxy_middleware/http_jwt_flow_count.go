@@ -7,7 +7,7 @@ import (
 	"github.com/didi/gatekeeper/model"
 	"github.com/didi/gatekeeper/public"
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
+	"errors"
 )
 
 func HTTPJwtFlowCountMiddleware() gin.HandlerFunc {

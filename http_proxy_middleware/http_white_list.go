@@ -26,6 +26,7 @@ func HTTPWhiteListMiddleware() gin.HandlerFunc {
 			}
 		}
 
+
 		urlWhiteUrlString := serviceDetail.PluginConf.GetPath("http_whiteblacklist", "url_white_list").MustString()
 		if urlWhiteUrlString != "" {
 			if !public.InURLSliceStr(c.Request.URL.Path, urlWhiteUrlString) {
@@ -34,6 +35,9 @@ func HTTPWhiteListMiddleware() gin.HandlerFunc {
 				return
 			}
 		}
+
+		c.Set("ip_white_list", ipWhiteListString)
+		c.Set("url_white_list", urlWhiteUrlString)
 		c.Next()
 	}
 }

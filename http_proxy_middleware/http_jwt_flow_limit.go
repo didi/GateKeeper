@@ -7,7 +7,7 @@ import (
 	"github.com/didi/gatekeeper/model"
 	"github.com/didi/gatekeeper/public"
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
+	"errors"
 )
 
 func HTTPJwtFlowLimitMiddleware() gin.HandlerFunc {
@@ -33,7 +33,7 @@ func HTTPJwtFlowLimitMiddleware() gin.HandlerFunc {
 			cLimiterBuffer := bytes.NewBufferString(public.FlowAppPrefix)
 			cLimiterBuffer.WriteString(appInfo.AppID)
 			cLimiterBuffer.WriteString("_")
-			cLimiterBuffer.WriteString(c.ClientIP())
+			//cLimiterBuffer.WriteString(c.ClientIP())
 			clientLimiter, err := handler.FlowLimiterHandler.GetLimiter(cLimiterBuffer.String(), float64(appInfo.Qps), 0, true)
 			if err != nil {
 				public.ResponseError(c, 5001, err)

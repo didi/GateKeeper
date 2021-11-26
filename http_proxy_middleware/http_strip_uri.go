@@ -17,7 +17,15 @@ func HTTPStripUriMiddleware() gin.HandlerFunc {
 			return
 		}
 		if serviceDetail.Info.HttpStripPrefix == 1 {
-			c.Request.URL.Path = strings.Replace(c.Request.URL.Path, serviceDetail.Info.HTTPPaths, "", 1)
+			strArr := strings.Split(serviceDetail.Info.HTTPPaths,"\n")
+			tmpStr := c.Request.URL.Path
+			for _, replaceStr := range strArr {
+				c.Request.URL.Path = strings.Replace(c.Request.URL.Path, replaceStr, "", 1)
+				if c.Request.URL.Path != tmpStr {
+					break
+				}
+			}
+
 		}
 		c.Next()
 	}
