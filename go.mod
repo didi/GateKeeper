@@ -17,7 +17,7 @@ require (
 	github.com/erikstmartin/go-testdb v0.0.0-20160219214506-8d10e4a1bae5 // indirect
 	github.com/garyburd/redigo v1.6.0
 	github.com/gin-gonic/contrib v0.0.0-20191209060500-d6e26eeaa607
-	github.com/gin-gonic/gin v1.7.0
+	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/locales v0.13.0
 	github.com/go-playground/universal-translator v0.17.0
 	github.com/go-sql-driver/mysql v1.5.0 // indirect
